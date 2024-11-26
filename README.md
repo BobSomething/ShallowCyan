@@ -1,4 +1,5 @@
 REMEMBER TO git pull FIRST, WHEN YOU WANT TO CHANGE ANYTHING!!
+
 REMEMBER TO git push EVERYTHING AFTER YOU ARE DONE WITH THE SESSION!!
 
 Notes about how the project will be.
