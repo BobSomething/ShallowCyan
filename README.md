@@ -13,6 +13,7 @@ To do list:
     b. piece.cpp - all the implementation of piece.hpp
     c. board.hpp - all board stuff related
     d. board.cpp - all the implementation of board.hpp
+    e. Makefile (or equivalent) - facilitate the compilation of our files
 
 1. Implement all the pieces
     a. Have a struct piece_t - generic type.
