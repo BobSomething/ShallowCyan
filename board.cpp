@@ -40,9 +40,9 @@ void board_t::print() {
 	// TODO
 	/* Prints the board sexily */
 	for (int i = 0; i < SIZE; i++) {
-		std::cout << 
+		std::cout << std::string(17, '-');
 		for (int j = 0; j < SIZE; j++) {
-			
+			continue;
 		}
 	}
 }
