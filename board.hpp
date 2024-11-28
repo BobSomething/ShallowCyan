@@ -2,6 +2,7 @@
 #define BOARD_HPP_
 
 #include <iostream>
+#include <vector>
 #include "piece.hpp"
 #include "macro.hpp"
 
@@ -12,6 +13,9 @@ struct board_t {
 	
 	/* Makes a starting chess board */
 	board_t();
+
+	/* Prints the board sexily */
+	void print();
 
 	/* Evaluates the current position. Positive score means white is winning, negative score means black */
 	int eval();
