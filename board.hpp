@@ -6,6 +6,8 @@
 #include "piece.hpp"
 #include "macro.hpp"
 
+struct piece_t;
+
 struct board_t {
 	piece_t* state[SIZE][SIZE];	// board state
 	bool turn;					// 1 = white turn, 0 = black turn
