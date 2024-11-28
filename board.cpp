@@ -1,7 +1,7 @@
 #include "board.hpp"
 
 board_t::board_t() {
-	// TODO
+	// DONE (probably, has not been tested. also, uses "new")
 	/* Makes a starting chess board */
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -19,8 +19,10 @@ board_t::board_t() {
 					case 2:
 					case 5:
 						piece = new bishop_t(coords{i, j}, color);
-					case 3: piece = new queen_t(coords{i, j}, color);
-					case 4: piece = new king_t(coords{i, j}, color);
+					case 3:
+						piece = new queen_t(coords{i, j}, color);
+					case 4:
+						piece = new king_t(coords{i, j}, color);
 				}
 				state[i][j] = piece;
 			}
@@ -33,8 +35,21 @@ board_t::board_t() {
 	fifty_moves = 0;
 }
 
-int board_t::eval() {
+
+void board_t::print() {
 	// TODO
+	/* Prints the board sexily */
+	for (int i = 0; i < SIZE; i++) {
+		std::cout << 
+		for (int j = 0; j < SIZE; j++) {
+			
+		}
+	}
+}
+
+
+int board_t::eval() {
+	// DONE (for now, we will change how boards are evaluated later)
 	/* Evaluates the current position. Positive score means white is winning, negative score means black */
 	int ret{};
 	for (int i = 0; i < SIZE; i++) {
