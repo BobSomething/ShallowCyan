@@ -2,6 +2,15 @@ REMEMBER TO git pull FIRST, WHEN YOU WANT TO CHANGE ANYTHING!!
 
 REMEMBER TO git push EVERYTHING AFTER YOU ARE DONE WITH THE SESSION!!
 
+To use CMake: 
+First time:
+1-mkdir build
+2-cd build
+3-cmake ../
+Then afterwards:
+1-cd build
+2-make
+
 Notes about how the project will be.
 
 Remember to name all functions/variables in a way for other to understand
