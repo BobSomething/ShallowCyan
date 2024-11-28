@@ -2,3 +2,4 @@
 #define array_coords std::vector<coords>  //vector of coordinates
 #define i first //number
 #define j second //letter
+#define SIZE 8
