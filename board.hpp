@@ -13,9 +13,13 @@ struct board_t {
 	bool turn;					// 1 = white turn, 0 = black turn
 	int fifty_moves;			// amount of moves into the fifty move rule
 	//last move from what square to what square
-	
+
 	/* Makes a starting chess board */
 	board_t();
+
+	/* For debugging: clearing the board */
+	void clear_board();
+	void add_piece(int x, int y, piece_t* piece);
 
 	/* Prints the board sexily */
 	void print();

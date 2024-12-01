@@ -12,27 +12,38 @@ board_t::board_t() {
 				switch (j) {
 					case 0:
 					case 7:
-						piece = new rook_t(coords{i, j}, color);
+						piece = new rook_t(coords{i, j}, color, this);
 					case 1:
 					case 6:
-						piece = new knight_t(coords{i, j}, color);
+						piece = new knight_t(coords{i, j}, color, this);
 					case 2:
 					case 5:
-						piece = new bishop_t(coords{i, j}, color);
+						piece = new bishop_t(coords{i, j}, color, this);
 					case 3:
-						piece = new queen_t(coords{i, j}, color);
+						piece = new queen_t(coords{i, j}, color, this);
 					case 4:
-						piece = new king_t(coords{i, j}, color);
+						piece = new king_t(coords{i, j}, color, this);
 				}
 				state[i][j] = piece;
 			}
 			if (i == 1 || i == 6) {
-				state[i][j] = new pawn_t(coords{i, j}, color);
+				state[i][j] = new pawn_t(coords{i, j}, color, this);
 			}
 		}
 	}
 	turn = 1;
 	fifty_moves = 0;
+}
+
+void board_t::clear_board() {
+	for(int i=0; i<SIZE; i++) 
+		for(int j=0; j<SIZE; j++)
+			state[i][j] = nullptr;
+
+}
+
+void board_t::add_piece(int x, int y, piece_t* piece) {
+	state[x][y] = piece;
 }
 
 
@@ -50,7 +61,7 @@ void board_t::print() {
 void board_t::update(std::string move) {
 	//TODO
 	/* Updates the board with this move, assumes that the move is legal */
-
+	
 }
 
 int board_t::eval() {
