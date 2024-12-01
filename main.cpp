@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
     }
     input.close();
 
+    //Outputs the next move
     std::ofstream output;
     output.open(move);
     output << board.next_move();
