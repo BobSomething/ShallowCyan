@@ -19,8 +19,14 @@ struct board_t {
 	/* Prints the board sexily */
 	void print();
 
+	/* Import the history by one move */
+	void update(std::string move);
+
 	/* Evaluates the current position. Positive score means white is winning, negative score means black */
 	int eval();
+
+	/* Calculates the next move */
+	std::string next_move(); //idk if we want to have any other arguments in or not
 
 	/* Turns a location (i, j) to a string (ex: (0, 0) maps to "a1") */
 	std::string pair_to_string(coords location);

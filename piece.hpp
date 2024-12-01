@@ -6,6 +6,8 @@
 #include "board.hpp"
 #include "macro.hpp"
 
+struct board_t;
+
 
 struct piece_t {
     bool color; //1 - white and 0 - black
@@ -19,6 +21,7 @@ struct piece_t {
     piece_t(coords location, bool color)
         : location {location}, color {color}, points {0} {}
 };
+
 
 struct pawn_t : piece_t {
     array_coords legal_moves(board_t* board);
@@ -47,7 +50,6 @@ struct rook_t : piece_t {
     rook_t(coords location, bool color)
         : piece_t(location, color) {points = 500;}
 };
-
 
 struct king_t : piece_t {
     array_coords legal_moves(board_t* board);

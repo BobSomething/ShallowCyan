@@ -40,13 +40,18 @@ void board_t::print() {
 	// TODO
 	/* Prints the board sexily */
 	for (int i = 0; i < SIZE; i++) {
-		std::cout << 
+		std::cout << "a";
 		for (int j = 0; j < SIZE; j++) {
-			
+			std::cout << "a";
 		}
 	}
 }
 
+void board_t::update(std::string move) {
+	//TODO
+	/* Updates the board with this move, assumes that the move is legal */
+
+}
 
 int board_t::eval() {
 	// DONE (for now, we will change how boards are evaluated later)
@@ -60,4 +65,10 @@ int board_t::eval() {
 		}
 	}
 	return ret;
+}
+
+std::string board_t::next_move() {
+	//TODO
+	/* Calculates the next move */
+	return "a2a4"; //returning something
 }
