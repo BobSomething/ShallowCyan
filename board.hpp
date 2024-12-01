@@ -12,6 +12,7 @@ struct board_t {
 	piece_t* state[SIZE][SIZE];	// board state
 	bool turn;					// 1 = white turn, 0 = black turn
 	int fifty_moves;			// amount of moves into the fifty move rule
+	//last move from what square to what square
 	
 	/* Makes a starting chess board */
 	board_t();
