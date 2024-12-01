@@ -41,5 +41,14 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
+    /*
+    board.clear_board();
+    board.add_piece(3,3, new bishop_t(makep(3,3),1,&board));
+    
+    for(auto& [x, y]: board.state[3][3]->legal_moves()) {
+        std::cout << x << " " << y << std::endl;
+    }
+    */
+
     return 0;
 }
