@@ -14,12 +14,15 @@ struct piece_t {
     int points; //counts how valueable is a piece
     coords location; //location on the board, if there will be no other methods, just put it in the legal_moves
 
-    //vector of pairs (i,j), indicating the cells
+    /* vector of pairs (i,j), indicating the cells */
     virtual array_coords legal_moves(board_t* board); 
 
-    //constructor of piece_t
+    /* constructor of piece_t */
     piece_t(coords location, bool color)
         : location {location}, color {color}, points {0} {}
+
+    /* returns false if the cell is out of bounds and if the cell contains a piece with the same color */
+    bool check_cell(int x, int y, board_t* board);
 };
 
 
