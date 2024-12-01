@@ -40,9 +40,15 @@ void board_t::print() {
 	// TODO
 	/* Prints the board sexily */
 	for (int i = 0; i < SIZE; i++) {
+<<<<<<< HEAD
 		std::cout << "a";
 		for (int j = 0; j < SIZE; j++) {
 			std::cout << "a";
+=======
+		std::cout << std::string(17, '-');
+		for (int j = 0; j < SIZE; j++) {
+			continue;
+>>>>>>> refs/remotes/origin/main
 		}
 	}
 }
