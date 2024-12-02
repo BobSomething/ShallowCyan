@@ -51,10 +51,10 @@ void board_t::print() {
 	// TODO
 	/* Prints the board sexily */
 	for (int i = 0; i < SIZE; i++) {
-		std::cout << "a";
 		for (int j = 0; j < SIZE; j++) {
 			std::cout << "a";
 		}
+		std::cout << "\n";
 	}
 }
 
