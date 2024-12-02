@@ -1,4 +1,5 @@
 #include "board.hpp"
+#include <cstdlib>
 
 board_t::board_t() {
 	// DONE (probably, has not been tested. also, uses "new")
@@ -46,15 +47,19 @@ void board_t::add_piece(int x, int y, piece_t* piece) {
 	state[x][y] = piece;
 }
 
+void board_t::remove_piece(int x, int y) {
+	state[x][y] = nullptr;
+}
+
 
 void board_t::print() {
 	// TODO
 	/* Prints the board sexily */
 	for (int i = 0; i < SIZE; i++) {
+		std::cout << "a";
 		for (int j = 0; j < SIZE; j++) {
 			std::cout << "a";
 		}
-		std::cout << "\n";
 	}
 }
 
@@ -65,7 +70,13 @@ void board_t::update(std::string move) {
 }
 
 bool board_t::is_check(bool color) {
-
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = 0; j < SIZE; j++) {
+			if(state[i][j]->color == turn && state[i][j]->id == "K")
+				return state[i][j]->is_checked();
+		}
+	}
+	error("Why there is no king?");
 }
 
 
@@ -86,5 +97,20 @@ int board_t::eval() {
 std::string board_t::next_move() {
 	//TODO
 	/* Calculates the next move */
-	return "a2a4"; //returning something
+	//Returning random legal move
+	return "a2a4";
+	/*std::vector<piece_t*> our_pieces;
+	for(int i=0; i < SIZE; i++) {
+		for(int j=0; j < SIZE; j++) {
+			if(state[i][j]->color == turn)
+				our_pieces.push_back(state[i][j]);
+		}
+	}
+	int n = our_pieces.size();
+	while(true) {
+		array_coords random_pick = our_pieces[rand() % n]->legal_moves();
+		if(!random_pick.empty()) {
+			return random_pick[rand() % random_pick.size()].print();
+		}
+	}*/
 }
