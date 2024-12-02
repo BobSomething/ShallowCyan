@@ -20,6 +20,7 @@ struct board_t {
 	/* For debugging: clearing the board */
 	void clear_board();
 	void add_piece(int x, int y, piece_t* piece);
+	void remove_piece(int x, int y);
 
 	/* Prints the board sexily */
 	void print();
