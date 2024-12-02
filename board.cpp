@@ -64,6 +64,11 @@ void board_t::update(std::string move) {
 	
 }
 
+bool board_t::is_check(bool color) {
+
+}
+
+
 int board_t::eval() {
 	// DONE (for now, we will change how boards are evaluated later)
 	/* Evaluates the current position. Positive score means white is winning, negative score means black */
