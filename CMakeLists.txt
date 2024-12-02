@@ -8,6 +8,6 @@ include_directories(.)
 
 add_library(libraries board.cpp board.hpp piece.cpp piece.hpp macro.hpp)
 
-add_executable(chess main.cpp)
+add_executable(shallowcyan main.cpp)
 
-target_link_libraries(chess PRIVATE libraries)
+target_link_libraries(shallowcyan PRIVATE libraries)
