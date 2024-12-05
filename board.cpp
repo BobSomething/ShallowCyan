@@ -71,23 +71,41 @@ void board_t::print() {
 	}
 }
 
+
+std::map<std::string, int> letter_to_coords = { // Dictionary to translate input to move
+	{"a" , 0},
+	{"b" , 1},
+	{"c" , 2},
+	{"d" , 3},
+	{"e" , 4},
+	{"f" , 5},
+	{"g" , 6},
+	{"h" , 7}
+};
+
+std::map<int, std::string> coords_to_letter = { // Dictionary to translate input to move
+	{0, "a"},
+	{1, "b"},
+	{2, "c"},
+	{3, "d"},
+	{4, "e"},
+	{5, "f"},
+	{6, "g"},
+	{7, "h"}
+};
+
+
+std::string board_t::pair_to_string(coords location) {
+	
+}
+
 void board_t::update(std::string move) {
 	//TODO
 	/* Updates the board with this move, assumes that the move is legal */
-	std::map<std::string, int> letter_to_coords = { // Dictionary to translate input to move
-		{"a" , 0},
-		{"b" , 1},
-		{"c" , 2},
-		{"d" , 3},
-		{"e" , 4},
-		{"f" , 5},
-		{"g" , 6},
-		{"h" , 7}
-	};
 	//Define new position and old position
 	int og_pos_j = letter_to_coords[move.substr(0,1)];
 	int new_pos_j = letter_to_coords[move.substr(2,1)];
-	int og_pos_i = 8 - stoi(move.substr(1,1));
+	int og_pos_i = 8 - stoi(move.substr(1,1)); //stoi = string to integer
 	int new_pos_i = 8 - stoi(move.substr(3,1));
 	//Update the board
 	state[new_pos_i][new_pos_j] = state[og_pos_i][og_pos_j];
