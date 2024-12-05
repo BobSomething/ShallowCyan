@@ -2,6 +2,9 @@
 #include "piece.hpp"
 #include <fstream>
 #include <cstring>
+#include <sys/resource.h>
+
+
 
 int main(int argc, char* argv[]) {
     bool state = true;
@@ -31,7 +34,7 @@ int main(int argc, char* argv[]) {
     std::string line;
     getline(input,line);
     while (getline(input, line)) {
-        board.update(line);
+        board.update(line,true);
     }
     input.close();
 
@@ -41,12 +44,11 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
-    board.update("e2e4");
-    board.print();
-    board.update("d7d5");
-    board.print();
-    board.update("e4d5");
-    board.print();
+    //board.print();
+    //std::cout << board.move_to_string(move_t{makep(1,1),makep(3,3)}) << std::endl;
+
+    //std::cout << board.nb_moves(6); 
+   
     /*
     board.clear_board();
     board.add_piece(3,3, new bishop_t(makep(3,3),1,&board));
