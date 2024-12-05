@@ -4,3 +4,4 @@
 #define j second //letter
 #define makep std::make_pair
 #define SIZE 8
+#define inf 2147483647
