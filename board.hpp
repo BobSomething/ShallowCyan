@@ -20,12 +20,16 @@ struct board_t {
 	/* For debugging: clearing the board */
 	void clear_board();
 	void add_piece(int x, int y, piece_t* piece);
+	void remove_piece(int x, int y);
 
 	/* Prints the board sexily */
 	void print();
 
 	/* Import the history by one move */
 	void update(std::string move);
+
+	/* If in checks */
+	bool is_check(bool color);
 
 	/* Evaluates the current position. Positive score means white is winning, negative score means black */
 	int eval();

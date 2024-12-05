@@ -50,11 +50,18 @@ int main(int argc, char* argv[]) {
     /*
     board.clear_board();
     board.add_piece(3,3, new bishop_t(makep(3,3),1,&board));
+    board.add_piece(1,2, new bishop_t(makep(1,2),1,&board));
+    board.add_piece(0,0, new rook_t(makep(0,0),1,&board));
     
+    std::cout << typeid(board.state[1][2]).name() << " " << board.state[1][2]->id << std::endl;
+    std::cout << typeid(board.state[3][3]).name() << " " << board.state[3][3]->id << std::endl;
+    std::cout << typeid(board.state[0][0]).name() << " " << board.state[0][0]->id << std::endl;
+
     for(auto& [x, y]: board.state[3][3]->legal_moves()) {
         std::cout << x << " " << y << std::endl;
     }
     */
+    
 
     return 0;
 }
