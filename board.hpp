@@ -9,7 +9,31 @@
 struct move_t {
 	coords before;
 	coords after;
-	int type_move;
+	
+	// -1 - if it is a capture
+	// 0 - if it is a normal move
+	// 1 - if it is a castle
+	// -2 - if it is en passant
+	// 3 - if it is promotion
+	// 30 - promotion -> queen
+	// 31 - promotion -> rook
+	// 32 - promotion -> bishop
+	// 33 - promotion -> knight
+	int type_move; 
+	int score = 0;
+	
+
+	move_t(int before_i, int before_j, int after_i, int after_j, int type_move)
+		: before {makep(before_i,before_j)}, after {makep(after_i, after_j)}, type_move {type_move} {}
+	
+	move_t(coords before, coords after)
+		: before {before}, after {after}, type_move {0} {}
+
+	move_t(coords before, coords after, int type_move)
+		: before {before}, after {after}, type_move {type_move} {}
+
+	move_t()
+		: before {makep(-10,-10)}, after {makep(-10,-10)}, type_move {-10} {} //not initialized
 };
 
 struct piece_t;
@@ -18,7 +42,7 @@ struct board_t {
 	piece_t* state[SIZE][SIZE];	// board state
 	bool turn;					// 1 = white turn, 0 = black turn
 	int fifty_moves;			// amount of moves into the fifty move rule
-	//last move from what square to what square
+	move_t last_move; 			//last move from what square to what square
 
 	/* Makes a starting chess board */
 	board_t();
@@ -32,10 +56,20 @@ struct board_t {
 	void print();
 
 	/* Import the history by one move */
-	void update(std::string move);
+	void update(std::string move, bool change_turn);
+
+	void update_with_move(move_t move, bool change_turn);
+
+	void undo(std::string move, bool change_turn);
+
+	void undo_with_move(move_t move, piece_t* captured, bool change_turn);
 
 	/* If in checks */
 	bool is_check(bool color);
+
+	bool check_valid_move_with_check(move_t current_move);
+
+	long long nb_moves(int depth);
 
 	/* Generates all moves */
 	std::vector<move_t> generate_all_moves();
@@ -51,9 +85,9 @@ struct board_t {
 	std::string next_move(); //idk if we want to have any other arguments in or not
 
 	/* Turns a location (i, j) to a string (ex: (0, 0) maps to "a1") */
-	std::string pair_to_string(coords location);
+	std::string move_to_string(move_t move);
 	/* Turns a string to a location (i, j) (ex: "a1" maps to (0, 0)) */
-	coords string_to_pair(std::string location);
+	move_t string_to_move(std::string move);
 };
 
 #endif

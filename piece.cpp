@@ -58,11 +58,11 @@ array_coords pawn_t::legal_moves(){
         //PROMOTION!
     }
 
-    if(check_cell(x+d,y, color, board) == 0){ //if next square is empty
+    if(check_cell(x+d,y, color, board) == 1){ //if next square is empty
         arr.push_back(makep(x+d,y));
 
         if (x == first_time) //first move: you can move two if square is empty
-            if(check_cell(x+2*d,y, color, board) == 0)
+            if(check_cell(x+2*d,y, color, board) == 1)
                 arr.push_back(makep(x+2*d,y));
     }
     
@@ -73,52 +73,6 @@ array_coords pawn_t::legal_moves(){
     if(check_cell(x+d,y-1, color, board) == 2) 
         arr.push_back(makep(x+d,y-1));
 
-    /*
-    if (x < 7){ //not go outside of the board
-            if (x == 1){ //first move: you can move two if square is empty
-                if (board->state[y+2][x] == nullptr){ 
-                    arr.push_back(std::make_pair(y+2,x));
-                }
-            }
-            if (board->state[y+1][x] == nullptr){ //if next square is empty
-                arr.push_back(std::make_pair(y+1,x));
-            }
-            else if (board->state[y+1][x+1] != nullptr){ //if diagonal square is taken
-                if (board->state[y+1][x+1]->color == 0){ //if diagonal piece is opposite color
-                    arr.push_back(std::make_pair(y+1,x+1));
-                }
-            }
-            else if (board->state[y+1][x-1] != nullptr){
-                if (board->state[y+1][x+1]->color == 0){
-                    arr.push_back(std::make_pair(y+1,x-1));
-                }
-            }
-        }
-    }else{ //if pawn is black
-        int y = location.i;
-        int x = location.j;
-        if (x > 0){ //not go outside of the board
-            if (x == 6){ //first move: you can move two if square is empty
-                if (board->state[y-2][x] == nullptr){ 
-                    arr.push_back(std::make_pair(y-2,x));
-                }
-            }
-            if (board->state[y-1][x] == nullptr){ //if next square is empty
-                arr.push_back(std::make_pair(y-1,x));
-            }
-            else if (board->state[y-1][x+1] != nullptr){ //if diagonal square is taken
-                if (board->state[y-1][x+1]->color == 1){ //if diagonal piece is opposite color
-                  arr.push_back(std::make_pair(y-1,x+1));
-                }
-            }
-            else if (board->state[y-1][x-1] != nullptr){
-                if (board->state[y-1][x+1]->color == 1){
-                    arr.push_back(std::make_pair(y-1,x-1));
-                }
-            }
-        }
-    }
-    */
     return arr;
 }
 
@@ -200,11 +154,11 @@ bool king_t::is_checked() {
 
     if(check_cell(location.i+d, location.j-1, color, board) == 2)
         if(board->state[location.i+d][location.j-1]->id == "p")
-            return false;
+            return true;
 
     if(check_cell(location.i+d, location.j+1, color, board) == 2)
         if(board->state[location.i+d][location.j+1]->id == "p")
-            return false;
+            return true;
 
     std::map<coords, bool> directions;
     directions[makep(1,1)] = true;
@@ -214,9 +168,10 @@ bool king_t::is_checked() {
     
     array_coords bishop_check = template_legal_moves(location, color, board, directions);
 
-    for(auto &[x,y]: bishop_check) 
-        if(board->state[x][y]->id == "b" || board->state[x][y]->id == "q") 
-            return false;
+    for(auto &[x,y]: bishop_check)
+        if(board->state[x][y] != nullptr) 
+            if(board->state[x][y]->id == "b" || board->state[x][y]->id == "q") 
+                return true;
 
     directions.clear();
     directions[makep(1,0)] = true;
@@ -226,9 +181,10 @@ bool king_t::is_checked() {
 
     array_coords rook_check = template_legal_moves(location, color, board, directions);
 
-    for(auto &[x,y]: bishop_check) 
-        if(board->state[x][y]->id == "b" || board->state[x][y]->id == "q") 
-            return false;
+    for(auto &[x,y]: rook_check)
+        if(board->state[x][y] != nullptr) 
+            if(board->state[x][y]->id == "b" || board->state[x][y]->id == "q") 
+                return true;
 
     array_coords knight_check;
     int x = location.i;
@@ -241,10 +197,11 @@ bool king_t::is_checked() {
     }
 
     for(auto &[x,y]: knight_check) 
-        if(board->state[x][y]->id == "k") 
-            return false;
+        if(board->state[x][y] != nullptr)
+            if(board->state[x][y]->id == "n") 
+                return true;
 
-    return true;
+    return false;
 }  
 
 array_coords king_t::legal_moves() {

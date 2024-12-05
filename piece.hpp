@@ -18,6 +18,7 @@ struct piece_t {
     std::string id; //identification of a piece
     board_t* board; //the pointer to the board
     std::string display; //the string to display the board, capital is black, normal is white
+    bool moved = false; //if a piece moved, this is only necessary for rooks and kings
 
     /* vector of pairs (i,j), indicating the cells */
     virtual array_coords legal_moves();
@@ -41,12 +42,13 @@ struct pawn_t : piece_t {
 
     pawn_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
-            points = 100; 
+            id = "p";
+            points = 100;
             if (color == 0){
-                display = "\x1B[34mP\x1B[0m";
+                display = "\u2659";
             }
             if (color == 1){
-                display = "\x1B[31mP\x1B[0m";
+                display = "\u265F";
             }
         }
 };
@@ -56,12 +58,13 @@ struct bishop_t : piece_t {
 
     bishop_t(coords location, bool color , board_t* board)
         : piece_t(location, color, board) {
+            id = "b";
             points = 300;
             if (color == 0){
-                display = "\x1B[34mB\x1B[0m";
+                display = "\u2657";
             }
             if (color == 1){
-                display = "\x1B[31mB\x1B[0m";
+                display = "\u265D";
             }
         }
 };
@@ -71,27 +74,31 @@ struct knight_t : piece_t {
 
     knight_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
+            id = "n";
             points = 300;
             if (color == 0){
-                display = "\x1B[34mN\x1B[0m";
+                display = "\u2658";
             }
             if (color == 1){
-                display = "\x1B[31mN\x1B[0m";
+                display = "\u265E";
             }
         }
 };
 
 struct rook_t : piece_t {
+    
+
     array_coords legal_moves();
 
     rook_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
+            id = "r";
             points = 500;
             if (color == 0){
-                display = "\x1B[34mR\x1B[0m";
+                display = "\u2656";
             }
             if (color == 1){
-                display = "\x1B[31mR\x1B[0m";
+                display = "\u265C";
             }
         }
 };
@@ -103,12 +110,13 @@ struct king_t : piece_t {
 
     king_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
+            id = "k";
             points = 0;
             if (color == 0){
-                display = "\x1B[34mK\x1B[0m";
+                display = "\u2654";
             }
             if (color == 1){
-                display = "\x1B[31mK\x1B[0m";
+                display = "\u265A";
             }
         }
 };
@@ -118,12 +126,13 @@ struct queen_t : piece_t {
 
     queen_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
+            id = "q";
             points = 900;
             if (color == 0){
-                display = "\x1B[34mQ\x1B[0m";
+                display = "\u2655";
             }
             if (color == 1){
-                display = "\x1B[31mQ\x1B[0m";
+                display = "\u265B";
             }
         }
 };
