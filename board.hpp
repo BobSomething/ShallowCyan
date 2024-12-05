@@ -6,6 +6,12 @@
 #include "piece.hpp"
 #include "macro.hpp"
 
+struct move_t {
+	coords before;
+	coords after;
+	int type_move;
+};
+
 struct piece_t;
 
 struct board_t {
@@ -31,8 +37,15 @@ struct board_t {
 	/* If in checks */
 	bool is_check(bool color);
 
+	/* Generates all moves */
+	std::vector<move_t> generate_all_moves();
+	
+
 	/* Evaluates the current position. Positive score means white is winning, negative score means black */
 	int eval();
+
+	/* Search function */
+	move_t search();
 
 	/* Calculates the next move */
 	std::string next_move(); //idk if we want to have any other arguments in or not

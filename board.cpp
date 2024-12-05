@@ -96,7 +96,7 @@ std::map<int, std::string> coords_to_letter = { // Dictionary to translate input
 
 
 std::string board_t::pair_to_string(coords location) {
-	
+
 }
 
 void board_t::update(std::string move) {
@@ -121,6 +121,12 @@ bool board_t::is_check(bool color) {
 	}
 	error("Why there is no king?");
 }
+
+
+std::vector<info_t> board_t::generate_all_moves() {
+	
+}
+
 
 
 int board_t::eval() {
