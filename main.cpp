@@ -41,6 +41,12 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
+    board.update("e2e4");
+    board.print();
+    board.update("d7d5");
+    board.print();
+    board.update("e4d5");
+    board.print();
     /*
     board.clear_board();
     board.add_piece(3,3, new bishop_t(makep(3,3),1,&board));

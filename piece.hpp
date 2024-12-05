@@ -16,13 +16,20 @@ struct piece_t {
     int points; //counts how valueable is a piece
     coords location; //location on the board, if there will be no other methods, just put it in the legal_moves
     board_t* board; //the pointer to the board
+    std::string display; //the string to display the board, capital is black, normal is white
 
     /* vector of pairs (i,j), indicating the cells */
     virtual array_coords legal_moves(); 
 
     /* constructor of piece_t */
-    piece_t(coords location, bool color, board_t* board)
-        : location {location}, color {color}, points {0}, board {board} {}
+    piece_t(coords l, bool c, board_t* b)
+    // {
+    //     location = l;
+    //     color = c;
+    //     points = 0;
+    //     board = b;
+    // }
+        : location {l}, color {c}, points {0}, board {b} {}
 
     /* 
     returns 0 if the cell is out of bounds or if the cell in bounds and contains a piece with the same color 
@@ -37,42 +44,90 @@ struct pawn_t : piece_t {
     array_coords legal_moves();
 
     pawn_t(coords location, bool color, board_t* board)
-        : piece_t(location, color, board) {points = 100;}
+        : piece_t(location, color, board) {
+            points = 100; 
+            if (color == 0){
+                display = "\x1B[34mP\x1B[0m";
+            }
+            if (color == 1){
+                display = "\x1B[31mP\x1B[0m";
+            }
+        }
 };
 
 struct bishop_t : piece_t {
     array_coords legal_moves();
 
     bishop_t(coords location, bool color , board_t* board)
-        : piece_t(location, color, board) {points = 300;}
+        : piece_t(location, color, board) {
+            points = 300;
+            if (color == 0){
+                display = "\x1B[34mB\x1B[0m";
+            }
+            if (color == 1){
+                display = "\x1B[31mB\x1B[0m";
+            }
+        }
 };
 
 struct knight_t : piece_t {
     array_coords legal_moves();
 
     knight_t(coords location, bool color, board_t* board)
-        : piece_t(location, color, board) {points = 300;}
+        : piece_t(location, color, board) {
+            points = 300;
+            if (color == 0){
+                display = "\x1B[34mN\x1B[0m";
+            }
+            if (color == 1){
+                display = "\x1B[31mN\x1B[0m";
+            }
+        }
 };
 
 struct rook_t : piece_t {
     array_coords legal_moves();
 
     rook_t(coords location, bool color, board_t* board)
-        : piece_t(location, color, board) {points = 500;}
+        : piece_t(location, color, board) {
+            points = 500;
+            if (color == 0){
+                display = "\x1B[34mR\x1B[0m";
+            }
+            if (color == 1){
+                display = "\x1B[31mR\x1B[0m";
+            }
+        }
 };
 
 struct king_t : piece_t {
     array_coords legal_moves();
 
     king_t(coords location, bool color, board_t* board)
-        : piece_t(location, color, board) {points = 0;}
+        : piece_t(location, color, board) {
+            points = 0;
+            if (color == 0){
+                display = "\x1B[34mK\x1B[0m";
+            }
+            if (color == 1){
+                display = "\x1B[31mK\x1B[0m";
+            }
+        }
 };
 
 struct queen_t : piece_t {
     array_coords legal_moves();
 
     queen_t(coords location, bool color, board_t* board)
-        : piece_t(location, color, board) {points = 900;}
+        : piece_t(location, color, board) {
+            points = 900;
+            if (color == 0){
+                display = "\x1B[34mQ\x1B[0m";
+            }
+            if (color == 1){
+                display = "\x1B[31mQ\x1B[0m";
+            }
+        }
 };
 
 #endif
