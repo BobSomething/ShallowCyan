@@ -55,6 +55,8 @@ struct board_t {
 	/* Prints the board sexily */
 	void print();
 
+	std::string print_string();
+
 	/* Import the history by one move */
 	void update(std::string move, bool change_turn);
 

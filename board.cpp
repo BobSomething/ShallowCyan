@@ -1,5 +1,6 @@
 #include "board.hpp"
 #include <cstdlib>
+#include <fstream>
 
 board_t::board_t() {
 	// DONE (probably, has not been tested. also, uses "new")
@@ -104,6 +105,35 @@ void board_t::print() {
 	std::cout << " " << std::endl;
 }
 
+std::string board_t::print_string() {
+	// TODO
+	/* Prints the board sexily */
+	std::string s = "";
+	for (int i = SIZE-1; i >= 0; i--) {
+		s += std::to_string(i+1) + " ";
+		for (int j = 0; j < SIZE; j++) {
+			if((i + j) % 2 == 0)
+				s += "|";
+			else
+				s += "|";
+
+			if (state[i][j] == nullptr){
+				s += "  ";
+			}
+			if (state[i][j] != nullptr){
+				s += state[i][j]->display;
+			}
+		}
+		s += "|\n";
+	}
+	s += "  ";
+	for (int j = 0; j < SIZE; j++) {
+		s += " " + coords_to_letter[j] + " ";
+	}
+	s += " \n";
+	return s;
+}
+
 
 std::string board_t::move_to_string(move_t move) {
 	std::string base = coords_to_letter[move.before.j] + std::to_string(move.before.i+1) + coords_to_letter[move.after.j] + std::to_string(move.after.i+1);
@@ -125,7 +155,7 @@ move_t board_t::string_to_move(std::string move) {
 		type = 30 + promotion[move.substr(4,1)];
 	}
 		
-	move_t new_move {8 - stoi(move.substr(1,1)), letter_to_coords[move.substr(0,1)], 8 - stoi(move.substr(3,1)), letter_to_coords[move.substr(2,1)],type};
+	move_t new_move {stoi(move.substr(1,1)) - 1, letter_to_coords[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords[move.substr(2,1)],type};
 	/*
 	new_move.before.j = letter_to_coords[move.substr(0,1)];
 	new_move.after.j = letter_to_coords[move.substr(2,1)];
@@ -293,8 +323,16 @@ long long board_t::nb_moves(int depth) {
 		piece_t* captured = state[move.after.i][move.after.j];
 		update_with_move(move);
 		count += nb_moves(depth-1);
-		if(depth == 2)
-			print();
+		
+		if(depth == 2) {
+			std::ofstream o;
+			o.open("moves.txt", std::ios_base::app);
+			
+			o << print_string();
+			o.close();
+		}
+
+		print();
 		undo_with_move(move,captured);
 	}
 	return count;
