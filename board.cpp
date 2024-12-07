@@ -188,6 +188,7 @@ void board_t::update(std::string move, bool change_turn=true) {
 
 	//Update the board
 	state[new_move.after.i][new_move.after.j] = state[new_move.before.i][new_move.before.j];
+	state[new_move.after.i][new_move.after.j]->location = new_move.after;
 	state[new_move.before.i][new_move.before.j] = nullptr;
 	if(change_turn)
 		turn = !turn;
@@ -196,24 +197,20 @@ void board_t::update(std::string move, bool change_turn=true) {
 
 void board_t::update_with_move(move_t move, bool change_turn=true) {
 	/* Updates the board with this move, assumes that the move is legal */
-	if(move.before == move.after || state[move.before.i][move.before.j]->color != turn) {
-		print();
-		std::cout << move_to_string(move) << std::endl;
-		std::cout << move.before.i << " " << move.before.j << "  " << move.after.i << " " << move.after.j;
-		error("NOT A MOVE!");
-	}
-
 	//Update the board
 	//if it is castling
 	if(move.type_move == 1) {
 		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
+		state[move.after.i][move.after.j]->location = move.after;
 		state[move.before.i][move.before.j] = nullptr;
 		if(move.after.j - move.before.j > 0) {
 			state[move.after.i][move.after.j+1] = state[move.before.i][move.before.j+3];
+			state[move.after.i+1][move.after.j+1]->location = makep(move.after.i+1,move.after.j+1);
 			state[move.before.i][move.before.j+3] = nullptr;
 		}
 		else {
 			state[move.after.i][move.after.j-1] = state[move.before.i][move.before.j-4];
+			state[move.after.i-1][move.after.j-1]->location = makep(move.after.i-1,move.after.j-1);
 			state[move.before.i][move.before.j-4] = nullptr;
 		}
 
@@ -227,6 +224,7 @@ void board_t::update_with_move(move_t move, bool change_turn=true) {
 	if(turn == 0) direction = -1;
 	if(move.type_move == -2) {
 		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
+		state[move.after.i][move.after.j]->location = move.after;
 		state[move.before.i][move.before.j] = nullptr;
 		state[move.after.i-direction][move.after.j] = nullptr;
 
@@ -234,17 +232,20 @@ void board_t::update_with_move(move_t move, bool change_turn=true) {
 		turn = !turn;
 		return;
 	}
-
+	
 	state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
+	state[move.after.i][move.after.j]->location = move.after;
 	state[move.before.i][move.before.j] = nullptr;
 	if(change_turn)
 		turn = !turn;
 }
 
+//This one not updated, might break!!
 void board_t::undo(std::string move, bool change_turn=true) {
 	move_t new_move = string_to_move(move);
 
 	state[new_move.before.i][new_move.before.j] = state[new_move.after.i][new_move.after.j];
+	state[new_move.before.i][new_move.before.j]->location = new_move.before;
 	state[new_move.after.i][new_move.after.j] = nullptr;
 	if(change_turn)
 		turn = !turn;
@@ -254,13 +255,16 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 	//undoing castling
 	if(move.type_move == 1) {
 		state[move.before.i][move.before.j] = state[move.before.i][move.before.j];
+		state[move.before.i][move.before.j]->location = move.before;
 		state[move.after.i][move.after.j] = nullptr;
 		if(move.after.j - move.before.j > 0) {
 			state[move.before.i][move.before.j+3] = state[move.before.i][move.before.j+3];
+			state[move.before.i][move.before.j+3]->location = makep(move.before.i,move.before.j+3);
 			state[move.after.i][move.after.j+1] = nullptr;
 		}
 		else {
 			state[move.before.i][move.before.j-4] = state[move.before.i][move.before.j-4];
+			state[move.before.i][move.before.j-4]->location = makep(move.before.i,move.before.j-4);
 			state[move.after.i][move.after.j-1] = nullptr;
 		}
 
@@ -274,8 +278,11 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 	if(turn == 0) direction = -1;
 	if(move.type_move == -2) {
 		state[move.before.i][move.before.j] = state[move.after.i][move.after.j];
+		state[move.before.i][move.before.j]->location = move.before;
 		state[move.after.i][move.after.j] = nullptr;
 		state[move.after.i-direction][move.after.j] = captured;
+		if(captured != nullptr)
+			state[move.after.i][move.after.j]->location = makep(move.after.i-direction, move.after.j);
 
 		if(change_turn)
 		turn = !turn;
@@ -283,7 +290,11 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 	}
 
 	state[move.before.i][move.before.j] = state[move.after.i][move.after.j];
+	state[move.before.i][move.before.j]->location = move.before;
 	state[move.after.i][move.after.j] = captured; //undoing a capture if there was a capture
+	if(captured != nullptr) {
+		state[move.after.i][move.after.j]->location = move.after;
+	}
 	if(change_turn)
 		turn = !turn;
 }
@@ -324,6 +335,7 @@ long long board_t::nb_moves(int depth) {
 		update_with_move(move);
 		count += nb_moves(depth-1);
 		
+		/*
 		if(depth == 2) {
 			std::ofstream o;
 			o.open("moves.txt", std::ios_base::app);
@@ -331,8 +343,9 @@ long long board_t::nb_moves(int depth) {
 			o << print_string();
 			o.close();
 		}
+		*/
 
-		print();
+		//print();
 		undo_with_move(move,captured);
 	}
 	return count;
@@ -344,7 +357,6 @@ std::vector<move_t> board_t::generate_all_moves() {
 		for (int j = 0; j < SIZE; j++) {
 			if(state[i][j] != nullptr) {
 				if(state[i][j]->color == turn) {
-
 					//castling
 					if(state[i][j]->id == "k" && !state[i][j]->moved) {
 						if(state[i][j+3]->id == "r" && !state[i][j+3]->moved && state[i][j+1] == nullptr && state[i][j+2] == nullptr) {

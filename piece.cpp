@@ -141,7 +141,7 @@ array_coords rook_t::legal_moves() {
     std::map<coords, bool> directions;
     directions[makep(1,0)] = true;
     directions[makep(-1,0)] = true;
-    directions[makep(0,-1)] = true;
+    directions[makep(0,1)] = true;
     directions[makep(0,-1)] = true;
 
     return template_legal_moves(location, color, board, directions);
@@ -221,16 +221,16 @@ array_coords king_t::legal_moves() {
     directions[makep(1,0)] = true;
     directions[makep(-1,0)] = true;
     directions[makep(0,-1)] = true;
-    directions[makep(0,-1)] = true;
+    directions[makep(0,1)] = true;
 
     for(auto &[key, value]: directions) {
         //if it lands on a cell with a opposite color piece or if it lands on a empty cell
-        if(check_cell(x+it*key.i,y+it*key.j, color, board) == 2 || check_cell(x+it*key.i,y+it*key.j, color, board) == 1) {
-            board->add_piece(x+it*key.i,y+it*key.j, new king_t(makep(x+it*key.i,y+it*key.j),color,board));
+        if(check_cell(x+key.i,y+key.j, color, board) == 2 || check_cell(x+key.i,y+key.j, color, board) == 1) {
+            board->add_piece(x+key.i,y+key.j, new king_t(makep(x+key.i,y+key.j),color,board));
             board->remove_piece(x,y);
-            if(is_checked())
-                arr.push_back(makep(x+it*key.i,y+it*key.j));
-            board->remove_piece(x+it*key.i,y+it*key.j);
+            if(!is_checked())
+                arr.push_back(makep(x+key.i,y+key.j));
+            board->remove_piece(x+key.i,y+key.j);
             board->add_piece(x,y, new king_t(makep(x,y),color,board));
         }
             
