@@ -67,12 +67,13 @@ array_coords pawn_t::legal_moves(){
     }
     
     //checking if the diagonal captures are legal
+    
     if(check_cell(x+d,y+1, color, board) == 2) 
         arr.push_back(makep(x+d,y+1));
 
     if(check_cell(x+d,y-1, color, board) == 2) 
         arr.push_back(makep(x+d,y-1));
-
+        
     return arr;
 }
 
