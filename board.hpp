@@ -43,6 +43,8 @@ struct board_t {
 	bool turn;					// 1 = white turn, 0 = black turn
 	int fifty_moves;			// amount of moves into the fifty move rule
 	move_t last_move; 			//last move from what square to what square
+	int grid_white[SIZE][SIZE]; //An integer for every square, the amount of black piece targetting it
+	int grid_black[SIZE][SIZE]; //An integer for every square, the amount of black piece targetting it
 
 	/* Makes a starting chess board */
 	board_t();
@@ -51,6 +53,7 @@ struct board_t {
 	void clear_board();
 	void add_piece(int x, int y, piece_t* piece);
 	void remove_piece(int x, int y);
+	void print_grids(bool color); //print the grid with respect to "color", true == white perspective
 
 	/* Prints the board sexily */
 	void print();

@@ -34,6 +34,13 @@ board_t::board_t() {
 			}
 		}
 	}
+	//Initialise grids
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = 0; j < SIZE; j++) {
+			grid_black[i][j] = 1;
+			grid_white[i][j] = 0;
+		}
+	}
 	turn = 1;
 	fifty_moves = 0;
 }
@@ -193,6 +200,8 @@ void board_t::update(std::string move, bool change_turn=true) {
 	if(change_turn)
 		turn = !turn;
 	last_move = new_move;
+
+
 }
 
 void board_t::update_with_move(move_t move, bool change_turn=true) {
@@ -238,6 +247,57 @@ void board_t::update_with_move(move_t move, bool change_turn=true) {
 	state[move.before.i][move.before.j] = nullptr;
 	if(change_turn)
 		turn = !turn;
+
+	//UPDATING GRIDS
+	//Initialise
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = 0; j < SIZE; j++) {
+			grid_black[i][j] = 0;
+			grid_white[i][j] = 0;
+		}
+	}
+	//Parsing every piece
+	for (int i=0; i<SIZE; i++){
+		for (int j=0; j<SIZE; j++){
+			if (state[i][j] != nullptr){
+				array_coords arr = state[i][j]->legal_moves();
+				for (int k=0; k<arr.size(); k++){
+					int ii = arr[k].i;
+					int jj = arr[k].j;
+					if (state[i][j]->color==0){
+						grid_white[ii][jj]+=1;
+					}
+					if (state[i][j]->color==1){
+						grid_black[ii][jj]+=1;
+					}
+				} 
+			}
+		}
+	}
+}
+
+void board_t::print_grids(bool color){
+	for (int i = SIZE-1; i >= 0; i--) {
+		std::cout << std::to_string(i+1) + " ";
+		for (int j = 0; j < SIZE; j++) {
+			if((i + j) % 2 == 0)
+				std::cout << "\033[43m";
+			else
+				std::cout << "\033[100m";
+			if (color == true){
+				std::cout << " " << grid_white[i][j] << " ";
+			}
+			if (color == false){
+				std::cout << " " << grid_black[i][j] << " ";
+			}
+		}
+		std::cout << "\033[40m" << std::endl;
+	}
+	std::cout << "  ";
+	for (int j = 0; j < SIZE; j++) {
+		std::cout << " " + coords_to_letter[j] + " ";
+	}
+	std::cout << " " << std::endl;
 }
 
 //This one not updated, might break!!
