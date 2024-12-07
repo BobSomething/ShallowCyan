@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
-    //board.print();
+
     //std::cout << board.move_to_string(move_t{makep(1,1),makep(3,3)}) << std::endl;
 
-    //std::cout << board.nb_moves(6); 
+    //std::cout << board.nb_moves(4); 
    
     /*
     board.clear_board();
