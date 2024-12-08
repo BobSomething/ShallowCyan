@@ -50,6 +50,7 @@ board_t::board_t() {
 				}
 				if (j == 4){
 						piece = new king_t(coords(i, j), color, this);
+						king[color] = piece;
 				}
 				state[i][j] = piece;
 			}
@@ -67,8 +68,8 @@ board_t::board_t() {
 void board_t::update_grids() {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
-			grid_black[i][j] = 0;
-			grid_white[i][j] = 0;
+			grid_attack[0][i][j] = 0;
+			grid_attack[1][i][j] = 0;
 		}
 	}
 	for (int i=0; i<SIZE; i++){
@@ -80,12 +81,7 @@ void board_t::update_grids() {
 						continue;
 					int ii = arr[k].after.i;
 					int jj = arr[k].after.j;
-					if(state[i][j]->color==0){
-						grid_white[ii][jj]+=1;
-					}
-					if(state[i][j]->color==1){
-						grid_black[ii][jj]+=1;
-					}
+					grid_attack[!state[i][j]->color][ii][jj]+=1;
 				} 
 			}
 		}
@@ -100,12 +96,7 @@ void board_t::print_grids(bool color){
 				std::cout << "\033[43m";
 			else
 				std::cout << "\033[100m";
-			if (color == true){
-				std::cout << " " << grid_white[i][j] << " ";
-			}
-			if (color == false){
-				std::cout << " " << grid_black[i][j] << " ";
-			}
+			std::cout << " " << grid_attack[color][i][j] << " ";
 		}
 		std::cout << "\033[40m" << std::endl;
 	}
@@ -264,6 +255,9 @@ void board_t::update_with_move(move_t move, bool change_turn=true) {
 	if(move.type_move == 1) {
 		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
 		state[move.after.i][move.after.j]->location = move.after;
+		if(state[move.after.i][move.after.j]->id == "k" && state[move.after.i][move.after.j]->color == turn) {
+			king[turn] = state[move.after.i][move.after.j];
+		}
 
 		state[move.before.i][move.before.j] = nullptr;
 		if(move.after.j - move.before.j > 0) {
@@ -310,6 +304,9 @@ void board_t::update_with_move(move_t move, bool change_turn=true) {
 	else {
 		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
 		state[move.after.i][move.after.j]->location = move.after;
+		if(state[move.after.i][move.after.j]->id == "k" && state[move.after.i][move.after.j]->color == turn) {
+			king[turn] = state[move.after.i][move.after.j];
+		}
 
 		state[move.before.i][move.before.j] = nullptr;
 	}
@@ -332,6 +329,8 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 	if(move.type_move == 1) {
 		state[move.before.i][move.before.j] = state[move.before.i][move.before.j];
 		state[move.before.i][move.before.j]->location = move.before;
+		if(state[move.after.i][move.after.j]->id == "k" && state[move.before.i][move.before.j]->color == turn)
+			king[turn] = state[move.before.i][move.before.j];
 
 		state[move.after.i][move.after.j] = nullptr;
 		if(move.after.j - move.before.j > 0) {
@@ -371,7 +370,9 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 	else {
 		state[move.before.i][move.before.j] = state[move.after.i][move.after.j];
 		state[move.before.i][move.before.j]->location = move.before;
-
+		if(state[move.before.i][move.before.j]->id == "k" && state[move.before.i][move.before.j]->color == turn) {
+			king[turn] = state[move.before.i][move.before.j];
+		}
 		state[move.after.i][move.after.j] = captured; //undoing a capture if there was a capture
 		if(captured != nullptr) {
 			state[move.after.i][move.after.j]->location = move.after;
@@ -381,22 +382,51 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 		turn = !turn;
 }
 
+//if(!(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y))
+		//return false;
 
-bool board_t::is_check(bool color) {
+//if(grid_attack[color][x][y] == 0 && !(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y))
+	//return false;
+
+/*if(!(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y)) {
+	return false;
+}*/
+
+bool board_t::is_check(bool color, piece_t* captured, move_t current_move) {
+	/*int r = 0;
+	if(state[current_move.before.i][current_move.before.j]->id == "k") {
+		if(grid_attack[color][current_move.after.i][current_move.after.i] == 0) {
+			if(move_to_string(current_move) == "e8e7") {
+				
+			}
+			//r = 1;
+			//return false;
+		}
+		//return true;
+	}*/
+	update_with_move(current_move, false);
+	int x = king[color]->location.i;
+	int y = king[color]->location.j;
+
+	if(grid_attack[color][x][y] == 0) {
+		undo_with_move(current_move, captured, false);
+		return false;
+	}
+	undo_with_move(current_move, captured, false);
+	return true;
+		
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
 			if(state[i][j] != nullptr)
 				if(state[i][j]->color == turn && state[i][j]->id == "k") {
-					if(color == 1) {
-						if(grid_white[i][j] == 0)
-							return false;
-						return true;
+					if(x != i && y != j) {
+						std::cout << x << " " << y << "  " << i << " " << j << std::endl;
+						print();
+						error("king is flying");
 					}
-					else {
-						if(grid_black[i][j] == 0)
-							return false;
-						return true;
-					}
+					if(grid_attack[color][i][j] == 0)
+						return false;
+					return true;
 				}
 		}
 	}
@@ -414,15 +444,12 @@ bool board_t::check_valid_move_with_check(move_t current_move) {
 		if(turn == 1)
 			captured = state[current_move.after.i-1][current_move.after.j];
 		else
-			captured = state[current_move.after.i-1][current_move.after.j];
+			captured = state[current_move.after.i+1][current_move.after.j];
 	}
-
-	update_with_move(current_move, false);
-
-	if(!is_check(turn)) {
+	if(!is_check(turn, captured, current_move)) {
 		res = true;
 	}	
-	undo_with_move(current_move, captured, false);
+	
 	return res;
 }
 
@@ -447,7 +474,7 @@ long long board_t::nb_moves(int depth) {
 			o.close();
 		}
 		*/
-		print();
+		//print();
 		undo_with_move(move,captured);
 	}
 	return count;

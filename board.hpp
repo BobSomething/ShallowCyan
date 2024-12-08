@@ -45,8 +45,10 @@ struct board_t {
 	bool turn;					// 1 = white turn, 0 = black turn
 	int fifty_moves;			// amount of moves into the fifty move rule
 	move_t last_move; 			//last move from what square to what square
-	int grid_white[SIZE][SIZE]; //An integer for every square, the amount of black piece targetting it
-	int grid_black[SIZE][SIZE]; //An integer for every square, the amount of white piece targetting it
+	int grid_attack[2][SIZE][SIZE]; //An integer for every square, the amount of 0 - white, 1 - black piece targetting it
+	//int grid_black[SIZE][SIZE]; //An integer for every square, the amount of white piece targetting it
+	piece_t* king[2]; // 0 - black kings, 1 - white king
+
 	//resets/updates the grids above
 	void update_grids();
 
@@ -74,7 +76,7 @@ struct board_t {
 	void undo_with_move(move_t move, piece_t* captured, bool change_turn);
 
 	/* If in checks */
-	bool is_check(bool color);
+	bool is_check(bool color, piece_t* captured, move_t current_move);
 
 	bool check_valid_move_with_check(move_t current_move);
 
