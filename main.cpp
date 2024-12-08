@@ -44,12 +44,12 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
-    std::cout << board.move_to_string(move_t{makep(1,1),makep(3,3)}) << std::endl;
-    // board.print();
-    board.update_with_move(board.string_to_move("a2a3"),true);
-    board.print_grids(false);
+    //board.print();
+    //board.update_with_move(board.string_to_move("a2a3"),true);
+    //board.print_grids(false);
     // std::cout << board.state[0][4]->legal_moves().size();
-    // std::cout << board.nb_moves(4); 
+    //board.update("b1a3",true);
+    //std::cout << board.nb_moves(3); 
    
     /*
     board.clear_board();
