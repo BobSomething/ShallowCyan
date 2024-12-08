@@ -9,11 +9,13 @@
 struct move_t {
 	coords before;
 	coords after;
-	
+	//-100 - if it is on the same color
 	// -1 - if it is a capture
 	// 0 - if it is a normal move
 	// 1 - if it is a castle
 	// -2 - if it is en passant
+	// 21 - if pawn moves 1 up - counts also as normal moves
+	// 22 - if pawn moves 2 up - counts also as normal moves
 	// 3 - if it is promotion
 	// 30 - promotion -> queen
 	// 31 - promotion -> rook
@@ -44,7 +46,9 @@ struct board_t {
 	int fifty_moves;			// amount of moves into the fifty move rule
 	move_t last_move; 			//last move from what square to what square
 	int grid_white[SIZE][SIZE]; //An integer for every square, the amount of black piece targetting it
-	int grid_black[SIZE][SIZE]; //An integer for every square, the amount of black piece targetting it
+	int grid_black[SIZE][SIZE]; //An integer for every square, the amount of white piece targetting it
+	//resets/updates the grids above
+	void update_grids();
 
 	/* Makes a starting chess board */
 	board_t();
@@ -65,7 +69,7 @@ struct board_t {
 
 	void update_with_move(move_t move, bool change_turn);
 
-	void undo(std::string move, bool change_turn);
+	void undo(std::string move, piece_t* captured, bool change_turn);
 
 	void undo_with_move(move_t move, piece_t* captured, bool change_turn);
 
