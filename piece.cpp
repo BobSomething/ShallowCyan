@@ -252,20 +252,12 @@ array_moves king_t::legal_moves() {
     for(auto d: directions) {
         //if it lands on a cell with a opposite color piece or if it lands on a empty cell
         if(check_cell(x+d.i,y+d.j, color, board) == 1) {
-            if(color == 1)
-                if(board->grid_white[x+d.i][y+d.j] == 0)
-                    arr.push_back(move_t(location,makep(x+d.i,y+d.j),0));
-            else
-                if(board->grid_black[x+d.i][y+d.j] == 0)
-                    arr.push_back(move_t(location,makep(x+d.i,y+d.j),0));
+            if(board->grid_attack[color][x+d.i][y+d.j] == 0)
+                arr.push_back(move_t(location,makep(x+d.i,y+d.j),0));
         }
         else if(check_cell(x+d.i,y+d.j, color, board) == 2) {
-            if(color == 1)
-                if(board->grid_white[x+d.i][y+d.j] == 0)
-                    arr.push_back(move_t(location,makep(x+d.i,y+d.j),-1));
-            else
-                if(board->grid_black[x+d.i][y+d.j] == 0)
-                    arr.push_back(move_t(location,makep(x+d.i,y+d.j),-1));
+            if(board->grid_attack[color][x+d.i][y+d.j] == 0)
+                arr.push_back(move_t(location,makep(x+d.i,y+d.j),-1));
         }
 
         else if(check_cell(x+d.i,y+d.j, color, board) == 3) {
@@ -278,24 +270,16 @@ array_moves king_t::legal_moves() {
         //short castle
         if(board->state[x][y+1] == nullptr && board->state[x][y+2] == nullptr && board->state[x][y+3] != nullptr) {
             if(board->state[x][y+3]->id == "r" && !board->state[x][y+3]->moved) {
-                if(color == 1)
-                    if(board->grid_white[x][y+1] == 0 && board->grid_white[x][y+2] == 0)
-                        arr.push_back(move_t(location, makep(x,y+2), 1)); //castling
-                else
-                    if(board->grid_black[x][y+1] == 0 && board->grid_black[x][y+2] == 0)
-                        arr.push_back(move_t(location, makep(x,y+2), 1)); //castling
+                if(board->grid_attack[color][x][y+1] == 0 && board->grid_attack[color][x][y+2] == 0)
+                    arr.push_back(move_t(location, makep(x,y+2), 1)); //castling
             }
         }
 
         //long castle
         if(board->state[x][y-1] == nullptr && board->state[x][y-2] == nullptr && board->state[x][y-3] == nullptr && board->state[x][y-4] != nullptr) {
             if(board->state[x][y-4]->id == "r" && !board->state[x][y-4]->moved) {
-                if(color == 1)
-                    if(board->grid_white[x][y-1] == 0 && board->grid_white[x][y-2] == 0)
-                        arr.push_back(move_t(location, makep(x,y-2), 1)); //castling
-                else
-                    if(board->grid_black[x][y-1] == 0 && board->grid_black[x][y-2] == 0)
-                        arr.push_back(move_t(location, makep(x,y-2), 1)); //castling
+                if(board->grid_attack[color][x][y-1] == 0 && board->grid_attack[color][x][y-2] == 0)
+                    arr.push_back(move_t(location, makep(x,y-2), 1)); //castling
             }
         }
     }
