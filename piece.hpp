@@ -21,7 +21,7 @@ struct piece_t {
     bool moved = false; //if a piece moved, this is only necessary for rooks and kings
 
     /* vector of pairs (i,j), indicating the cells */
-    virtual array_coords legal_moves();
+    virtual array_moves legal_moves();
     virtual bool is_checked();
 
     /* constructor of piece_t */
@@ -38,7 +38,7 @@ struct piece_t {
 
 
 struct pawn_t : piece_t {
-    array_coords legal_moves();
+    array_moves legal_moves();
 
     pawn_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
@@ -54,7 +54,7 @@ struct pawn_t : piece_t {
 };
 
 struct bishop_t : piece_t {
-    array_coords legal_moves();
+    array_moves legal_moves();
 
     bishop_t(coords location, bool color , board_t* board)
         : piece_t(location, color, board) {
@@ -70,7 +70,7 @@ struct bishop_t : piece_t {
 };
 
 struct knight_t : piece_t {
-    array_coords legal_moves();
+    array_moves legal_moves();
 
     knight_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
@@ -86,9 +86,7 @@ struct knight_t : piece_t {
 };
 
 struct rook_t : piece_t {
-    
-
-    array_coords legal_moves();
+    array_moves legal_moves();
 
     rook_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
@@ -104,9 +102,9 @@ struct rook_t : piece_t {
 };
 
 struct king_t : piece_t {
-    array_coords legal_moves();
+    array_moves legal_moves();
 
-    bool is_checked();
+    //bool is_checked();
 
     king_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
@@ -122,7 +120,7 @@ struct king_t : piece_t {
 };
 
 struct queen_t : piece_t {
-    array_coords legal_moves();
+    array_moves legal_moves();
 
     queen_t(coords location, bool color, board_t* board)
         : piece_t(location, color, board) {
