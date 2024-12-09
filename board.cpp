@@ -394,20 +394,32 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 }*/
 
 bool board_t::is_check(bool color, piece_t* captured, move_t current_move) {
-	/*int r = 0;
 	if(state[current_move.before.i][current_move.before.j]->id == "k") {
-		if(grid_attack[color][current_move.after.i][current_move.after.i] == 0) {
-			if(move_to_string(current_move) == "e8e7") {
-				
-			}
-			//r = 1;
-			//return false;
+		if(grid_attack[color][current_move.after.i][current_move.after.j] == 0) {
+			return false;
 		}
-		//return true;
-	}*/
-	update_with_move(current_move, false);
+		return true;
+	}
+
 	int x = king[color]->location.i;
 	int y = king[color]->location.j;
+
+	if(grid_attack[color][x][y] == 0) {
+		int a = current_move.before.i;
+		int b = current_move.before.j;
+		int aa = current_move.after.i;
+		int bb = current_move.after.j;
+		if(!(abs(a - x) == abs(b - y) || a == x || b == y)) {
+			return false;
+		}
+		if((a - x)*(bb - y) == (aa - x)*(b - y)) //check if it still on the same diagonal
+			return false;
+		if((a == x && a == aa) || (b == y && b == bb))
+			return false;
+		
+	}
+
+	update_with_move(current_move, false);
 
 	if(grid_attack[color][x][y] == 0) {
 		undo_with_move(current_move, captured, false);
