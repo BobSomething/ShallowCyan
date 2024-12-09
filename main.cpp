@@ -1,8 +1,8 @@
 #include "board.hpp"
 #include "piece.hpp"
+#include "bitboard.hpp"
 #include <fstream>
 #include <cstring>
-#include <sys/resource.h>
 
 
 
@@ -43,6 +43,11 @@ int main(int argc, char* argv[]) {
     output.open(move);
     output << board.next_move();
     output.close();
+
+    bitboard_t board_test;
+
+    //board_test.printBB();
+    //board_test.printBBpiece(0);
 
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
