@@ -414,9 +414,68 @@ bool board_t::is_check(bool color, piece_t* captured, move_t current_move) {
 		}
 		if((a - x)*(bb - y) == (aa - x)*(b - y)) //check if it still on the same diagonal
 			return false;
-		if((a == x && a == aa) || (b == y && b == bb))
+		if((a == x && a == aa) || (b == y && b == bb)) //check if it is still on the same row/column
 			return false;
 		
+		if((a == x) && grid_attack[color][a][b] > 0) {
+			int d = 1;
+			if(x - a < 0) d = -1;
+			int it = 1;
+			while(a+d*it >= 0 && a+d*it < SIZE) {
+				if(state[a+d*it][b] != nullptr) {
+					if(state[a+d*it][b]->color == color)
+						return false;
+					if(state[a+d*it][b]->id == "r" || state[a+d*it][b]->id == "q") {
+						return true;
+					}
+					else
+						return false;
+				}
+				it+=1;
+			}
+			return false;
+		}
+
+		if((b == y) && grid_attack[color][a][b] > 0) {
+			int d = 1;
+			if(b - y < 0) d = -1;
+			int it = 1;
+			while(b+d*it >= 0 && b+d*it < SIZE) {
+				if(state[a][b+d*it] != nullptr) {
+					if(state[a][b+d*it]->color == color)
+						return false;
+					if(state[a][b+d*it]->id == "r" || state[a][b+d*it]->id == "q") {
+						return true;
+					}
+					else
+						return false;
+				}
+				it+=1;
+			}
+			return false;
+		}
+
+		/*if(abs(a - x) == abs(b - y) && grid_attack[color][a][b] > 0) {
+			int dx = 1;
+			int dy = 1;
+			if(a - x < 0) dx = -1;
+			if(b - y < 0) dy = -1;
+			int it = 1;
+			while(a+dx*it >=0 && a+dx*it < SIZE && b+dy*it >= 0 && b+dy*it < SIZE) {
+				if(state[a+dx*it][b+dy*it] != nullptr) {
+					if(state[a+dx*it][b+dy*it]->color == color)
+						return false;
+					if(state[a+dx*it][b+dy*it]->id == "b" || state[a+dx*it][b+dy*it]->id == "q") {
+						return true;
+					}
+					else
+						return false;
+				}
+				it+=1;
+			}
+			return false;
+		}*/
+
 	}
 
 	update_with_move(current_move, false);
