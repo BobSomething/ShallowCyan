@@ -380,6 +380,7 @@ void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=tr
 	}
 	if(change_turn)
 		turn = !turn;
+	update_grids();
 }
 
 //if(!(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y))
@@ -474,7 +475,7 @@ long long board_t::nb_moves(int depth) {
 			o.close();
 		}
 		*/
-		//print();
+		print();
 		undo_with_move(move,captured);
 	}
 	return count;
