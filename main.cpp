@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     //board.print_grids(1);
     // std::cout << board.state[0][4]->legal_moves().size();
     //board.update("b1a3",true);
-     std::cout << board.nb_moves(5); 
+    //std::cout << board.nb_moves(4); 
    
     /*
     board.clear_board();
