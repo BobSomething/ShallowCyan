@@ -23,6 +23,7 @@ struct move_t {
 	// 33 - promotion -> knight
 	int type_move; 
 	int score = 0;
+	int eval = 0;
 	
 
 	move_t(int before_i, int before_j, int after_i, int after_j, int type_move)
