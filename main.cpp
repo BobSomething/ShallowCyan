@@ -47,7 +47,9 @@ int main(int argc, char* argv[]) {
     bitboard_t board_test;
 
     //board_test.printBB();
-    //board_test.printBBpiece(0);
+
+    //board_test.printBB();
+    //board_test.printBBany(0x0101010101010101);
 
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
