@@ -9,6 +9,12 @@ struct move_t;
 #define j second //letter
 #define makep std::make_pair
 #define SIZE 8
+#define SIZESQ SIZE*SIZE
 #define inf 2147483647
+
+#define U64 uint64_t
+#define set_bit(bitboard, index) (bitboard |= (1ULL << index))
+#define get_bit(bitboard, index) (bitboard & (1ULL << index))
+#define get_LSB(bitboard) (__builtin_ctzll(bitboard)) //get the least significant bit 
 
 #endif
