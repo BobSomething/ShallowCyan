@@ -177,7 +177,7 @@ array_moves rook_t::legal_moves() {
     return template_legal_moves(location, color, board, directions);
 }
 
-//outdated
+//outdated, we use the grid_attack now instead
 /*
 bool king_t::is_checked() {
     //pawn :(
