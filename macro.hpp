@@ -15,6 +15,7 @@ struct move_t;
 #define U64 uint64_t
 #define set_bit(bitboard, index) (bitboard |= (1ULL << index))
 #define get_bit(bitboard, index) ((bitboard>>index) & 1)
+#define clear_bit(bitboard, index) (get_bit(bitboard, index) ? bitboard ^= (1ULL << index) : 0)
 #define get_LSB(bitboard) (__builtin_ctzll(bitboard)) //get the least significant bit 
-
+#define get_count(bitboard) (__builtin_popcountl(bitboard))
 #endif
