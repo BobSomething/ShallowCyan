@@ -1,6 +1,8 @@
 #include "board.hpp"
 #include "piece.hpp"
 #include "bitboard.hpp"
+#include "bithelpers.hpp"
+#include "magicbitboard.cpp"
 #include <fstream>
 #include <cstring>
 
@@ -44,14 +46,19 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
+
     bitboard_t board_test;
+    
+    //get_magic_numbers_rook();
+    
 
-    // board_test.printBB();
+    /* for(int i =0;i <100; i++) {
+        U64 x = board_test.attacksRook_mask(21,temp);
+        board_test.printBBany(get_set_with_index(i,board_test.attacksRook_mask(21,temp)));
+        board_test.printBBany(get_a_mask(i, x, 21));
+        getchar();
+    } */
 
-    // board_test.printBB();
-    U64 board_king_test = board_test.attacksRook_mask(27, 0x00000800000000);
-    board_test.printBBany(0x00000800000000);
-    board_test.printBBany(board_king_test);
 
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
@@ -59,20 +66,6 @@ int main(int argc, char* argv[]) {
     // std::cout << board.state[0][4]->legal_moves().size();
     //board.update("b1c3",true);
     //std::cout << board.nb_moves(4); 
-    /*
-    board.clear_board();
-    board.add_piece(3,3, new bishop_t(makep(3,3),1,&board));
-    board.add_piece(1,2, new bishop_t(makep(1,2),1,&board));
-    board.add_piece(0,0, new rook_t(makep(0,0),1,&board));
-    
-    std::cout << typeid(board.state[1][2]).name() << " " << board.state[1][2]->id << std::endl;
-    std::cout << typeid(board.state[3][3]).name() << " " << board.state[3][3]->id << std::endl;
-    std::cout << typeid(board.state[0][0]).name() << " " << board.state[0][0]->id << std::endl;
-
-    for(auto& [x, y]: board.state[3][3]->legal_moves()) {
-        std::cout << x << " " << y << std::endl;
-    }
-    */
     
 
     return 0;
