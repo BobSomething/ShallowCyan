@@ -46,10 +46,12 @@ int main(int argc, char* argv[]) {
 
     bitboard_t board_test;
 
-    //board_test.printBB();
+    // board_test.printBB();
 
-    //board_test.printBB();
-    //board_test.printBBany(0x0101010101010101);
+    // board_test.printBB();
+    U64 board_king_test = board_test.attacksRook_mask(27, 0x00000800000000);
+    board_test.printBBany(0x00000800000000);
+    board_test.printBBany(board_king_test);
 
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
