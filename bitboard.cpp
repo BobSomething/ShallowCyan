@@ -26,6 +26,17 @@ std::map<int, std::string> coords_to_letter_2 = { // Dictionary to translate inp
 	{7, "h"}
 };
 
+std::map<std::string, int> letter_to_coords_2 = { // Dictionary to translate input to move
+	{"a" , 0},
+	{"b" , 1},
+	{"c" , 2},
+	{"d" , 3},
+	{"e" , 4},
+	{"f" , 5},
+	{"g" , 6},
+	{"h" , 7}
+};
+
 std::map<int,std::string> index_to_piece {
     {12, " "},
     {0, "\u265F"},
@@ -43,7 +54,42 @@ std::map<int,std::string> index_to_piece {
 };
 
 
+
+
+/*
+
+IMPLEMENTATION OF BITBOARDS
+
+*/
+
+
 bitboard_t::bitboard_t() {
+    
+    pieceTable[0] = 3;
+    pieceTable[1] = 1;
+    pieceTable[2] = 2;
+    pieceTable[3] = 4;
+    pieceTable[4] = 5; kingWhere[0] = 4;
+    pieceTable[5] = 2;
+    pieceTable[6] = 1;
+    pieceTable[7] = 3;
+    for(int i=8; i<=15; i++)
+        pieceTable[i] = 0;
+
+    for(int i=16; i<=47; i++)
+        pieceTable[i] = -1;
+    
+    for(int i=48; i<=55; i++)
+        pieceTable[i] = 6;
+    pieceTable[56] = 9;
+    pieceTable[57] = 7;
+    pieceTable[58] = 8;
+    pieceTable[59] = 10;
+    pieceTable[60] = 11; kingWhere[1] = 60;
+    pieceTable[61] = 8;
+    pieceTable[62] = 7;
+    pieceTable[63] = 9;
+
     piecesBB[0] = 0xFF00ULL; //white pawns
     piecesBB[1] = 0x42ULL; //white knights
     piecesBB[2] = 0x24ULL; //white bishops 
@@ -61,12 +107,13 @@ bitboard_t::bitboard_t() {
     turn = 0;
 
     for(int i=0; i<SIZESQ; i++) {
-        attacksPawns_mask(i, 0);
-        attacksPawns_mask(i, 1);
+        attacksPawns[0][i] = attacksPawns_mask(i, 0);
+        attacksPawns[1][i] = attacksPawns_mask(i, 1);
 
-        attacksKing_mask(i);
-        attacksKnight_mask(i);
+        attacksKing[i] = attacksKing_mask(i);
+        attacksKnights[i] = attacksKnight_mask(i);
     }
+
 }
 
 
@@ -139,3 +186,35 @@ void bitboard_t::printBB() {
 	}
 	std::cout << " " << std::endl;
 }
+
+std::string bitboard_t::move_to_string(move_t* move) {
+	std::string base = coords_to_letter_2[move->before.j] + std::to_string(move->before.i+1) + coords_to_letter_2[move->after.j] + std::to_string(move->after.i+1);
+	//move->type_move == if it is promotion
+	return base;
+}
+
+
+
+move_t* bitboard_t::string_to_move(std::string move) {
+	int type = 0;
+	if(move.length() == 5) {
+		std::map<std::string, int> promotion = {
+			{"q" , 0},
+			{"r" , 1},
+			{"b" , 2},
+			{"n" , 3},
+		};
+		type = 30 + promotion[move.substr(4,1)];
+	}
+		
+	move_t* new_move = new move_t{stoi(move.substr(1,1)) - 1, letter_to_coords_2[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords_2[move.substr(2,1)],type};
+	/*
+	new_move->before.j = letter_to_coords[move->substr(0,1)];
+	new_move->after.j = letter_to_coords[move->substr(2,1)];
+	new_move->before.i = 8 - stoi(move->substr(1,1)); //stoi = string to integer
+	new_move->after.i = 8 - stoi(move->substr(3,1));
+	*/
+	return new_move;
+}
+
+

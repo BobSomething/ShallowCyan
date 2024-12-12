@@ -14,6 +14,12 @@ You can also use the macros get_bit(), set_bit(), get_LSB()
 To test your implementation of a bitboard you can use printBBany(bitboard)
 */
 
+/*
+
+USEFUL BIT FUNCTIONS
+
+*/
+
 struct bitboard_t {
     /*
     0 - white pawns
@@ -31,6 +37,8 @@ struct bitboard_t {
     */
     U64 piecesBB[12] {};
     bool turn;
+    int pieceTable[SIZESQ];
+    int kingWhere[2];
 
     bitboard_t();
 
