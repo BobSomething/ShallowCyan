@@ -1,8 +1,8 @@
 #include "board.hpp"
 #include "piece.hpp"
+#include "bitboard.hpp"
 #include <fstream>
 #include <cstring>
-#include <sys/resource.h>
 
 
 
@@ -44,13 +44,19 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
+    bitboard_t board_test;
+
+    //board_test.printBB();
+
+    //board_test.printBB();
+    //board_test.printBBany(0x0101010101010101);
+
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
     //board.print_grids(1);
     // std::cout << board.state[0][4]->legal_moves().size();
-    //board.update("b1a3",true);
-     std::cout << board.nb_moves(4); 
-   
+    //board.update("b1c3",true);
+    //std::cout << board.nb_moves(4); 
     /*
     board.clear_board();
     board.add_piece(3,3, new bishop_t(makep(3,3),1,&board));

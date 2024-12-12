@@ -53,39 +53,71 @@ board_t::board_t() {
 						king[color] = piece;
 				}
 				state[i][j] = piece;
+				current_pieces[piece] = makep(i,j);
 			}
 			if (i == 1 || i == 6) {
 				state[i][j] = new pawn_t(coords(i, j), color, this);
+				current_pieces[state[i][j]] = makep(i,j);
 			}
 		}
 	}
 	//Initialise grids
-	update_grids();
+	update_grids(nullptr);
 	turn = 1;
 	fifty_moves = 0;
 }
 
-void board_t::update_grids() {
-	for (int i = 0; i < SIZE; i++) {
-		for (int j = 0; j < SIZE; j++) {
-			grid_attack[0][i][j] = 0;
-			grid_attack[1][i][j] = 0;
+void board_t::update_grids(move_t* move) {
+	if(move == nullptr) { //initializing the grids
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				grid_attack[0][i][j] = 0;
+				grid_attack[1][i][j] = 0;
+			}
 		}
-	}
-	for (int i=0; i<SIZE; i++){
-		for (int j=0; j<SIZE; j++){
-			if (state[i][j] != nullptr){
-				array_moves arr = state[i][j]->legal_moves();
-				for (int k=0; k<arr.size(); k++){
-					if(arr[k].type_move == 21 || arr[k].type_move == 22)
-						continue;
-					int ii = arr[k].after.i;
-					int jj = arr[k].after.j;
-					grid_attack[!state[i][j]->color][ii][jj]+=1;
-				} 
+		for (int i=0; i<SIZE; i++){
+			for (int j=0; j<SIZE; j++){
+				if (state[i][j] != nullptr){
+					array_moves arr = state[i][j]->legal_moves();
+					for(auto m : arr) {
+						if(m->type_move == 21 || m->type_move == 22)
+							continue;
+						int ii = m->after.i;
+						int jj = m->after.j;
+						grid_attack[!state[i][j]->color][ii][jj]+=1;
+					} 
+				}
 			}
 		}
 	}
+	else {
+		for(auto m : state[move->before.i][move->before.j]->legal_moves()) {
+			if(m->type_move == 21 || m->type_move == 22)
+				continue;
+			int ii = m->after.i;
+			int jj = m->after.j;
+			grid_attack[!state[move->before.i][move->before.j]->color][ii][jj]-=1;
+		}
+		for(auto m : state[move->after.i][move->after.j]->legal_moves()) {
+			if(m->type_move == 21 || m->type_move == 22)
+				continue;
+			int ii = m->after.i;
+			int jj = m->after.j;
+			grid_attack[!state[move->before.i][move->before.j]->color][ii][jj]-=1;
+		}
+	}
+	
+}
+
+piece_t* board_t::find_first_piece(int x, int y, int dx, int dy) {
+	int it = 0;
+	while(x+dx*it >=0 && x+dx*it < SIZE && y+dy*it >= 0 && y+dy*it < SIZE) {
+		if(state[x+dx*it][y+dy*it] != nullptr) {
+			return state[x+dx*it][y+dy*it];
+		}
+		it+=1;
+	}
+	return nullptr;
 }
 
 void board_t::print_grids(bool color){
@@ -182,15 +214,15 @@ std::string board_t::print_string() {
 }
 
 
-std::string board_t::move_to_string(move_t move) {
-	std::string base = coords_to_letter[move.before.j] + std::to_string(move.before.i+1) + coords_to_letter[move.after.j] + std::to_string(move.after.i+1);
-	//move.type_move == if it is promotion
+std::string board_t::move_to_string(move_t* move) {
+	std::string base = coords_to_letter[move->before.j] + std::to_string(move->before.i+1) + coords_to_letter[move->after.j] + std::to_string(move->after.i+1);
+	//move->type_move == if it is promotion
 	return base;
 }
 
 
 
-move_t board_t::string_to_move(std::string move) {
+move_t* board_t::string_to_move(std::string move) {
 	int type = 0;
 	if(move.length() == 5) {
 		std::map<std::string, int> promotion = {
@@ -202,12 +234,12 @@ move_t board_t::string_to_move(std::string move) {
 		type = 30 + promotion[move.substr(4,1)];
 	}
 		
-	move_t new_move {stoi(move.substr(1,1)) - 1, letter_to_coords[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords[move.substr(2,1)],type};
+	move_t* new_move = new move_t{stoi(move.substr(1,1)) - 1, letter_to_coords[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords[move.substr(2,1)],type};
 	/*
-	new_move.before.j = letter_to_coords[move.substr(0,1)];
-	new_move.after.j = letter_to_coords[move.substr(2,1)];
-	new_move.before.i = 8 - stoi(move.substr(1,1)); //stoi = string to integer
-	new_move.after.i = 8 - stoi(move.substr(3,1));
+	new_move->before.j = letter_to_coords[move->substr(0,1)];
+	new_move->after.j = letter_to_coords[move->substr(2,1)];
+	new_move->before.i = 8 - stoi(move->substr(1,1)); //stoi = string to integer
+	new_move->after.i = 8 - stoi(move->substr(3,1));
 	*/
 	return new_move;
 }
@@ -220,26 +252,26 @@ void board_t::update(std::string move, bool change_turn=true) {
 	/*
 	move_t new_move = string_to_move(move);
 
-	if(new_move.type_move >= 30) {
-		if(new_move.type_move == 30)
-			state[new_move.after.i][new_move.after.j] = new queen_t(coords(new_move.after.i,new_move.after.j), turn, this);
-		if(new_move.type_move == 31) {
-			state[new_move.after.i][new_move.after.j] = new rook_t(coords(new_move.after.i,new_move.after.j), turn, this);
-			state[new_move.after.i][new_move.after.j]->moved = true;
+	if(new_move->type_move >= 30) {
+		if(new_move->type_move == 30)
+			state[new_move->after.i][new_move->after.j] = new queen_t(coords(new_move->after.i,new_move->after.j), turn, this);
+		if(new_move->type_move == 31) {
+			state[new_move->after.i][new_move->after.j] = new rook_t(coords(new_move->after.i,new_move->after.j), turn, this);
+			state[new_move->after.i][new_move->after.j]->moved = true;
 		}
-		if(new_move.type_move == 32)
-			state[new_move.after.i][new_move.after.j] = new bishop_t(coords(new_move.after.i,new_move.after.j), turn, this);
-		if(new_move.type_move == 33)
-			state[new_move.after.i][new_move.after.j] = new knight_t(coords(new_move.after.i,new_move.after.j), turn, this);
+		if(new_move->type_move == 32)
+			state[new_move->after.i][new_move->after.j] = new bishop_t(coords(new_move->after.i,new_move->after.j), turn, this);
+		if(new_move->type_move == 33)
+			state[new_move->after.i][new_move->after.j] = new knight_t(coords(new_move->after.i,new_move->after.j), turn, this);
 
-		state[new_move.before.i][new_move.before.j] = nullptr;
+		state[new_move->before.i][new_move->before.j] = nullptr;
 		return;
 	}
 
 	//Update the board
-	state[new_move.after.i][new_move.after.j] = state[new_move.before.i][new_move.before.j];
-	state[new_move.after.i][new_move.after.j]->location = new_move.after;
-	state[new_move.before.i][new_move.before.j] = nullptr;
+	state[new_move->after.i][new_move->after.j] = state[new_move->before.i][new_move->before.j];
+	state[new_move->after.i][new_move->after.j]->location = new_move->after;
+	state[new_move->before.i][new_move->before.j] = nullptr;
 	if(change_turn)
 		turn = !turn;
 	last_move = new_move;
@@ -247,68 +279,69 @@ void board_t::update(std::string move, bool change_turn=true) {
 
 }
 
-void board_t::update_with_move(move_t move, bool change_turn=true) {
+void board_t::update_with_move(move_t* move, bool change_turn=true) {
 	/* Updates the board with this move, assumes that the move is legal */
 	//Update the board
 
+
 	//if it is castling
-	if(move.type_move == 1) {
-		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
-		state[move.after.i][move.after.j]->location = move.after;
-		if(state[move.after.i][move.after.j]->id == "k" && state[move.after.i][move.after.j]->color == turn) {
-			king[turn] = state[move.after.i][move.after.j];
+	if(move->type_move == 1) {
+		state[move->after.i][move->after.j] = state[move->before.i][move->before.j];
+		state[move->after.i][move->after.j]->location = move->after;
+		if(state[move->after.i][move->after.j]->id == "k" && state[move->after.i][move->after.j]->color == turn) {
+			king[turn] = state[move->after.i][move->after.j];
 		}
 
-		state[move.before.i][move.before.j] = nullptr;
-		if(move.after.j - move.before.j > 0) {
-			state[move.after.i][move.after.j+1] = state[move.before.i][move.before.j+3];
-			state[move.after.i+1][move.after.j+1]->location = makep(move.after.i+1,move.after.j+1);
+		state[move->before.i][move->before.j] = nullptr;
+		if(move->after.j - move->before.j > 0) {
+			state[move->after.i][move->after.j+1] = state[move->before.i][move->before.j+3];
+			state[move->after.i+1][move->after.j+1]->location = makep(move->after.i+1,move->after.j+1);
 
-			state[move.before.i][move.before.j+3] = nullptr;
+			state[move->before.i][move->before.j+3] = nullptr;
 		}
 		else {
-			state[move.after.i][move.after.j-1] = state[move.before.i][move.before.j-4];
-			state[move.after.i-1][move.after.j-1]->location = makep(move.after.i-1,move.after.j-1);
+			state[move->after.i][move->after.j-1] = state[move->before.i][move->before.j-4];
+			state[move->after.i-1][move->after.j-1]->location = makep(move->after.i-1,move->after.j-1);
 
-			state[move.before.i][move.before.j-4] = nullptr;
+			state[move->before.i][move->before.j-4] = nullptr;
 		}
 	}
 	//if it is en passant
-	else if(move.type_move == -2) {
+	else if(move->type_move == -2) {
 		int direction = 1;
 		if(turn == 0) direction = -1;
-		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
-		state[move.after.i][move.after.j]->location = move.after;
+		state[move->after.i][move->after.j] = state[move->before.i][move->before.j];
+		state[move->after.i][move->after.j]->location = move->after;
 
-		state[move.before.i][move.before.j] = nullptr;
-		state[move.after.i-direction][move.after.j] = nullptr;
+		state[move->before.i][move->before.j] = nullptr;
+		state[move->after.i-direction][move->after.j] = nullptr;
 	}
 
 	//promotion to queen
-	else if(move.type_move == 30) {
-		state[move.before.i][move.before.j] = nullptr;
-		state[move.after.i][move.after.j] = new queen_t(makep(move.after.i,move.after.j),turn,this);
+	else if(move->type_move == 30) {
+		state[move->before.i][move->before.j] = nullptr;
+		state[move->after.i][move->after.j] = new queen_t(makep(move->after.i,move->after.j),turn,this);
 	}
-	else if(move.type_move == 31) {
-		state[move.before.i][move.before.j] = nullptr;
-		state[move.after.i][move.after.j] = new rook_t(makep(move.after.i,move.after.j),turn,this);
+	else if(move->type_move == 31) {
+		state[move->before.i][move->before.j] = nullptr;
+		state[move->after.i][move->after.j] = new rook_t(makep(move->after.i,move->after.j),turn,this);
 	}
-	else if(move.type_move == 32) {
-		state[move.before.i][move.before.j] = nullptr;
-		state[move.after.i][move.after.j] = new bishop_t(makep(move.after.i,move.after.j),turn,this);
+	else if(move->type_move == 32) {
+		state[move->before.i][move->before.j] = nullptr;
+		state[move->after.i][move->after.j] = new bishop_t(makep(move->after.i,move->after.j),turn,this);
 	}
-	else if(move.type_move == 33) {
-		state[move.before.i][move.before.j] = nullptr;
-		state[move.after.i][move.after.j] = new knight_t(makep(move.after.i,move.after.j),turn,this);
+	else if(move->type_move == 33) {
+		state[move->before.i][move->before.j] = nullptr;
+		state[move->after.i][move->after.j] = new knight_t(makep(move->after.i,move->after.j),turn,this);
 	}
 	else {
-		state[move.after.i][move.after.j] = state[move.before.i][move.before.j];
-		state[move.after.i][move.after.j]->location = move.after;
-		if(state[move.after.i][move.after.j]->id == "k" && state[move.after.i][move.after.j]->color == turn) {
-			king[turn] = state[move.after.i][move.after.j];
+		state[move->after.i][move->after.j] = state[move->before.i][move->before.j];
+		state[move->after.i][move->after.j]->location = move->after;
+		if(state[move->after.i][move->after.j]->id == "k" && state[move->after.i][move->after.j]->color == turn) {
+			king[turn] = state[move->after.i][move->after.j];
 		}
 
-		state[move.before.i][move.before.j] = nullptr;
+		state[move->before.i][move->before.j] = nullptr;
 	}
 	
 	if(change_turn)
@@ -316,98 +349,194 @@ void board_t::update_with_move(move_t move, bool change_turn=true) {
 
 	//UPDATING GRIDS
 	//Parsing every piece
-	update_grids();
+	update_grids(nullptr);
 }
 
-//This one not updated, might break!!
+//This one not updated, might break!! // ok I think now
 void board_t::undo(std::string move, piece_t* captured, bool change_turn=true) {
 	undo_with_move(string_to_move(move), captured, change_turn);
 }
 
-void board_t::undo_with_move(move_t move, piece_t* captured, bool change_turn=true) {
+void board_t::undo_with_move(move_t* move, piece_t* captured, bool change_turn=true) {
 	//undoing castling
-	if(move.type_move == 1) {
-		state[move.before.i][move.before.j] = state[move.before.i][move.before.j];
-		state[move.before.i][move.before.j]->location = move.before;
-		if(state[move.after.i][move.after.j]->id == "k" && state[move.before.i][move.before.j]->color == turn)
-			king[turn] = state[move.before.i][move.before.j];
+	if(move->type_move == 1) {
+		state[move->before.i][move->before.j] = state[move->after.i][move->after.j];
+		state[move->before.i][move->before.j]->location = move->before;
+		if(state[move->before.i][move->before.j]->id == "k" && state[move->before.i][move->before.j]->color == turn)
+			king[turn] = state[move->before.i][move->before.j];
 
-		state[move.after.i][move.after.j] = nullptr;
-		if(move.after.j - move.before.j > 0) {
-			state[move.before.i][move.before.j+3] = state[move.before.i][move.before.j+3];
-			state[move.before.i][move.before.j+3]->location = makep(move.before.i,move.before.j+3);
+		state[move->after.i][move->after.j] = nullptr;
+		if(move->after.j - move->before.j > 0) {
+			state[move->before.i][move->before.j+3] = state[move->after.i][move->after.j+1];
+			state[move->before.i][move->before.j+3]->location = makep(move->before.i,move->before.j+3);
 
-			state[move.after.i][move.after.j+1] = nullptr;
+			state[move->after.i][move->after.j+1] = nullptr;
 		}
 		else {
-			state[move.before.i][move.before.j-4] = state[move.before.i][move.before.j-4];
-			state[move.before.i][move.before.j-4]->location = makep(move.before.i,move.before.j-4);
+			state[move->before.i][move->before.j-4] = state[move->after.i][move->after.j-1];
+			state[move->before.i][move->before.j-4]->location = makep(move->before.i,move->before.j-4);
 
-			state[move.after.i][move.after.j-1] = nullptr;
+			state[move->after.i][move->after.j-1] = nullptr;
 		}
 	}
 
 	//undoing en passant
-	else if(move.type_move == -2) {
+	else if(move->type_move == -2) {
 		int direction = 1;
 		if(turn == 0) direction = -1;
 
-		state[move.before.i][move.before.j] = state[move.after.i][move.after.j];
-		state[move.before.i][move.before.j]->location = move.before;
+		state[move->before.i][move->before.j] = state[move->after.i][move->after.j];
+		state[move->before.i][move->before.j]->location = move->before;
 
-		state[move.after.i][move.after.j] = nullptr;
-		state[move.after.i-direction][move.after.j] = captured;
+		state[move->after.i][move->after.j] = nullptr;
+		state[move->after.i-direction][move->after.j] = captured;
 
 		if(captured != nullptr)
-			state[move.after.i][move.after.j]->location = makep(move.after.i-direction, move.after.j);
+			state[move->after.i][move->after.j]->location = makep(move->after.i-direction, move->after.j);
 	}
 
 	//undoing promotion
-	else if(move.type_move >= 30 && move.type_move <= 33) {
-		state[move.after.i][move.after.j] = nullptr;
-		state[move.before.i][move.before.j] = new pawn_t(makep(move.before.i,move.before.j),turn,this);
+	else if(move->type_move >= 30 && move->type_move <= 33) {
+		state[move->after.i][move->after.j] = nullptr;
+		state[move->before.i][move->before.j] = new pawn_t(makep(move->before.i,move->before.j),turn,this);
 	}
 	else {
-		state[move.before.i][move.before.j] = state[move.after.i][move.after.j];
-		state[move.before.i][move.before.j]->location = move.before;
-		if(state[move.before.i][move.before.j]->id == "k" && state[move.before.i][move.before.j]->color == turn) {
-			king[turn] = state[move.before.i][move.before.j];
+		state[move->before.i][move->before.j] = state[move->after.i][move->after.j];
+		state[move->before.i][move->before.j]->location = move->before;
+		if(state[move->before.i][move->before.j]->id == "k" && state[move->before.i][move->before.j]->color == turn) {
+			king[turn] = state[move->before.i][move->before.j];
 		}
-		state[move.after.i][move.after.j] = captured; //undoing a capture if there was a capture
+		state[move->after.i][move->after.j] = captured; //undoing a capture if there was a capture
 		if(captured != nullptr) {
-			state[move.after.i][move.after.j]->location = move.after;
+			state[move->after.i][move->after.j]->location = move->after;
 		}
 	}
 	if(change_turn)
 		turn = !turn;
-	update_grids();
+	update_grids(nullptr);
 }
 
-//if(!(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y))
+//if(!(abs(current_move->before.i - x) == abs(current_move->before.j - y) || current_move->before.i == x || current_move->before.j == y))
 		//return false;
 
-//if(grid_attack[color][x][y] == 0 && !(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y))
+//if(grid_attack[color][x][y] == 0 && !(abs(current_move->before.i - x) == abs(current_move->before.j - y) || current_move->before.i == x || current_move->before.j == y))
 	//return false;
 
-/*if(!(abs(current_move.before.i - x) == abs(current_move.before.j - y) || current_move.before.i == x || current_move.before.j == y)) {
+/*if(!(abs(current_move->before.i - x) == abs(current_move->before.j - y) || current_move->before.i == x || current_move->before.j == y)) {
 	return false;
 }*/
 
-bool board_t::is_check(bool color, piece_t* captured, move_t current_move) {
-	/*int r = 0;
-	if(state[current_move.before.i][current_move.before.j]->id == "k") {
-		if(grid_attack[color][current_move.after.i][current_move.after.i] == 0) {
-			if(move_to_string(current_move) == "e8e7") {
-				
-			}
-			//r = 1;
-			//return false;
+bool board_t::is_check(bool color, piece_t* captured, move_t* current_move) {
+	if(state[current_move->before.i][current_move->before.j]->id == "k") {
+		if(grid_attack[color][current_move->after.i][current_move->after.j] == 0) {
+			return false;
 		}
-		//return true;
-	}*/
-	update_with_move(current_move, false);
+		return true;
+	}
+
 	int x = king[color]->location.i;
 	int y = king[color]->location.j;
+
+	if(grid_attack[color][x][y] == 0) {
+		int a = current_move->before.i;
+		int b = current_move->before.j;
+		int aa = current_move->after.i;
+		int bb = current_move->after.j;
+		if(!(abs(a - x) == abs(b - y) || a == x || b == y)) {
+			return false;
+		}
+		if((a - x)*(bb - y) == (aa - x)*(b - y)) //check if it still on the same diagonal
+			return false;
+		if((a == x && a == aa) || (b == y && b == bb)) //check if it is still on the same row/column
+			return false;
+		
+		if((a == x) && grid_attack[color][a][b] > 0) {
+			int d = 1;
+			if(x - a < 0) d = -1;
+			int it = 1;
+
+			while(abs(x+d*it - a) > 0) {
+				if(state[x+d*it][b] != nullptr) {
+					return false;
+				}
+				it+=1;
+			}
+
+			it = 1;
+			while(a+d*it >= 0 && a+d*it < SIZE) {
+				if(state[a+d*it][b] != nullptr) {
+					if(state[a+d*it][b]->color == color)
+						return false;
+					if(state[a+d*it][b]->id == "r" || state[a+d*it][b]->id == "q") {
+						return true;
+					}
+					else
+						return false;
+				}
+				it+=1;
+			}
+			return false;
+		}
+
+		if((b == y) && grid_attack[color][a][b] > 0) {
+			int d = 1;
+			if(b - y < 0) d = -1;
+			int it = 1;
+
+			while(abs(y+d*it - b) > 0) {
+				if(state[a][y+d*it] != nullptr) {
+					return false;
+				}
+				it+=1;
+			}
+
+			it = 1;
+			while(b+d*it >= 0 && b+d*it < SIZE) {
+				if(state[a][b+d*it] != nullptr) {
+					if(state[a][b+d*it]->color == color)
+						return false;
+					if(state[a][b+d*it]->id == "r" || state[a][b+d*it]->id == "q") {
+						return true;
+					}
+					else
+						return false;
+				}
+				it+=1;
+			}
+			return false;
+		}
+
+		if(abs(a - x) == abs(b - y) && grid_attack[color][a][b] > 0) {
+			int dx = 1;
+			int dy = 1;
+			if(a - x < 0) dx = -1;
+			if(b - y < 0) dy = -1;
+			int it = 1;
+
+			while(abs(y+dy*it - b) > 0) {
+				if(state[x+dx*it][y+dy*it] != nullptr) {
+					return false;
+				}
+				it+=1;
+			}
+
+			while(a+dx*it >=0 && a+dx*it < SIZE && b+dy*it >= 0 && b+dy*it < SIZE) {
+				if(state[a+dx*it][b+dy*it] != nullptr) {
+					if(state[a+dx*it][b+dy*it]->color == color)
+						return false;
+					if(state[a+dx*it][b+dy*it]->id == "b" || state[a+dx*it][b+dy*it]->id == "q") {
+						return true;
+					}
+					else
+						return false;
+				}
+				it+=1;
+			}
+			return false;
+		}
+	}
+
+	update_with_move(current_move, false);
 
 	if(grid_attack[color][x][y] == 0) {
 		undo_with_move(current_move, captured, false);
@@ -415,7 +544,8 @@ bool board_t::is_check(bool color, piece_t* captured, move_t current_move) {
 	}
 	undo_with_move(current_move, captured, false);
 	return true;
-		
+
+	/*
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
 			if(state[i][j] != nullptr)
@@ -432,20 +562,21 @@ bool board_t::is_check(bool color, piece_t* captured, move_t current_move) {
 		}
 	}
 	error("Why there is no king?");
+	*/
 }
 
 
-bool board_t::check_valid_move_with_check(move_t current_move) {
+bool board_t::check_valid_move_with_check(move_t* current_move) {
 	bool res = false;
 	//check if captures
-	piece_t* captured = state[current_move.after.i][current_move.after.j];
+	piece_t* captured = state[current_move->after.i][current_move->after.j];
 	
 	//if it is en passant -> weird capture
-	if(current_move.type_move == -2) {
+	if(current_move->type_move == -2) {
 		if(turn == 1)
-			captured = state[current_move.after.i-1][current_move.after.j];
+			captured = state[current_move->after.i-1][current_move->after.j];
 		else
-			captured = state[current_move.after.i+1][current_move.after.j];
+			captured = state[current_move->after.i+1][current_move->after.j];
 	}
 	if(!is_check(turn, captured, current_move)) {
 		res = true;
@@ -462,7 +593,7 @@ long long board_t::nb_moves(int depth) {
 		return generate_all_moves().size();
 	}
 	for(auto move: generate_all_moves()) {
-		piece_t* captured = state[move.after.i][move.after.j];
+		piece_t* captured = state[move->after.i][move->after.j];
 		update_with_move(move);
 		count += nb_moves(depth-1);
 		
@@ -481,8 +612,8 @@ long long board_t::nb_moves(int depth) {
 	return count;
 }
 
-std::vector<move_t> board_t::generate_all_moves() {
-	std::vector<move_t> all_moves;
+array_moves board_t::generate_all_moves() {
+	array_moves all_moves;
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
 			if(state[i][j] != nullptr) {
@@ -507,9 +638,9 @@ std::vector<move_t> board_t::generate_all_moves() {
 					//en passant
 					int direction = 1;
 					if(turn == 0) direction = -1;
-					if(state[i][j]->id == "p" && last_move.type_move != -10) {
-						if(state[last_move.after.i][last_move.after.j]->id == "p" && abs(last_move.after.j - last_move.before.j) == 2 && last_move.after.i == i && abs(last_move.after.j - j) == 1) {
-							move_t current_move {makep(i,j), makep(i+direction,last_move.after.j),-2};
+					if(state[i][j]->id == "p" && last_move->type_move != -10) {
+						if(state[last_move->after.i][last_move->after.j]->id == "p" && abs(last_move->after.j - last_move->before.j) == 2 && last_move->after.i == i && abs(last_move->after.j - j) == 1) {
+							move_t current_move {makep(i,j), makep(i+direction,last_move->after.j),-2};
 							if(check_valid_move_with_check(current_move))
 								all_moves.push_back(current_move);
 						}
@@ -522,13 +653,13 @@ std::vector<move_t> board_t::generate_all_moves() {
 						if(state[i+direction][j] == nullptr) {
 							move_t current_move {makep(i,j), makep(i+direction,j), 3};
 							if(check_valid_move_with_check(current_move)) {
-								current_move.type_move = 30;
+								current_move->type_move = 30;
 								all_moves.push_back(current_move);
-								current_move.type_move = 31;
+								current_move->type_move = 31;
 								all_moves.push_back(current_move);
-								current_move.type_move = 32;
+								current_move->type_move = 32;
 								all_moves.push_back(current_move);
-								current_move.type_move = 33;
+								current_move->type_move = 33;
 								all_moves.push_back(current_move);
 							}
 						}
@@ -537,7 +668,7 @@ std::vector<move_t> board_t::generate_all_moves() {
 					
 					array_moves legal_moves_current = state[i][j]->legal_moves();
 					for(auto move : legal_moves_current) {
-						if(move.type_move == -100)
+						if(move->type_move == -100)
 							continue;
 						if(check_valid_move_with_check(move))
 							all_moves.push_back(move);
@@ -547,9 +678,9 @@ std::vector<move_t> board_t::generate_all_moves() {
 					for(auto next_location: legal_moves_current) {
 						move_t current_move {current_location, next_location};
 						//check if it is a capture
-						if(state[current_move.after.i][current_move.after.j] != nullptr)
-							if(state[current_move.after.i][current_move.after.j]->color != turn) 
-								current_move.type_move = -1;
+						if(state[current_move->after.i][current_move->after.j] != nullptr)
+							if(state[current_move->after.i][current_move->after.j]->color != turn) 
+								current_move->type_move = -1;
 
 						if(check_valid_move_with_check(current_move))
 							all_moves.push_back(current_move);
