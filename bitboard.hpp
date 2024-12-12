@@ -1,6 +1,7 @@
 #ifndef BITBOARD_HPP_
 #define BITBOARD_HPP_
 
+#include <cstdint>   //added this cause the CMake wasnt happy
 #include <iostream>
 #include <map>
 #include "macro.hpp"

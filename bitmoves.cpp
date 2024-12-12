@@ -108,7 +108,7 @@ U64 bitboard_t::attacksKnight_mask(int square) {
     if (square > 55){
         temp_bitboard |= 0x000000000000FFFF;
     }
-
+    //This should check if the square is out of the board
     U64 attack_bitboard = 0ULL;
     set_bit(attack_bitboard, (square+10));
     set_bit(attack_bitboard, (square+6));
@@ -127,7 +127,42 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
     U64 temp_bitboard = 0ULL;
     U64 attack_bitboard = 0ULL;
     set_bit(temp_bitboard, square);
-
+    for (int i = 1; (square - i*9)>=0; i++){  //down left
+        if ((square - i*9)%8 > square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square - i*9));
+        if (get_bit(occupied, (square - i*9))==1){
+            break;
+        }
+    }
+    for (int i=1; (square + i*9)<64; i++){ //up right
+        if ((square + i*9)%8 < square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square + i*9));
+        if (get_bit(occupied, (square + i*9))==1){
+            break;
+        }
+    }
+    for (int i=1; (square - i*7)>=0; i++){ //down right
+        if (((square - i*7))%8 < square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square - i*7));
+        if (get_bit(occupied, (square - i*7))==1){
+            break;
+        }
+    }
+    for (int i = 1; (square + i*7)<64; i++){ //up left
+        if (((square + i*7))%8 > square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square + i*7));
+        if (get_bit(occupied, (square + i*7))==1){
+            break;
+        }
+    }
     return attack_bitboard;
 }
 
@@ -143,7 +178,7 @@ U64 bitboard_t::attacksRook_mask(int square, U64 occupied) {
             break;
         }
     }
-    for (int i=1; (square - i*8)>0; i++){
+    for (int i=1; (square - i*8)>=0; i++){ //>= 0 because 0 is still legal move
         set_bit(attack_bitboard, (square - i*8));
         if (get_bit(occupied, (square - i*8))==1){
             break;
@@ -171,6 +206,70 @@ U64 bitboard_t::attacksQueen_mask(int square, U64 occupied) {
     U64 temp_bitboard = 0ULL;
     U64 attack_bitboard = 0ULL;
     set_bit(temp_bitboard, square);
+
+    //from rook
+    for (int i=1; (square + i*8)<64; i++){
+        set_bit(attack_bitboard, (square + i*8));
+        if (get_bit(occupied, (square + i*8))==1){
+            break;
+        }
+    }
+    for (int i=1; (square - i*8)>=0; i++){ //>= 0 because 0 is still legal move
+        set_bit(attack_bitboard, (square - i*8));
+        if (get_bit(occupied, (square - i*8))==1){
+            break;
+        }
+    }
+    for (int i=-1; i>-(square%8)-1; i--){
+        set_bit(attack_bitboard, (square + i));
+        if (get_bit(occupied, (square+i))==1){
+            break;
+        }
+    }
+    for (int i=1; i<8-(square%8); i++){
+        set_bit(attack_bitboard, (square + i));
+        if (get_bit(occupied, (square+i))==1){
+            break;
+        }
+    }
+    
+    //from bishop
+    for (int i = 1; (square - i*9)>=0; i++){  //down left
+        if ((square - i*9)%8 > square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square - i*9));
+        if (get_bit(occupied, (square - i*9))==1){
+            break;
+        }
+    }
+    for (int i=1; (square + i*9)<64; i++){ //up right
+        if ((square + i*9)%8 < square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square + i*9));
+        if (get_bit(occupied, (square + i*9))==1){
+            break;
+        }
+    }
+    for (int i=1; (square - i*7)>=0; i++){ //down right
+        if (((square - i*7))%8 < square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square - i*7));
+        if (get_bit(occupied, (square - i*7))==1){
+            break;
+        }
+    }
+    for (int i = 1; (square + i*7)<64; i++){ //up left
+        if (((square + i*7))%8 > square % 8){
+            break;
+        }
+        set_bit(attack_bitboard, (square + i*7));
+        if (get_bit(occupied, (square + i*7))==1){
+            break;
+        }
+    }
 
     return attack_bitboard;
 }
