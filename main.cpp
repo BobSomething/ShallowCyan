@@ -34,7 +34,6 @@ int main(int argc, char* argv[]) {
     std::ifstream input;
     input.open(history);
     std::string line;
-    getline(input,line);
     while (getline(input, line)) {
         board.update(line,true);
     }
