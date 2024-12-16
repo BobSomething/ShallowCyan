@@ -122,6 +122,34 @@ U64 bitboard_t::attacksKnight_mask(int square) {
     return attack_bitboard & (~temp_bitboard);
 }
 
+U64 bitboard_t::attacksBishopsMagic(int square, U64 occupied) {
+    U64 rayoccupied = occupied & attacksBishopsNoBlockers[square];
+    U64 key = (rayoccupied*magicBishops[square]) >> (64 - bishopShifts[square]);
+
+    return attacksBishops[square][key];
+}
+
+U64 bitboard_t::attacksRooksMagic(int square, U64 occupied) {
+    U64 rayoccupied = occupied & attacksRooksNoBlockers[square];
+    U64 key = (rayoccupied*magicRooks[square]) >> (64 - rookShifts[square]);
+    
+    return attacksRooks[square][key];
+}
+
+U64 bitboard_t::attacksQueensMagic(int square, U64 occupied) {
+    return attacksBishopsMagic(square, occupied) | attacksRooksMagic(square, occupied);
+}
+
+
+
+/*
+NO NEED TO LOOK BELOW.
+ALL FUNCTIONS BELOW ARE ONLY FOR INITIALIZING THE BITBOARDS
+*/
+
+
+
+
 U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
     //TODO
     U64 temp_bitboard = 0ULL;
@@ -166,6 +194,10 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
     return attack_bitboard;
 }
 
+U64 bitboard_t::attacksBishop_mask_short(int square) {
+    return attacksBishop_mask(square, 0) & 35604928818740736; //35604928818740736 - 1 everywhere, except at the boarders
+}
+
 U64 bitboard_t::attacksRook_mask(int square, U64 occupied) {
     //TODO
     U64 temp_bitboard = 0ULL;
@@ -199,6 +231,28 @@ U64 bitboard_t::attacksRook_mask(int square, U64 occupied) {
 
     return attack_bitboard;
     // return occupied;
+}
+
+U64 bitboard_t::attacksRook_mask_short(int square) {
+    U64 attack_bitboard = 0ULL;
+
+    int i = square / 8;
+    int j = square % 8;
+
+    for (int y = j+1; y <= 6; y++){
+        set_bit(attack_bitboard, (i*8+y));
+    }
+    for (int y = j-1; y >= 1; y--){
+        set_bit(attack_bitboard, (i*8+y));
+    }
+    for (int x = i+1; x <= 6; x++){
+        set_bit(attack_bitboard, (x*8+j));
+    }
+    for (int x = i-1; x >= 1; x--){
+        set_bit(attack_bitboard, (x*8+j));
+    }
+
+    return attack_bitboard;
 }
 
 U64 bitboard_t::attacksQueen_mask(int square, U64 occupied) {

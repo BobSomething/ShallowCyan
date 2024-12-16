@@ -1,8 +1,8 @@
 #include "board.hpp"
 #include "piece.hpp"
 #include "bitboard.hpp"
-#include "bithelpers.hpp"
-#include "magicbitboard.cpp"
+//#include "bithelpers.hpp"
+//#include "magicbitboard.cpp"
 #include <fstream>
 #include <cstring>
 
@@ -34,7 +34,6 @@ int main(int argc, char* argv[]) {
     std::ifstream input;
     input.open(history);
     std::string line;
-    getline(input,line);
     while (getline(input, line)) {
         board.update(line,true);
     }
@@ -47,10 +46,17 @@ int main(int argc, char* argv[]) {
     output.close();
 
 
-    bitboard_t board_test;
-    
-    //get_magic_numbers_rook();
-    
+    /* bitboard_t board_test;
+    U64 occupied;
+    set_bit(occupied, 12);
+    set_bit(occupied, 30);
+    set_bit(occupied, 25);
+    set_bit(occupied, 40);
+    set_bit(occupied, 19);
+    set_bit(occupied, 14);
+    board_test.printBBany(occupied);
+    board_test.printBBany(board_test.attacksQueensMagic(28,occupied));  */
+
 
     /* for(int i =0;i <100; i++) {
         U64 x = board_test.attacksRook_mask(21,temp);
@@ -58,17 +64,6 @@ int main(int argc, char* argv[]) {
         board_test.printBBany(get_a_mask(i, x, 21));
         getchar();
     } */
-    //    U64 temp = ru64();
-    //    for(int i =0;i <100; i++) {
-    //         U64 x = board_test.attacksBishop_mask(21,temp);
-    //         board_test.printBBany(get_set_with_index(i,x));
-    //    }
-
-    U64 occupied = 0x0000000000500000000;
-    U64 test_bishop = board_test.attacksBishop_mask(14, occupied);
-    board_test.printBBany(occupied);
-    board_test.printBBany(test_bishop);
-
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
     //board.print_grids(1);

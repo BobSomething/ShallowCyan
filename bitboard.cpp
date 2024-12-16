@@ -1,4 +1,5 @@
 #include "bitboard.hpp"
+#include "bithelpers.hpp"
 
 std::map<std::pair<std::string,bool>,int> convertPiece = {
     {makep("p",1), 0},
@@ -106,12 +107,34 @@ bitboard_t::bitboard_t() {
 
     turn = 0;
 
-    for(int i=0; i<SIZESQ; i++) {
-        attacksPawns[0][i] = attacksPawns_mask(i, 0);
-        attacksPawns[1][i] = attacksPawns_mask(i, 1);
+    for(int square=0; square<SIZESQ; square++) {
+        attacksPawns[0][square] = attacksPawns_mask(square, 0);
+        attacksPawns[1][square] = attacksPawns_mask(square, 1);
 
-        attacksKing[i] = attacksKing_mask(i);
-        attacksKnights[i] = attacksKnight_mask(i);
+        attacksKing[square] = attacksKing_mask(square);
+        attacksKnights[square] = attacksKnight_mask(square);
+
+        //bishop
+        attacksBishopsNoBlockers[square] = attacksBishop_mask_short(square);
+
+        U64 attack_mask = attacksBishopsNoBlockers[square];
+        int n = bishopShifts[square];
+        for(int index = 0; index < (1 << n); index++) {
+            U64 occupied = get_set_with_index(index, attack_mask);
+            int key = (occupied*magicBishops[square]) >> (64 - bishopShifts[square]);
+            attacksBishops[square][key] = attacksBishop_mask(square, occupied);
+        }
+
+        //rook
+        attacksRooksNoBlockers[square] = attacksRook_mask_short(square);
+
+        attack_mask = attacksRook_mask_short(square);
+        n = rookShifts[square];
+        for(int index = 0; index < (1 << n); index++) {
+            U64 occupied = get_set_with_index(index, attack_mask);
+            int key = (occupied*magicRooks[square]) >> (64 - rookShifts[square]);
+            attacksRooks[square][key] = attacksRook_mask(square, occupied);
+        }
     }
 
 }

@@ -713,20 +713,7 @@ int board_t::eval() {
 std::string board_t::next_move() {
 	//TODO
 	/* Calculates the next move */
-	//Returning random legal move
-	return "a2a4";
-	/*std::vector<piece_t*> our_pieces;
-	for(int i=0; i < SIZE; i++) {
-		for(int j=0; j < SIZE; j++) {
-			if(state[i][j]->color == turn)
-				our_pieces.push_back(state[i][j]);
-		}
-	}
-	int n = our_pieces.size();
-	while(true) {
-		array_coords random_pick = our_pieces[rand() % n]->legal_moves();
-		if(!random_pick.empty()) {
-			return random_pick[rand() % random_pick.size()].print();
-		}
-	}*/
+	//First legal move
+	array_moves g = generate_all_moves();
+	return move_to_string(g[0]);
 }
