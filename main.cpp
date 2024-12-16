@@ -58,11 +58,17 @@ int main(int argc, char* argv[]) {
         board_test.printBBany(get_a_mask(i, x, 21));
         getchar();
     } */
-   U64 temp = ru64();
-   for(int i =0;i <100; i++) {
-        U64 x = board_test.attacksBishop_mask(21,temp);
-        board_test.printBBany(get_set_with_index(i,x));
-   }
+    //    U64 temp = ru64();
+    //    for(int i =0;i <100; i++) {
+    //         U64 x = board_test.attacksBishop_mask(21,temp);
+    //         board_test.printBBany(get_set_with_index(i,x));
+    //    }
+
+    U64 occupied = 0x0000000000500000000;
+    U64 test_bishop = board_test.attacksBishop_mask(14, occupied);
+    board_test.printBBany(occupied);
+    board_test.printBBany(test_bishop);
+
     //board.print();
     //board.update_with_move(board.string_to_move("a2a3"),true);
     //board.print_grids(1);
