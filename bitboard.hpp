@@ -22,6 +22,8 @@ USEFUL BIT FUNCTIONS
 */
 
 struct bitboard_t {
+    array_coords u64_to_coords(U64 u);
+
     /*
     0 - white pawns
     1 - white knights

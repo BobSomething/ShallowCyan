@@ -1,6 +1,18 @@
 #include "bitboard.hpp"
 #include "bithelpers.hpp"
 
+array_coords bitboard_t::u64_to_coords(U64 u){
+    std::vector<coords> ar = {};
+    U64 u_copy = u;
+    while (u_copy != 0){
+        int i = get_LSB(u_copy)/8;
+        int j = get_LSB(u_copy)%8;
+        ar.push_back(makep(i,j));
+        u_copy = u_copy&(u_copy-1);
+    }
+    return ar;
+}
+
 std::map<std::pair<std::string,bool>,int> convertPiece = {
     {makep("p",1), 0},
     {makep("n",1), 1},
@@ -105,7 +117,7 @@ bitboard_t::bitboard_t() {
     piecesBB[10] = 0x0800000000000000ULL; //black queens
     piecesBB[11] = 0x1000000000000000ULL; //black king
 
-    turn = 0;
+    turn = 1;
 
     for(int square=0; square<SIZESQ; square++) {
         attacksPawns[0][square] = attacksPawns_mask(square, 0);
@@ -239,5 +251,47 @@ move_t* bitboard_t::string_to_move(std::string move) {
 	*/
 	return new_move;
 }
+
+array_moves bitboard_t::allMovesKnights(bool color){
+    coords before;
+    coords after;
+    array_moves ar;
+    U64 black = 0x0000000000000000;
+    U64 white = 0x0000000000000000;
+    for (int i=6; i<11; i++){
+        black |= piecesBB[i];
+    }
+    for (int i=0; i<5; i++){
+        white |= piecesBB[i];
+    }
+    for (int j=0; j<63; j++){
+        if (color == 0){
+            if (pieceTable[j] == 7){
+                before.i = j/8;
+                before.j = j%8;
+                U64 u = attacksKnight_mask(j) & (~black);
+                array_coords array = u64_to_coords(u);
+                for (int k=0; k<array.size(); k++){
+                    after = array[k];
+                    move_t m (before, after);
+                    ar.push_back(&m);
+                }
+            }
+        }
+        if (color == 1){
+            if (pieceTable[j] == 1){
+                before.i = j/8;
+                before.j = j%8;
+                U64 u = attacksKnight_mask(j) & (~white);
+                array_coords array = u64_to_coords(u);
+                for (int k=0; k<array.size(); k++){
+                    after = array[k];
+                    move_t m (before, after);
+                    ar.push_back(&m);
+                }
+            }
+        }
+    }
+};
 
 

@@ -45,17 +45,18 @@ int main(int argc, char* argv[]) {
     output << board.next_move();
     output.close();
 
-
-    /* bitboard_t board_test;
-    U64 occupied;
-    set_bit(occupied, 12);
-    set_bit(occupied, 30);
-    set_bit(occupied, 25);
-    set_bit(occupied, 40);
-    set_bit(occupied, 19);
-    set_bit(occupied, 14);
-    board_test.printBBany(occupied);
-    board_test.printBBany(board_test.attacksQueensMagic(28,occupied));  */
+    bitboard_t board_test;
+    // U64 occupied;
+    // set_bit(occupied, 12);
+    // set_bit(occupied, 30);
+    // set_bit(occupied, 25);
+    // set_bit(occupied, 40);
+    // set_bit(occupied, 19);
+    // set_bit(occupied, 14);
+    // board_test.printBBany(occupied);
+    // board_test.printBBany(board_test.attacksQueensMagic(28,occupied));  */
+    array_coords ar = board_test.u64_to_coords(3);
+    std::cout << ar[1].i << ar[1].j;
 
 
     /* for(int i =0;i <100; i++) {
