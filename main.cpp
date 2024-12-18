@@ -55,8 +55,8 @@ int main(int argc, char* argv[]) {
     // set_bit(occupied, 14);
     // board_test.printBBany(occupied);
     // board_test.printBBany(board_test.attacksQueensMagic(28,occupied));  */
-    array_coords ar = board_test.u64_to_coords(3);
-    std::cout << ar[1].i << ar[1].j;
+    //array_coords ar = board_test.u64_to_coords(3);
+    //std::cout << ar[1].i << ar[1].j;
 
 
     /* for(int i =0;i <100; i++) {

@@ -5,8 +5,9 @@ array_coords bitboard_t::u64_to_coords(U64 u){
     std::vector<coords> ar = {};
     U64 u_copy = u;
     while (u_copy != 0){
-        int i = get_LSB(u_copy)/8;
-        int j = get_LSB(u_copy)%8;
+        int index = get_LSB(u_copy);
+        int i = index/8;
+        int j = index%8;
         ar.push_back(makep(i,j));
         u_copy = u_copy&(u_copy-1);
     }
@@ -256,14 +257,38 @@ array_moves bitboard_t::allMovesKnights(bool color){
     coords before;
     coords after;
     array_moves ar;
-    U64 black = 0x0000000000000000;
-    U64 white = 0x0000000000000000;
+    /*
+    U64 black = 0;
+    U64 white = 0;
     for (int i=6; i<11; i++){
         black |= piecesBB[i];
     }
     for (int i=0; i<5; i++){
         white |= piecesBB[i];
+    }*/
+    U64 same = 0;
+    int shift = color ? 0 : 6;
+    for(int i = shift; i<5+shift; i++) {
+        same |= piecesBB[i];
     }
+
+    U64 knights_copy = color ? piecesBB[1] : piecesBB[7];
+    while(knights_copy) {
+        int index = get_LSB(knights_copy);
+
+        knights_copy &= (knights_copy - 1);
+        before.i = index/8;
+        before.j = index%8;
+        U64 u = attacksKnight_mask(index) & (~same);
+        array_coords array = u64_to_coords(u);
+        for (int k=0; k<array.size(); k++){
+            after = array[k];
+            move_t m (before, after);
+            ar.push_back(&m);
+        }
+    }
+
+    /*
     for (int j=0; j<63; j++){
         if (color == 0){
             if (pieceTable[j] == 7){
@@ -292,6 +317,8 @@ array_moves bitboard_t::allMovesKnights(bool color){
             }
         }
     }
+    */
+    return ar;
 };
 
 
