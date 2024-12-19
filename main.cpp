@@ -52,6 +52,9 @@ int main(int argc, char* argv[]) {
             std::cout << " " << i;
         }
     }
+    std::cout << std::endl;
+    board_test.printBBany(board_test.attacksKing_mask(4));
+    board_test.printBBany(0ULL);
     // U64 occupied;
     // set_bit(occupied, 12);
     // set_bit(occupied, 30);

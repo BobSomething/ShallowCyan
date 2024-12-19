@@ -26,6 +26,7 @@ struct bitboard_t {
     std::vector<int> u64_to_index(U64 u);
 
     /*
+    -1 - No piece
     0 - white pawns
     1 - white knights
     2 - white bishops
@@ -106,6 +107,7 @@ struct bitboard_t {
     U64 attacksQueensMagic(int square, U64 occupied);
 
     /* Use precomputed data */
+    /* Squares attacked BY the color */
     bool is_square_attacked(int square, bool color);
 
 
