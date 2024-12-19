@@ -308,7 +308,7 @@ array_moves bitboard_t::allMovesKnights(bool color){
     }*/
     U64 same = 0;
     int shift = color ? 0 : 6;
-    for(int i = shift; i<5+shift; i++) {
+    for(int i = shift; i<6+shift; i++) {
         same |= piecesBB[i];
     }
 
@@ -319,7 +319,7 @@ array_moves bitboard_t::allMovesKnights(bool color){
         knights_copy &= (knights_copy - 1);
         before.i = index/8;
         before.j = index%8;
-        U64 u = attacksKnight_mask(index) & (~same);
+        U64 u = attacksKnights[index] & (~same);
         array_coords array = u64_to_coords(u);
         for (int k=0; k<array.size(); k++){
             after = array[k];
@@ -368,7 +368,7 @@ array_moves bitboard_t::allMovesBishop(bool color){
     array_moves ar;
     U64 same = 0;
     int shift = color ? 0 : 6;
-    for(int i = shift; i<5+shift; i++) {
+    for(int i = shift; i<6+shift; i++) {
         same |= piecesBB[i];
     }
 
@@ -396,7 +396,7 @@ array_moves bitboard_t::allMovesRooks(bool color){
     array_moves ar;
     U64 same = 0;
     int shift = color ? 0 : 6;
-    for(int i = shift; i<5+shift; i++) {
+    for(int i = shift; i<6+shift; i++) {
         same |= piecesBB[i];
     }
 
@@ -424,7 +424,7 @@ array_moves bitboard_t::allMovesQueens(bool color){
     array_moves ar;
     U64 same = 0;
     int shift = color ? 0 : 6;
-    for(int i = shift; i<5+shift; i++) {
+    for(int i = shift; i<6+shift; i++) {
         same |= piecesBB[i];
     }
 
@@ -447,13 +447,30 @@ array_moves bitboard_t::allMovesQueens(bool color){
 };
 
 bool bitboard_t::is_square_attacked(int square, bool color){
-    U64 same = 0;
     int shift = color ? 0 : 6;
-    for(int i = shift; i<5+shift; i++) {
+    /* U64 same = 0;
+    for(int i = shift; i<6+shift; i++) {
         same |= piecesBB[i];
+    } */
+    U64 both = 0;
+    for(int i = shift; i<12; i++) {
+        both |= piecesBB[i];
     }
-     U64 attacking = 0;
-    for(int j = shift; j<5+shift; j++) {
+    U64 attacking = 0;
+    if(attacksPawns[color^1][square] & piecesBB[shift])
+        return true;
+    if(attacksKnights[square] & piecesBB[shift+1]) {
+        return true;
+    }
+    if(attacksBishopsMagic(square,both) & (piecesBB[shift+2] | piecesBB[shift+4]))
+        return true;
+    if(attacksRooksMagic(square,both) & (piecesBB[shift+3] | piecesBB[shift+4]))
+        return true;
+    if(attacksKing[square] & piecesBB[shift+5])
+        return true;
+    return false;
+
+    /* for(int j = shift; j<6+shift; j++) {
         std::vector<int> ar = u64_to_index(piecesBB[j]);
         if (j%6 == 0){
             for (int i=0; i<ar.size(); i++){
@@ -486,5 +503,6 @@ bool bitboard_t::is_square_attacked(int square, bool color){
             }
         }
     }
-    return get_bit(attacking, square);
+    return get_bit(attacking, square); */
+
 };
