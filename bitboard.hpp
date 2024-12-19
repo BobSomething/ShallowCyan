@@ -23,6 +23,7 @@ USEFUL BIT FUNCTIONS
 
 struct bitboard_t {
     array_coords u64_to_coords(U64 u);
+    std::vector<int> u64_to_index(U64 u);
 
     /*
     0 - white pawns
@@ -48,6 +49,7 @@ struct bitboard_t {
     void printBBpiece(int index);   // print the current bitboard of specific piece on the board
     void printBBany(U64 u64);       // print any U64 integer, thus any kind of bitboard
     void printBB();                 // print the current board
+    void printBBattacked(bool color); // print the board and the square attacked by color
 
 
     /* Turns the type move_t to a move in form of the string */

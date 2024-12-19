@@ -46,6 +46,12 @@ int main(int argc, char* argv[]) {
     output.close();
 
     bitboard_t board_test;
+    board_test.printBBattacked(1);
+    for (int i=0; i<63; i++){
+        if (board_test.is_square_attacked(i, 0)){
+            std::cout << " " << i;
+        }
+    }
     // U64 occupied;
     // set_bit(occupied, 12);
     // set_bit(occupied, 30);
