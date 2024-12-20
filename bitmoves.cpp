@@ -17,6 +17,8 @@ To not have loop over attack moves you can & it wih not fileA: you do ~fileA
 
 U64 fileA = 0x0101010101010101;
 U64 fileH = 0x8080808080808080;
+U64 fileAB = 0x0303030303030303;
+U64 fileGH = 0xc0c0c0c0c0c0c0c0;
 
 /*
 Im assuming the bitboard look like this
@@ -96,19 +98,18 @@ U64 bitboard_t::attacksKnight_mask(int square) {
     //TODO
     //To avoid loop
     U64 temp_bitboard = 0x0000000000000000;
-    if (square%8 == 7){
+    if (square%8 >= 6){
         temp_bitboard = 0x0303030303030303;
     }
-    if (square%8 == 0){
+    if (square%8 <= 1){
         temp_bitboard = 0xC0C0C0C0C0C0C0C0;
     }
     if (square < 8){
         temp_bitboard |= 0xFFFF000000000000;
     }
-    if (square > 55){
+    if (square > 47){
         temp_bitboard |= 0x000000000000FFFF;
     }
-    //This should check if the square is out of the board
     U64 attack_bitboard = 0ULL;
     set_bit(attack_bitboard, (square+10));
     set_bit(attack_bitboard, (square+6));
@@ -118,7 +119,6 @@ U64 bitboard_t::attacksKnight_mask(int square) {
     set_bit(attack_bitboard, (square-6));
     set_bit(attack_bitboard, (square-17));
     set_bit(attack_bitboard, (square-15));
-
     return attack_bitboard & (~temp_bitboard);
 }
 

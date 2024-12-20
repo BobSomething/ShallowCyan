@@ -21,6 +21,24 @@ USEFUL BIT FUNCTIONS
 
 */
 
+
+/*
+
+FOR MOVE_T TYPES:
+-1 = capture
+ 0 = normal (quiet)
+ 1 = castle
+-2 = en passant
+ 3 = double pawn push
+ 4 = promotion knight
+ 5 = promotion bishop
+ 6 = promotion rook
+ 7 = promotion queen
+
+*/
+
+
+
 struct bitboard_t {
     array_coords u64_to_coords(U64 u);
     std::vector<int> u64_to_index(U64 u);
@@ -43,6 +61,12 @@ struct bitboard_t {
     bool turn;                      // turn
     int pieceTable[SIZESQ];         // keep track where are the pieces easily: output is a number correspoding to the description above
     int kingWhere[2];               // keep track where is the king - location 0 -> 63
+    int enpassant_square = -1;      // the square, of which the pawn could en passant the opposite pawn
+    bool w_castle_kside = 1;
+    bool w_castle_qside = 1;
+    bool b_castle_kside = 1;
+    bool b_castle_qside = 1;
+
     bitboard_t();                   // Initializing the bitboards
 
     /* To debug */
@@ -112,21 +136,21 @@ struct bitboard_t {
     //TODO
     //For pawns, need to remove the attacking the same color pieces + en passant + moving 1 forward + moving 2 forward
     //USE attacksPawns table
-    array_moves allMovesPawns(bool color);
+    void allMovesPawns(bool color, array_moves* moves);
     
     //For knights, need to remove the attacking the same color pieces
     //USE attacksKnights table
-    array_moves allMovesKnights(bool color);
+    void allMovesKnights(bool color, array_moves* moves);
 
     //For kings, need to remove the attacking the same color pieces + checking is_squared_attacked
     //USE attacksKing table
-    array_moves allMovesKing(bool color);
+    void allMovesKing(bool color, array_moves* moves);
     
     //For sliding pieces, need to remove the attacking the same color pieces
     //USE attacks...Magic functions!
-    array_moves allMovesBishop(bool color);
-    array_moves allMovesRooks(bool color);
-    array_moves allMovesQueens(bool color);
+    void allMovesBishop(bool color, array_moves* moves);
+    void allMovesRooks(bool color, array_moves* moves);
+    void allMovesQueens(bool color, array_moves* moves);
 
 };
 
