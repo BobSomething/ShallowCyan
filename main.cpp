@@ -46,46 +46,46 @@ int main(int argc, char* argv[]) {
     output.close();
     bitboard_t board_test;
     
-    /* array_moves moves;
+    // array_moves moves;
     
-    clear_bit(board_test.piecesBB[0],9);
-    set_bit(board_test.piecesBB[0],25);
-    board_test.pieceTable[9] = -1;
-    board_test.pieceTable[25] = 0;
-    board_test.turn = 0;
-    board_test.printBB();
+    // clear_bit(board_test.piecesBB[0],9);
+    // set_bit(board_test.piecesBB[0],25);
+    // board_test.pieceTable[9] = -1;
+    // board_test.pieceTable[25] = 0;
+    // board_test.turn = 0;
+    // board_test.printBB();
     
 
-    std::cout << board_test.perft(2) << std::endl; */
+    // std::cout << board_test.perft(2) << std::endl; 
 
 
-    /* board_test.generate_all_moves(&moves);
-    for(auto& move : moves) {
-        board_test.printBB();
+    //  board_test.generate_all_moves(&moves);
+    // for(auto& move : moves) {
+    //     board_test.printBB();
 
-        int p_before = board_test.pieceTable[move->before.i*8 + move->before.j];
-        int p_after = board_test.pieceTable[move->after.i*8 + move->after.j]; 
-        int ep_square = board_test.enpassant_square;
-        bool w_c_kside = board_test.w_castle_kside;
-        bool w_c_qside = board_test.w_castle_qside; 
-        bool b_c_kside = board_test.b_castle_kside;
-        bool b_c_qside = board_test.b_castle_qside;
+    //     int p_before = board_test.pieceTable[move->before.i*8 + move->before.j];
+    //     int p_after = board_test.pieceTable[move->after.i*8 + move->after.j]; 
+    //     int ep_square = board_test.enpassant_square;
+    //     bool w_c_kside = board_test.w_castle_kside;
+    //     bool w_c_qside = board_test.w_castle_qside; 
+    //     bool b_c_kside = board_test.b_castle_kside;
+    //     bool b_c_qside = board_test.b_castle_qside;
 
-        board_test.update(move);
-        board_test.printBB();
-        std::cout << move->before.i << " " << move->before.j << "  " << move->after.i  << " " << move->after.j << std::endl;
-        std::cout << p_before << " " << p_after << "  " << move->type_move << std::endl;
+    //     board_test.update(move);
+    //     board_test.printBB();
+    //     std::cout << move->before.i << " " << move->before.j << "  " << move->after.i  << " " << move->after.j << std::endl;
+    //     std::cout << p_before << " " << p_after << "  " << move->type_move << std::endl;
 
-        for(int k=0; k<64; k++) {
-            std::cout << board_test.pieceTable[k] << " ";
-            if(k % 8 == 7)
-                std::cout << std::endl;
-        }
+    //     for(int k=0; k<64; k++) {
+    //         std::cout << board_test.pieceTable[k] << " ";
+    //         if(k % 8 == 7)
+    //             std::cout << std::endl;
+    //     }
 
-        getchar();
+    //     getchar();
         
-        board_test.undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
-    } */
+    //     board_test.undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
+    // } 
     // U64 occupied;
     // set_bit(occupied, 12);
     // set_bit(occupied, 30);
