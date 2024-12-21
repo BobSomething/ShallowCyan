@@ -30,10 +30,10 @@ FOR MOVE_T TYPES:
  1 = castle
 -2 = en passant
  3 = double pawn push
- 4 = promotion knight
- 5 = promotion bishop
- 6 = promotion rook
- 7 = promotion queen
+ 7 = promotion knight
+ 8 = promotion bishop
+ 9 = promotion rook
+10 = promotion queen
 
 */
 
@@ -61,7 +61,7 @@ struct bitboard_t {
     bool turn;                      // turn
     int pieceTable[SIZESQ];         // keep track where are the pieces easily: output is a number correspoding to the description above
     int kingWhere[2];               // keep track where is the king - location 0 -> 63
-    int enpassant_square = -1;      // the square, of which the pawn could en passant the opposite pawn
+    int enpassant_square = -1;      // the square, of which the pawn could en passant the opposite pawn, -1 = if enpassant is not possible
     bool w_castle_kside = 1;
     bool w_castle_qside = 1;
     bool b_castle_kside = 1;
@@ -81,11 +81,11 @@ struct bitboard_t {
 	/* Turns a move in form of the string to the type move_t */
 	move_t* string_to_move(std::string move);
 
-    /* Updates the state with the move */
-    void update(move_t* move);
+    /* Updates the state with the move, returns true if legal, else false */
+    bool update(move_t* move);
 
-    /* Undoes the state with the move */
-    void undo(move_t* move);
+    /* Undoes the state with the move inputs every information stored before */
+    void undo(move_t* move, int p_before, int p_after, int ep_square, bool w_c_kside, bool w_c_qside, bool b_c_kside, bool b_c_qside);
 
     /* Attack masks */ // implementation in bitmoves.cpp
     /* i.e. where a piece can attack, this is just the mask, to find the attacking moves refer below */
@@ -151,6 +151,9 @@ struct bitboard_t {
     void allMovesBishop(bool color, array_moves* moves);
     void allMovesRooks(bool color, array_moves* moves);
     void allMovesQueens(bool color, array_moves* moves);
+
+    void generate_all_moves(array_moves* moves);
+    U64 perft(int depth);
 
 };
 

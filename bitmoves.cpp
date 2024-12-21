@@ -1,13 +1,5 @@
 #include "bitboard.hpp"
 
-void bitboard_t::update(move_t* move) {
-    
-}
-
-void bitboard_t::undo(move_t* move) {
-    
-}
-
 /*
 DUC read:
 
