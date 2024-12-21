@@ -308,18 +308,19 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
     U64 pawns_copy = color ? piecesBB[0] : piecesBB[6];
     while(pawns_copy) {
         index = get_LSB(pawns_copy);
-        pawns_copy &= (pawns_copy - 1);
+        
         
         before.i = index/8;
         before.j = index%8;
 
         attacks = attacksPawns[color][index] & (different);
 
+        int id;
         while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
+            id = get_LSB(attacks);
+            after.i = id/8;
+            after.j = id%8;
+            if(get_bit(different,id)) { // A capture move
                 moves->push_back(new move_t(before, after, -1));
             }
             attacks &= (attacks - 1);
@@ -333,6 +334,7 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
                 moves->push_back(new move_t(before,after,-2));
             }
         }
+        pawns_copy &= (pawns_copy - 1);
 
         int promotion_row = 6, direction = 1, first_row = 1;
         if(color == 0) {
@@ -670,7 +672,7 @@ bool bitboard_t::is_square_attacked(int square, bool color){
         same |= piecesBB[i];
     } */
     U64 both = 0;
-    for(int i = shift; i<12; i++) {
+    for(int i = 0; i<12; i++) {
         both |= piecesBB[i];
     }
     if(attacksPawns[color^1][square] & piecesBB[shift]) {
@@ -728,6 +730,8 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
     int index_before = move->before.i*8 + move->before.j; 
     int index_after = move->after.i*8 + move->after.j;
 
+    turn ^= 1;
+
     //undo en passant square and castling rights
     enpassant_square = ep_square;
     w_castle_kside = w_c_kside;
@@ -744,12 +748,14 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
     //if capture
     if(move->type_move == -1) {
         set_bit(piecesBB[p_after], index_after);
+        pieceTable[index_after] = p_after;
     }
 
     //if promotion
     if(move->type_move >= 7) {
         int shift = (turn == 1) ? -6 : 0;
         clear_bit(piecesBB[move->type_move+shift], index_after);
+        pieceTable[index_after] = -1;
     }
 
     //if enpassant
@@ -795,12 +801,59 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
             }
         }
     }
-    turn ^= 1;
+    
+}
+
+void bitboard_t::update_string(std::string move) {
+    coords after, before;
+    before.j = move[0] - 'a';
+    before.i = move[1] - '1';
+    after.j = move[2] - 'a';
+    after.i = move[3] - '1';
+    
+    int index_before = before.i*8 + before.j; 
+    int index_after = after.i*8 + after.j;
+
+    //promotion
+    if(move.size() == 5) {
+        std::map<char,int> promoted_piece = {{'n', 7}, {'b', 8}, {'r', 9}, {'q', 10}};
+        update(new move_t(before,after,promoted_piece[move[4]]));
+        return;
+    }
+
+    //double pawn push
+    //if the piece is a pawn and it moved 2 squares => double pawn push
+    if(pieceTable[index_before] == ((turn == 1) ? 0 : 6) && abs(after.i - before.i) == 2) {
+        update(new move_t(before,after,3));
+        return;
+    }
+
+    //en passant
+    int enpassant_row = (turn == 1) ? 5 : 4;
+    // if the piece is a pawn, and it attacks an empty square => en passant
+    if(pieceTable[index_before] == ((turn == 1) ? 0 : 6) && before.j != after.j && pieceTable[index_after] == -1) {
+        update(new move_t(before,after,-2));
+        return;
+    }
+
+    //castle
+    // if the piece is a king, and it moved 2 squares to the left/right => castle
+    if(pieceTable[index_before] == ((turn == 1) ? 5 : 11) && abs(before.j - after.j) == 2) {
+        update(new move_t(before,after,1));
+        return;
+    }
+    
+    //capture
+    if(pieceTable[index_after] != -1) {
+        update(new move_t(before,after,-1));
+        return;
+    }
+
+    update(new move_t(before,after,0));
 }
 
 bool bitboard_t::update(move_t* move) {
     int index_before, index_after, piece_before, piece_after;
-
     index_before = move->before.i*8 + move->before.j; 
     index_after = move->after.i*8 + move->after.j;
     //std::cout << move->before.i << " " << move->before.j << " " << move->type_move << std::endl;
@@ -823,6 +876,7 @@ bool bitboard_t::update(move_t* move) {
     set_bit(piecesBB[piece_before], index_after);
     pieceTable[index_before] = -1;  /////////////////////////////////
     pieceTable[index_after] = piece_before;///////////////////////////////
+
     
     //if capture
     if(move->type_move == -1) {
@@ -922,8 +976,8 @@ bool bitboard_t::update(move_t* move) {
     turn ^= 1;
 
     //make sure it king is not exposed with a check at the end
-    int king = (turn == 1) ? 5 : 11;
-    if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) {
+    int king = (turn == 1) ? 11 : 5;
+    if(is_square_attacked(get_LSB(piecesBB[king]),turn)) {
         undo(move, p_before, p_after, ep_square, w_c_kside, w_c_qside, b_c_kside, b_c_qside);
         return false;
     }
@@ -956,13 +1010,35 @@ U64 bitboard_t::perft(int depth) {
         bool b_c_kside = b_castle_kside;
         bool b_c_qside = b_castle_qside;
         if(update(move)) {
-            printBB();
-            std::cout << p_before << " " << p_after << std::endl;
-            std::cout << move->before.i << " " << move->before.j << "  " << move->after.i << " " << move->after.j << " " << move->type_move << std::endl;
-            getchar(); 
+            /* if(depth == 1){
+                printBB();
+                std::cout << p_before << " " << p_after << std::endl;
+                std::cout << move->before.i << " " << move->before.j << "  " << move->after.i << " " << move->after.j << " " << move->type_move << std::endl;
+                //getchar(); 
+            } */
             count += perft(depth-1);
             undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
         }
     }
     return count;
+}
+
+void bitboard_t::perft_bases(int depth) {
+    array_moves moves;
+    generate_all_moves(&moves);
+    for(auto& move : moves) {
+        int p_before = pieceTable[move->before.i*8 + move->before.j];
+        int p_after = pieceTable[move->after.i*8 + move->after.j]; 
+        int ep_square = enpassant_square;
+        bool w_c_kside = w_castle_kside;
+        bool w_c_qside = w_castle_qside; 
+        bool b_c_kside = b_castle_kside;
+        bool b_c_qside = b_castle_qside;
+
+        if(update(move)) {
+            std::cout << move_to_string(move) << " " << move->type_move << " : " << perft(depth-1) << std::endl; 
+            undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
+        }
+    }
+
 }

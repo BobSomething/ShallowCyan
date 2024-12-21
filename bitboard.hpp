@@ -81,6 +81,9 @@ struct bitboard_t {
 	/* Turns a move in form of the string to the type move_t */
 	move_t* string_to_move(std::string move);
 
+    /* Updates the move, with a string notation, assumes it is always true */
+    void update_string(std::string move);
+
     /* Updates the state with the move, returns true if legal, else false */
     bool update(move_t* move);
 
@@ -154,6 +157,7 @@ struct bitboard_t {
 
     void generate_all_moves(array_moves* moves);
     U64 perft(int depth);
+    void perft_bases(int depth);
 
 };
 
