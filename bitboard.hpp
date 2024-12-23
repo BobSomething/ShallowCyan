@@ -30,10 +30,10 @@ FOR MOVE_T TYPES:
  1 = castle
 -2 = en passant
  3 = double pawn push
- 7 = promotion knight
- 8 = promotion bishop
- 9 = promotion rook
-10 = promotion queen
+ 7 = promotion knight, -7 = if it is with a capture
+ 8 = promotion bishop, -8 = if it is with a capture
+ 9 = promotion rook,   -9 = if it is with a capture
+10 = promotion queen, -10 = if it is with a capture
 
 */
 
@@ -159,6 +159,9 @@ struct bitboard_t {
     U64 perft(int depth);
     void perft_bases(int depth);
 
+    //Use it for quicker debugging
+    std::string generate_fen();
+    void update_with_fen(std::string fen);
 };
 
 #endif
