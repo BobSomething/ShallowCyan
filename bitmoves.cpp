@@ -148,7 +148,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
     U64 attack_bitboard = 0ULL;
     set_bit(temp_bitboard, square);
     for (int i = 1; (square - i*9)>=0; i++){  //down left
-        if ((square - i*9)%8 > square % 8){
+        if ((square - i*9)%8 >= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square - i*9));
@@ -157,7 +157,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
         }
     }
     for (int i=1; (square + i*9)<64; i++){ //up right
-        if ((square + i*9)%8 < square % 8){
+        if ((square + i*9)%8 <= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square + i*9));
@@ -166,7 +166,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
         }
     }
     for (int i=1; (square - i*7)>=0; i++){ //down right
-        if (((square - i*7))%8 < square % 8){
+        if (((square - i*7))%8 <= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square - i*7));
@@ -175,7 +175,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
         }
     }
     for (int i = 1; (square + i*7)<64; i++){ //up left
-        if (((square + i*7))%8 > square % 8){
+        if (((square + i*7))%8 >= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square + i*7));
