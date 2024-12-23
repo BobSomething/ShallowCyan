@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     }
 
     //Initializing the board
-    board_t board;
+    bitboard_t bboard;
 
 
     //Reading the history file
@@ -35,112 +35,34 @@ int main(int argc, char* argv[]) {
     input.open(history);
     std::string line;
     while (getline(input, line)) {
-        board.update(line,true);
+        bboard.update_string(line);
     }
     input.close();
 
     //Outputs the next move
     std::ofstream output;
     output.open(move);
-    output << board.next_move();
+    output << bboard.next_move();
     output.close();
-    bitboard_t board_test;
+
+    bboard.printBB();
+
+    //array_moves moves;
+    //bboard.generate_all_moves(&moves);
+
     
-    // array_moves moves;
-    
-    // clear_bit(board_test.piecesBB[0],9);
-    // set_bit(board_test.piecesBB[0],25);
-    // board_test.pieceTable[9] = -1;
-    // board_test.pieceTable[25] = 0;
-    // board_test.turn = 0;
-    // board_test.printBB();
-    
-    /* board_test.update_string("a2a4");
-    board_test.update_string("a7a6");
-    board_test.update_string("a4a5");
-    board_test.update_string("b7b5");*/
+    /* bitboard_t board_test;
 
-    std::string kiwipete = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - ";
-
-    std::string epcases = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
-
-    board_test.update_with_fen(kiwipete);
-
-    //board_test.update_string("h1g1");
-    //board_test.update_string("e2f1");
-    //board_test.update_string("h3g2");
-
+    board_test.update_with_fen(epcases);
 
     std::cout << board_test.generate_fen() << std::endl;
 
     board_test.printBB();
-    
-    /* array_moves moves;
-    board_test.generate_all_moves(&moves);
-    std::cout << moves.size() << std::endl; */
 
+    for(int i=1; i<7; i++)
+        std::cout << board_test.perft(i) << std::endl;
 
-    board_test.perft_bases(3);
-
-
-    //for(int i=1; i<5; i++)
-        //std::cout << board_test.perft(i) << std::endl;
-
-    std::cout << board_test.generate_fen() << std::endl;
-
-    //  board_test.generate_all_moves(&moves);
-    // for(auto& move : moves) {
-    //     board_test.printBB();
-
-    //     int p_before = board_test.pieceTable[move->before.i*8 + move->before.j];
-    //     int p_after = board_test.pieceTable[move->after.i*8 + move->after.j]; 
-    //     int ep_square = board_test.enpassant_square;
-    //     bool w_c_kside = board_test.w_castle_kside;
-    //     bool w_c_qside = board_test.w_castle_qside; 
-    //     bool b_c_kside = board_test.b_castle_kside;
-    //     bool b_c_qside = board_test.b_castle_qside;
-
-    //     board_test.update(move);
-    //     board_test.printBB();
-    //     std::cout << move->before.i << " " << move->before.j << "  " << move->after.i  << " " << move->after.j << std::endl;
-    //     std::cout << p_before << " " << p_after << "  " << move->type_move << std::endl;
-
-    //     for(int k=0; k<64; k++) {
-    //         std::cout << board_test.pieceTable[k] << " ";
-    //         if(k % 8 == 7)
-    //             std::cout << std::endl;
-    //     }
-
-    //     getchar();
-        
-    //     board_test.undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
-    // } 
-    // U64 occupied;
-    // set_bit(occupied, 12);
-    // set_bit(occupied, 30);
-    // set_bit(occupied, 25);
-    // set_bit(occupied, 40);
-    // set_bit(occupied, 19);
-    // set_bit(occupied, 14);
-    // board_test.printBBany(occupied);
-    // board_test.printBBany(board_test.attacksQueensMagic(28,occupied));  */
-    //array_coords ar = board_test.u64_to_coords(3);
-    //std::cout << ar[1].i << ar[1].j;
-
-
-    /* for(int i =0;i <100; i++) {
-        U64 x = board_test.attacksRook_mask(21,temp);
-        board_test.printBBany(get_set_with_index(i,board_test.attacksRook_mask(21,temp)));
-        board_test.printBBany(get_a_mask(i, x, 21));
-        getchar();
-    } */
-    //board.print();
-    //board.update_with_move(board.string_to_move("a2a3"),true);
-    //board.print_grids(1);
-    // std::cout << board.state[0][4]->legal_moves().size();
-    //board.update("b1c3",true);
-    //std::cout << board.nb_moves(4); 
-    
+    std::cout << board_test.generate_fen() << std::endl; */
 
     return 0;
 }
