@@ -55,9 +55,38 @@ int main(int argc, char* argv[]) {
     // board_test.turn = 0;
     // board_test.printBB();
     
+    /* board_test.update_string("a2a4");
+    board_test.update_string("a7a6");
+    board_test.update_string("a4a5");
+    board_test.update_string("b7b5");*/
 
-    // std::cout << board_test.perft(2) << std::endl; 
+    std::string kiwipete = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - ";
 
+    std::string epcases = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -";
+
+    board_test.update_with_fen(kiwipete);
+
+    //board_test.update_string("h1g1");
+    //board_test.update_string("e2f1");
+    //board_test.update_string("h3g2");
+
+
+    std::cout << board_test.generate_fen() << std::endl;
+
+    board_test.printBB();
+    
+    /* array_moves moves;
+    board_test.generate_all_moves(&moves);
+    std::cout << moves.size() << std::endl; */
+
+
+    board_test.perft_bases(3);
+
+
+    //for(int i=1; i<5; i++)
+        //std::cout << board_test.perft(i) << std::endl;
+
+    std::cout << board_test.generate_fen() << std::endl;
 
     //  board_test.generate_all_moves(&moves);
     // for(auto& move : moves) {
