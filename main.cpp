@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
     bool state = true;
     std::string history, move;
     //Taking all the arguments
+    /*
     for(int i = 1; i < argc; i++) {
         // Checking all if the next argument is a history file or a move file
         if(strcmp(argv[i],"-H") == 0) {
@@ -25,15 +26,20 @@ int main(int argc, char* argv[]) {
         if(state == true) history = argv[i];
         else move = argv[i];
     }
-
+*/
     //Initializing the board
     bitboard_t bboard;
 
     //testing the copy method
+    std::cout << "ohoh";
     bitboard_t copy = bboard.copy();
 
     //testing search
-    move_t search_move = bboard.search(3);
+    std::cout << "aaa";
+    move_t* search_move = bboard.search(2);
+    std::cout << "bbb";
+    std::cout << search_move->after.i << search_move->after.j;
+    
 
     //Reading the history file
     std::ifstream input;

@@ -598,3 +598,21 @@ bitboard_t bitboard_t::copy() {
     }
     return copy_board;
 }
+
+int bitboard_t::eval() {
+    int total = 0;
+    for (int i=0; i<SIZESQ; ++i) {
+        int a = this->pieceTable[i];
+        if (a==0) total += 1;
+        if (a==1) total += 3;
+        if (a==2) total += 3;
+        if (a==3) total += 5;
+        if (a==4) total += 9;
+        if (a==6) total -= 1;
+        if (a==7) total -= 3;
+        if (a==8) total -= 3;
+        if (a==9) total -= 5;
+        if (a==10) total -= 9;
+    }
+    return total;
+}

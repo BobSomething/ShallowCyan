@@ -14,7 +14,7 @@ bitboard.hpp bitboard.cpp
 bitmoves.cpp bitallmoves.cpp 
 bithelpers.hpp magicbitboard.cpp
 perft_fen.cpp
-dictionaries.hpp)
+dictionaries.hpp search.cpp)
 
 add_executable(shallowcyan main.cpp)
 

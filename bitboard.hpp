@@ -185,7 +185,7 @@ struct bitboard_t {
     void allMovesRooks(bool color, array_moves* moves);
     void allMovesQueens(bool color, array_moves* moves);
 
-    //Generates all pseudo-legal moves (we don't check king's check yet)
+    //Generates all pseudo-legal moves (we don't check king's check yet)  (in bitallmoves.cpp)
     void generate_all_moves(array_moves* moves);
 
     void generate_all_legal_moves(array_moves* moves);
@@ -204,8 +204,10 @@ struct bitboard_t {
     bitboard_t copy();
 
     //create the search function for alpha-beta prunning
-    eval_move search_aux(int depth);
-    move_t search(int depth);
-};
+    eval_move search_aux(int depth, int α = -inf, int β = inf);
+    move_t* search(int depth);
+
+    int eval();
+}; 
 
 #endif
