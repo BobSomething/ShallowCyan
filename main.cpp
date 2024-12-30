@@ -29,7 +29,11 @@ int main(int argc, char* argv[]) {
     //Initializing the board
     bitboard_t bboard;
 
+    //testing the copy method
     bitboard_t copy = bboard.copy();
+
+    //testing search
+    move_t search_move = bboard.search(3);
 
     //Reading the history file
     std::ifstream input;

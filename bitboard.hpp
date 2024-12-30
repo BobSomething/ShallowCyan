@@ -204,7 +204,8 @@ struct bitboard_t {
     bitboard_t copy();
 
     //create the search function for alpha-beta prunning
-    int search(int depth);
+    eval_move search_aux(int depth);
+    move_t search(int depth);
 };
 
 #endif
