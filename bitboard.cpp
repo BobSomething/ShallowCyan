@@ -555,4 +555,46 @@ std::string bitboard_t::next_move() {
     return move_to_string(moves[rand_pos]);
 }
 
-
+//create a copy of the current bitboard
+bitboard_t bitboard_t::copy() {
+    bitboard_t copy_board = bitboard_t();
+    for (int i = 0; i<12; ++i) {
+        copy_board.piecesBB[i] = this->piecesBB[i];
+    }
+    copy_board.turn = this->turn;
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.pieceTable[i] = this->pieceTable[i];
+    }
+    for (int i=0; i< 2; ++i) {
+        copy_board.kingWhere[i] = this->kingWhere[i];
+    }
+    copy_board.enpassant_square = this->enpassant_square;
+    copy_board.w_castle_kside = this->w_castle_kside;
+    copy_board.w_castle_qside = this->w_castle_qside;
+    copy_board.b_castle_kside = this->b_castle_kside;
+    copy_board.b_castle_qside = this->b_castle_qside;
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksKing[i] = this->attacksKing[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksKnights[i] = this->attacksKnights[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        for(int j=0; j<2; ++j){
+            copy_board.attacksPawns[j][i] = this->attacksPawns[j][i];
+        }
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksBishops[i] = this->attacksBishops[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksRooks[i] = this->attacksRooks[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksBishopsNoBlockers[i] = this->attacksBishopsNoBlockers[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksRooksNoBlockers[i] = this->attacksRooksNoBlockers[i];
+    }
+    return copy_board;
+}

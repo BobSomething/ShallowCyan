@@ -1,6 +1,8 @@
 #ifndef MACRO_HPP_
 #define MACRO_HPP_
 
+#include <cstdint>
+
 struct move_t;
 
 #define coords std::pair<int,int> //location of a piece

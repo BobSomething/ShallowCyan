@@ -1,16 +1,16 @@
-#include "board.hpp"
+#include "bitboard.hpp"
 
-move_t board_t::search(int depth, int α = -inf, int β = inf) {
+move_t bitboard_t::search(int depth, int α = -inf, int β = inf) {
 	/* Alpha-beta pruning :) */
 	// for now, returns an int
-	// MAKE A COPY FUNCTION
+	// MAKE A COPY FUNCTION (should be done but im keeping this in case its wrong so we know its important)
     if (depth == 0) { // OR CHECKMATE
 		return eval();
 	}
     if (turn) {
 		int val = -inf;
         for (move_t move : generate_all_moves()) {
-			board_t child = copy();
+			board_t child = this->copy();
 			child.update(move);
 			int pval = child.search(depth - 1, α, β);
 			if (pval > val) val = pval;
@@ -22,7 +22,7 @@ move_t board_t::search(int depth, int α = -inf, int β = inf) {
     else {
 		int val = inf;
         for (move_t move : generate_all_moves()) {
-			board_t child = copy();
+			board_t child = this->copy();
 			child.update(move);
 			int pval = child.search(depth - 1, α, β);
 			if (pval < val) val = pval;

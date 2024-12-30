@@ -199,6 +199,12 @@ struct bitboard_t {
     //Use it for quicker debugging, fen notation look on https://www.chessprogramming.org/Forsyth-Edwards_Notation for more info
     std::string generate_fen();
     void update_with_fen(std::string fen);
+
+    // Create a copy of the bitboard
+    bitboard_t copy();
+
+    //create the search function for alpha-beta prunning
+    int search(int depth);
 };
 
 #endif
