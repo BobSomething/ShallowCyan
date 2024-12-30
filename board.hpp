@@ -102,6 +102,8 @@ struct board_t {
 	std::string move_to_string(move_t* move);
 	/* Turns a string to a location (i, j) (ex: "a1" maps to (0, 0)) */
 	move_t* string_to_move(std::string move);
+
+	board_t copy(); //create a copy of the board
 };
 
 #endif
