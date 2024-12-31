@@ -9,7 +9,8 @@
 
 
 int main(int argc, char* argv[]) {
-    bool state = true;
+    std::cout << "test";
+    //bool state = true;
     std::string history, move;
     //Taking all the arguments
     /*
