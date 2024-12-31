@@ -14,7 +14,7 @@ include_directories(.)
 add_library(libraries  macro.hpp dictionaries.hpp 
 bitboard.hpp bitboard.cpp 
 bitmoves.cpp bitallmoves.cpp 
-bithelpers.hpp magicbitboard.cpp
+bithelpers.hpp
 perft_fen.cpp
 search.cpp)
 

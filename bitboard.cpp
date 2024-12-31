@@ -25,6 +25,35 @@ std::vector<int> bitboard_t::u64_to_index(U64 u){
     return ar;
 }
 
+
+std::ostream& operator << (std::ostream& os, const move_t& move) {
+    std::map<int, std::string> ctl = { {0, "a"}, {1, "b"}, {2, "c"}, {3, "d"}, {4, "e"}, {5, "f"}, {6, "g"}, {7, "h"} };
+    std::map<int,std::string> tf = { {0, "P"}, {1, "N"}, {2, "B"}, {3, "R"}, {4, "Q"}, {5, "K"}, {6, "p"}, {7, "n"}, {8, "b"}, {9, "r"}, {10, "q"}, {11, "k"} };
+
+    std::map<int,std::string> tm = {
+        {-1, "capture"},
+        {0, "normal (quiet)"},
+        {1, "castle"},
+        {-2, "en passant"},
+        {3, "double pawn push"},
+        {7, "promotion to a knight"},
+        {-7, "promotion to a knight with a capture"},
+        {8, "promotion to a bishop"},
+        {-8, "promotion to a knight with a capture"},
+        {9, "promotion to a knight"},
+        {-9, "promotion to a rook with a capture"},
+        {10, "promotion to a queen"},
+        {-10, "promotion to a queen with a capture"},
+    };
+
+
+    std::string base = ctl[move.before.j] + std::to_string(move.before.i+1) + ctl[move.after.j] + std::to_string(move.after.i+1);
+	if (abs(move.type_move) >= 7)
+        base += tf[abs(move.type_move)];
+    os << "move: " << base << ", type: " << tm[move.type_move] << std::endl;
+    return os;
+}
+
 /*
 
 IMPLEMENTATION OF BITBOARDS
@@ -124,7 +153,7 @@ void bitboard_t::printBBpiece(int index) {
 	}
 	std::cout << "  ";
 	for (int j = 0; j < SIZE; j++) {
-		std::cout << " " + coords_to_letter_2[j] + " ";
+		std::cout << " " + coords_to_letter[j] + " ";
 	}
 	std::cout << " " << std::endl;
     std::cout << "Bitboard: " << piecesBB[index] << std::endl;
@@ -146,7 +175,7 @@ void bitboard_t::printBBany(U64 u64) {
 	}
 	std::cout << "  ";
 	for (int j = 0; j < SIZE; j++) {
-		std::cout << " " + coords_to_letter_2[j] + " ";
+		std::cout << " " + coords_to_letter[j] + " ";
 	}
 	std::cout << " " << std::endl;
     std::cout << "Bitboard: " << u64 << std::endl;
@@ -173,7 +202,7 @@ void bitboard_t::printBB() {
 	}
 	std::cout << "  ";
 	for (int j = 0; j < SIZE; j++) {
-		std::cout << " " + coords_to_letter_2[j] + " ";
+		std::cout << " " + coords_to_letter[j] + " ";
 	}
 	std::cout << " " << std::endl;
 }
@@ -202,13 +231,13 @@ void bitboard_t::printBBattacked(bool color) {
 	}
 	std::cout << "  ";
 	for (int j = 0; j < SIZE; j++) {
-		std::cout << " " + coords_to_letter_2[j] + " ";
+		std::cout << " " + coords_to_letter[j] + " ";
 	}
 	std::cout << " " << std::endl;
 }
 
 std::string bitboard_t::move_to_string(move_t* move) {
-	std::string base = coords_to_letter_2[move->before.j] + std::to_string(move->before.i+1) + coords_to_letter_2[move->after.j] + std::to_string(move->after.i+1);
+	std::string base = coords_to_letter[move->before.j] + std::to_string(move->before.i+1) + coords_to_letter[move->after.j] + std::to_string(move->after.i+1);
 	if (abs(move->type_move) >= 7)
         base += tofen[abs(move->type_move)];
 	return base;
@@ -227,7 +256,7 @@ move_t* bitboard_t::string_to_move(std::string move) {
 		type = 30 + promotion[move.substr(4,1)];
 	}
 		
-	move_t* new_move = new move_t{stoi(move.substr(1,1)) - 1, letter_to_coords_2[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords_2[move.substr(2,1)],type};
+	move_t* new_move = new move_t{stoi(move.substr(1,1)) - 1, letter_to_coords[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords[move.substr(2,1)],type};
 	return new_move;
 }
 
@@ -288,11 +317,11 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
     if(move->type_move == -2) {
         if(turn == 1) {
             set_bit(piecesBB[6],index_after-8)
-            pieceTable[index_after-8] = 6; ////////////////////////////
+            pieceTable[index_after-8] = 6; 
         }
         else {
             set_bit(piecesBB[0],index_after+8)
-            pieceTable[index_after+8] = 0; ////////////////////////////
+            pieceTable[index_after+8] = 0; 
         }
     }
 
@@ -385,8 +414,6 @@ bool bitboard_t::update(move_t* move) {
     int index_before, index_after, piece_before, piece_after;
     index_before = move->before.i*8 + move->before.j; 
     index_after = move->after.i*8 + move->after.j;
-    //std::cout << move->before.i << " " << move->before.j << " " << move->type_move << std::endl;
-    //std::cout << index_before << std::endl;
 
     piece_before = pieceTable[index_before];
     piece_after = pieceTable[index_after];
@@ -403,8 +430,8 @@ bool bitboard_t::update(move_t* move) {
     //move the piece
     clear_bit(piecesBB[piece_before], index_before);
     set_bit(piecesBB[piece_before], index_after);
-    pieceTable[index_before] = -1;  /////////////////////////////////
-    pieceTable[index_after] = piece_before;///////////////////////////////
+    pieceTable[index_before] = -1;
+    pieceTable[index_after] = piece_before;
 
     
     
@@ -429,18 +456,18 @@ bool bitboard_t::update(move_t* move) {
         if(turn == 1) shift = -6;
         clear_bit(piecesBB[piece_before], index_after);
         set_bit(piecesBB[abs(move->type_move)+shift], index_after);
-        pieceTable[index_after] = abs(move->type_move)+shift; ///////////////////////
+        pieceTable[index_after] = abs(move->type_move)+shift;
     }
 
     //if enpassant
     if(move->type_move == -2) {
         if(turn == 1) {
             clear_bit(piecesBB[6],index_after-8);
-            pieceTable[index_after-8] = -1; ////////////////////////////
+            pieceTable[index_after-8] = -1;
         }
         else {
             clear_bit(piecesBB[0],index_after+8);
-            pieceTable[index_after+8] = -1; ////////////////////////////
+            pieceTable[index_after+8] = -1;
         }
     }
 

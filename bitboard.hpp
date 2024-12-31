@@ -59,7 +59,6 @@ struct move_t {
 };
 
 
-
 struct bitboard_t {
     array_coords u64_to_coords(U64 u);
     std::vector<int> u64_to_index(U64 u);

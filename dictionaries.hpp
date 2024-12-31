@@ -21,7 +21,7 @@ std::map<std::pair<std::string,bool>,int> convertPiece = {
         {makep("k",0), 11},
     };
 
-    std::map<int, std::string> coords_to_letter_2 = { // Dictionary to translate input to move
+    std::map<int, std::string> coords_to_letter = { // Dictionary to translate input to move
         {0, "a"},
         {1, "b"},
         {2, "c"},
@@ -32,7 +32,7 @@ std::map<std::pair<std::string,bool>,int> convertPiece = {
         {7, "h"}
     };
 
-    std::map<std::string, int> letter_to_coords_2 = { // Dictionary to translate input to move
+    std::map<std::string, int> letter_to_coords = { // Dictionary to translate input to move
         {"a" , 0},
         {"b" , 1},
         {"c" , 2},
