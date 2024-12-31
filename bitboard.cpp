@@ -38,7 +38,7 @@ bitboard_t::bitboard_t() {
     pieceTable[1] = 1;
     pieceTable[2] = 2;
     pieceTable[3] = 4;
-    pieceTable[4] = 5; kingWhere[0] = 4;
+    pieceTable[4] = 5;
     pieceTable[5] = 2;
     pieceTable[6] = 1;
     pieceTable[7] = 3;
@@ -54,7 +54,7 @@ bitboard_t::bitboard_t() {
     pieceTable[57] = 7;
     pieceTable[58] = 8;
     pieceTable[59] = 10;
-    pieceTable[60] = 11; kingWhere[1] = 60;
+    pieceTable[60] = 11;
     pieceTable[61] = 8;
     pieceTable[62] = 7;
     pieceTable[63] = 9;
@@ -215,7 +215,6 @@ std::string bitboard_t::move_to_string(move_t* move) {
 }
 
 
-
 move_t* bitboard_t::string_to_move(std::string move) {
 	int type = 0;
 	if(move.length() == 5) {
@@ -229,12 +228,6 @@ move_t* bitboard_t::string_to_move(std::string move) {
 	}
 		
 	move_t* new_move = new move_t{stoi(move.substr(1,1)) - 1, letter_to_coords_2[move.substr(0,1)], stoi(move.substr(3,1)) - 1, letter_to_coords_2[move.substr(2,1)],type};
-	/*
-	new_move->before.j = letter_to_coords[move->substr(0,1)];
-	new_move->after.j = letter_to_coords[move->substr(2,1)];
-	new_move->before.i = 8 - stoi(move->substr(1,1)); //stoi = string to integer
-	new_move->after.i = 8 - stoi(move->substr(3,1));
-	*/
 	return new_move;
 }
 
@@ -570,9 +563,6 @@ bitboard_t bitboard_t::copy() {
     copy_board.turn = this->turn;
     for (int i=0; i< SIZESQ; ++i) {
         copy_board.pieceTable[i] = this->pieceTable[i];
-    }
-    for (int i=0; i< 2; ++i) {
-        copy_board.kingWhere[i] = this->kingWhere[i];
     }
     copy_board.enpassant_square = this->enpassant_square;
     copy_board.w_castle_kside = this->w_castle_kside;

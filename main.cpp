@@ -1,5 +1,3 @@
-//#include "board.hpp"
-//#include "piece.hpp"
 #include "bitboard.hpp"
 //#include "bithelpers.hpp"
 //#include "magicbitboard.cpp"
