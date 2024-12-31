@@ -1,5 +1,5 @@
-#include "board.hpp"
-#include "piece.hpp"
+//#include "board.hpp"
+//#include "piece.hpp"
 #include "bitboard.hpp"
 //#include "bithelpers.hpp"
 //#include "magicbitboard.cpp"
@@ -9,11 +9,9 @@
 
 
 int main(int argc, char* argv[]) {
-    std::cout << "test";
-    //bool state = true;
+    bool state = true;
     std::string history, move;
     //Taking all the arguments
-    /*
     for(int i = 1; i < argc; i++) {
         // Checking all if the next argument is a history file or a move file
         if(strcmp(argv[i],"-H") == 0) {
@@ -27,20 +25,9 @@ int main(int argc, char* argv[]) {
         if(state == true) history = argv[i];
         else move = argv[i];
     }
-*/
+
     //Initializing the board
     bitboard_t bboard;
-
-    //testing the copy method
-    std::cout << "ohoh";
-    bitboard_t copy = bboard.copy();
-
-    //testing search
-    std::cout << "aaa";
-    move_t* search_move = bboard.search(2);
-    std::cout << "bbb";
-    std::cout << search_move->after.i << search_move->after.j;
-    
 
     //Reading the history file
     std::ifstream input;
@@ -48,6 +35,7 @@ int main(int argc, char* argv[]) {
     std::string line;
     while (getline(input, line)) {
         bboard.update_string(line);
+        bboard.nb_turns++;
     }
     input.close();
 

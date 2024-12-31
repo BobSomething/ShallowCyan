@@ -1,12 +1,9 @@
 #ifndef BITBOARD_HPP_
 #define BITBOARD_HPP_
 
-#include <cstdint>   //added this cause the CMake wasnt happy
 #include <iostream>
 #include <map>
 #include "macro.hpp"
-#include "board.hpp"
-
 
 /*
 If first time read this:
@@ -52,6 +49,39 @@ const std::string edwards1 = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w K
 
 const std::string edwards2 = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
 
+struct move_t {
+	coords before;
+	coords after;
+	//-100 - if it is on the same color
+	// -1 - if it is a capture
+	// 0 - if it is a normal move
+	// 1 - if it is a castle
+	// -2 - if it is en passant
+	// 21 - if pawn moves 1 up - counts also as normal moves
+	// 22 - if pawn moves 2 up - counts also as normal moves
+	// 3 - if it is promotion
+	// 30 - promotion -> queen
+	// 31 - promotion -> rook
+	// 32 - promotion -> bishop
+	// 33 - promotion -> knight
+	int type_move; 
+	int score = 0;
+	int eval = 0;
+	
+
+	move_t(int before_i, int before_j, int after_i, int after_j, int type_move)
+		: before {makep(before_i,before_j)}, after {makep(after_i, after_j)}, type_move {type_move} {}
+	
+	move_t(coords before, coords after)
+		: before {before}, after {after}, type_move {0} {}
+
+	move_t(coords before, coords after, int type_move)
+		: before {before}, after {after}, type_move {type_move} {}
+
+	move_t()
+		: before {makep(-10,-10)}, after {makep(-10,-10)}, type_move {-10} {} //not initialized
+};
+
 
 struct bitboard_t {
     array_coords u64_to_coords(U64 u);
@@ -84,6 +114,8 @@ struct bitboard_t {
     bool b_castle_kside = 1;
     bool b_castle_qside = 1;
 
+    int nb_turns = 0;
+
     bitboard_t();                   // Initializing the bitboards
 
     /* To debug */
@@ -111,7 +143,7 @@ struct bitboard_t {
     void undo(move_t* move, int p_before, int p_after, int ep_square, bool w_c_kside, bool w_c_qside, bool b_c_kside, bool b_c_qside);
 
     /* Checks, if it is a checkmate for the current player */
-    bool is_checkmate(); 
+    bool no_moves(); 
 
     /* Outputs the next move */
     std::string next_move();

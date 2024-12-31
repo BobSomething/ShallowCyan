@@ -2,6 +2,7 @@
 #define MACRO_HPP_
 
 #include <cstdint>
+#include <vector>
 
 struct move_t;
 

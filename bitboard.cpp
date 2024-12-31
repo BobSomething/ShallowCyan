@@ -537,7 +537,7 @@ bool bitboard_t::is_legal(move_t* move) {
     return true;
 }
 
-bool bitboard_t::is_checkmate() {
+bool bitboard_t::no_moves() {
     array_moves moves;
     generate_all_moves(&moves);
     if(moves.size() == 0)
@@ -547,12 +547,18 @@ bool bitboard_t::is_checkmate() {
 
 #include <ctime>
 //For now we generate a random move from all legal moves
+//After a while try search function
 std::string bitboard_t::next_move() {
-    array_moves moves;
-    std::srand(std::time(0));
-    generate_all_moves(&moves);
-    int rand_pos = std::rand() % moves.size();
-    return move_to_string(moves[rand_pos]);
+    if(nb_turns < 30) {
+        array_moves moves;
+        std::srand(std::time(0));
+        generate_all_moves(&moves);
+        int rand_pos = std::rand() % moves.size();
+        return move_to_string(moves[rand_pos]);
+    }
+    else {
+        return move_to_string(search(3));
+    }
 }
 
 //create a copy of the current bitboard
