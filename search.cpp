@@ -10,9 +10,10 @@ eval_move bitboard_t::search_aux(int depth, int α, int β) {
 
 	if(no_moves()) {
 		int king = (turn == 0) ? 11 : 5;
+		int sign = (turn == 0) ? 1 : -1;
 		//checkmate
 		if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) {
-			return eval_move(-inf,nullptr);
+			return eval_move(sign*inf,nullptr);
 		}
 		//stalemate
 		return eval_move(0,nullptr);
