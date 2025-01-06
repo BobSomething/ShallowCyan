@@ -133,6 +133,7 @@ bitboard_t::bitboard_t() {
             attacksRooks[square][key] = attacksRook_mask(square, occupied);
         }
     }
+    
 
 }
 

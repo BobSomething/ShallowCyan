@@ -93,7 +93,10 @@ struct bitboard_t {
     int nb_turns = 0;               // number of turns = number of moves in the game
 
     bitboard_t();                   // Initializing the bitboards
-
+    
+    //zobrist-hashing
+    U64 Zobrist_table[64][12];
+    void zobrist_init();
 
     /* Precomputed data of all moves */
     /* USE THESE TABLES FOR THE POSSIBLE ATTACKS */
