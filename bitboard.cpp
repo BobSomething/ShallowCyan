@@ -25,62 +25,6 @@ std::vector<int> bitboard_t::u64_to_index(U64 u){
     return ar;
 }
 
-std::map<std::pair<std::string,bool>,int> convertPiece = {
-    {makep("p",1), 0},
-    {makep("n",1), 1},
-    {makep("b",1), 2},
-    {makep("r",1), 3},
-    {makep("q",1), 4},
-    {makep("k",1), 5},
-    {makep("p",0), 6},
-    {makep("n",0), 7},
-    {makep("b",0), 8},
-    {makep("r",0), 9},
-    {makep("q",0), 10},
-    {makep("k",0), 11},
-};
-
-std::map<int, std::string> coords_to_letter_2 = { // Dictionary to translate input to move
-	{0, "a"},
-	{1, "b"},
-	{2, "c"},
-	{3, "d"},
-	{4, "e"},
-	{5, "f"},
-	{6, "g"},
-	{7, "h"}
-};
-
-std::map<std::string, int> letter_to_coords_2 = { // Dictionary to translate input to move
-	{"a" , 0},
-	{"b" , 1},
-	{"c" , 2},
-	{"d" , 3},
-	{"e" , 4},
-	{"f" , 5},
-	{"g" , 6},
-	{"h" , 7}
-};
-
-std::map<int,std::string> index_to_piece {
-    {12, " "},
-    {0, "\u265F"},
-    {1, "\u265E"},
-    {2, "\u265D"},
-    {3, "\u265C"},
-    {4, "\u265B"},
-    {5, "\u265A"},
-    {6, "\u2659"},
-    {7, "\u2658"},
-    {8, "\u2657"},
-    {9, "\u2656"},
-    {10, "\u2655"},
-    {11, "\u2654"},
-};
-
-
-
-
 /*
 
 IMPLEMENTATION OF BITBOARDS
@@ -265,7 +209,8 @@ void bitboard_t::printBBattacked(bool color) {
 
 std::string bitboard_t::move_to_string(move_t* move) {
 	std::string base = coords_to_letter_2[move->before.j] + std::to_string(move->before.i+1) + coords_to_letter_2[move->after.j] + std::to_string(move->after.i+1);
-	//move->type_move == if it is promotion
+	if (abs(move->type_move) >= 7)
+        base += tofen[abs(move->type_move)];
 	return base;
 }
 
@@ -294,383 +239,10 @@ move_t* bitboard_t::string_to_move(std::string move) {
 }
 
 
-void bitboard_t::allMovesPawns(bool color, array_moves* moves){
-    coords before, after;
-    U64 different = 0, both = 0, attacks;
-    int shift = color ? 6 : 0, index;
-    for(int i = shift; i<6+shift; i++) {
-        different |= piecesBB[i];
-    }
-    for(int i = 0; i<12; i++) {
-        both |= piecesBB[i]; 
-    }
-
-    U64 pawns_copy = color ? piecesBB[0] : piecesBB[6];
-    while(pawns_copy) {
-        index = get_LSB(pawns_copy);
-        pawns_copy &= (pawns_copy - 1);
-        
-        before.i = index/8;
-        before.j = index%8;
-
-        attacks = attacksPawns[color][index] & (different);
-
-        while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
-                moves->push_back(new move_t(before, after, -1));
-            }
-            attacks &= (attacks - 1);
-        }
-        
-        //en passant captures
-        if(enpassant_square != -1) {
-            if(attacksPawns[color][index] & (1 << enpassant_square)) {
-                after.i = enpassant_square/8;
-                after.j = enpassant_square%8;
-                moves->push_back(new move_t(before,after,-2));
-            }
-        }
-
-        int promotion_row = 6, direction = 1, first_row = 1;
-        if(color == 0) {
-            promotion_row = 1;
-            first_row = 6;
-            direction = -1;
-        }
-        // promotion
-        if(before.i == promotion_row) {
-            if(!get_bit(both, before.j+(before.i+direction)*8)) {
-                after.i = before.i+direction;
-                after.j = before.j;
-                moves->push_back(new move_t(before, after, 7));
-                moves->push_back(new move_t(before, after, 8));
-                moves->push_back(new move_t(before, after, 9));
-                moves->push_back(new move_t(before, after, 10));
-                continue;
-            }
-        }
-        if(!get_bit(both, before.j+(before.i+direction)*8)) {
-            after.i = before.i+direction;
-            after.j = before.j;
-            moves->push_back(new move_t(before, after, 0)); // normal move
-            if(before.i == first_row && !get_bit(both, before.j+(before.i+2*direction)*8)) {
-                after.i = before.i+2*direction;
-                moves->push_back(new move_t(before, after, 3)); // double pawn push
-            }
-        }
-    }
-};
-
-void bitboard_t::allMovesKing(bool color, array_moves* moves) {
-    coords before, after;
-    U64 same = 0, different = 0, both = 0, attacks;
-    int shift = color ? 0 : 6, index;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i];
-    }
-    for(int i = 0; i<12; i++) {
-        both |= piecesBB[i]; 
-    }
-    different = both ^ same;
-
-
-    U64 king_copy = color ? piecesBB[5] : piecesBB[11];
-    while(king_copy) {
-        index = get_LSB(king_copy);
-        king_copy &= (king_copy - 1);
-        
-        before.i = index/8;
-        before.j = index%8;
-
-        attacks = attacksKing[index] & (~same);
-        while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
-                moves->push_back(new move_t(before, after, -1));
-            }
-            else {
-                moves->push_back(new move_t(before, after, 0));
-            }
-            attacks &= (attacks - 1);
-        }
-
-        if(color == 1) {
-            if(w_castle_kside) {
-                if(!get_bit(both, before.j + 1) && !get_bit(both, before.j + 2)) {
-                    if(!is_square_attacked(before.j + before.i*8,color) && !is_square_attacked(before.j+1 + before.i*8,color)) {
-                        after.i = before.i;
-                        after.j = before.j + 2;
-                        moves->push_back(new move_t (after, before, 1));
-                    }
-                }
-            }
-            if(w_castle_qside) {
-                if(!get_bit(both, before.j - 1) && !get_bit(both, before.j - 2) && !get_bit(both, before.j - 3)) {
-                    if(!is_square_attacked(before.j + before.i*8,color) && !is_square_attacked(before.j-1 + before.i*8,color)) {
-                        after.i = before.i;
-                        after.j = before.j - 2;
-                        moves->push_back(new move_t (after, before, 1));
-                    }
-                }
-            }
-        }
-        else {
-            if(b_castle_kside) {
-                if(!get_bit(both, before.j + 1) && !get_bit(both, before.j + 2)) {
-                    if(!is_square_attacked(before.j + before.i*8,color) && !is_square_attacked(before.j+1 + before.i*8,color)) {
-                        after.i = before.i;
-                        after.j = before.j + 2;
-                        moves->push_back(new move_t (after, before, 1));
-                    }
-                }
-            }
-            if(b_castle_qside) {
-                if(!get_bit(both, before.j - 1) && !get_bit(both, before.j - 2) && !get_bit(both, before.j - 3)) {
-                    if(!is_square_attacked(before.j + before.i*8,color) && !is_square_attacked(before.j-1 + before.i*8,color)) {
-                        after.i = before.i;
-                        after.j = before.j - 2;
-                        moves->push_back(new move_t (after, before, 1));
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-void bitboard_t::allMovesKnights(bool color, array_moves* moves){
-    coords before, after;
-    U64 same = 0, different = 0, both = 0, attacks;
-    int shift = color ? 0 : 6, index;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i];
-    }
-    for(int i = 0; i<12; i++) {
-        both |= piecesBB[i]; 
-    }
-    different = both ^ same;
-
-    U64 knights_copy = color ? piecesBB[1] : piecesBB[7];
-    while(knights_copy) {
-        index = get_LSB(knights_copy);
-        knights_copy &= (knights_copy - 1);
-        
-        before.i = index/8;
-        before.j = index%8;
-
-        attacks = attacksKnights[index] & (~same);
-        while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
-                moves->push_back(new move_t(before, after, -1));
-            }
-            else {
-                moves->push_back(new move_t(before, after, 0));
-            }
-            attacks &= (attacks - 1);
-        }
-    }
-};
-
-//Bishop, basically copy paste from knight
-void bitboard_t::allMovesBishop(bool color, array_moves* moves){
-    coords before, after;
-    U64 same = 0, different = 0, both = 0, attacks;
-    int shift = color ? 0 : 6, index;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i]; 
-    }
-    for(int i = 0; i<12; i++) {
-        both |= piecesBB[i]; 
-    }
-    different = both ^ same;
-
-    U64 bishop_copy = color ? piecesBB[2] : piecesBB[8];
-    while(bishop_copy) {
-        index = get_LSB(bishop_copy);
-        bishop_copy &= (bishop_copy - 1);
-        
-        before.i = index/8;
-        before.j = index%8;
-
-        attacks = attacksBishopsMagic(index, both) & (~same);
-        while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
-                moves->push_back(new move_t(before, after, -1));
-            }
-            else {
-                moves->push_back(new move_t(before, after, 0));
-            }
-            attacks &= (attacks - 1);
-        }
-    }
-    /*coords before;
-    coords after;
-    array_moves ar;
-    U64 same = 0;
-    int shift = color ? 0 : 6;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i];
-    }
-
-    U64 bishops_copy = color ? piecesBB[2] : piecesBB[8];
-    while(bishops_copy) {
-        int index = get_LSB(bishops_copy);
-
-        bishops_copy &= (bishops_copy - 1);
-        before.i = index/8;
-        before.j = index%8;
-        U64 u = attacksBishopsMagic(index, (~same)) & (~same);
-        array_coords array = u64_to_coords(u);
-        for (int k=0; k<array.size(); k++){
-            after = array[k];
-            move_t m (before, after);
-            ar.push_back(&m);
-        }
-    }*/
-};
-
-void bitboard_t::allMovesRooks(bool color, array_moves* moves){
-    coords before, after;
-    U64 same = 0, different = 0, both = 0, attacks;
-    int shift = color ? 0 : 6, index;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i]; 
-    }
-    for(int i = 0; i<12; i++) {
-        both |= piecesBB[i]; 
-    }
-    different = both ^ same;
-    
-
-    U64 rook_copy = color ? piecesBB[3] : piecesBB[9];
-    while(rook_copy) {
-        index = get_LSB(rook_copy);
-        rook_copy &= (rook_copy - 1);
-        
-        before.i = index/8;
-        before.j = index%8;
-
-        attacks = attacksRooksMagic(index, both) & (~same);
-        while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
-                moves->push_back(new move_t(before, after, -1));
-            }
-            else {
-                moves->push_back(new move_t(before, after, 0));
-            }
-            attacks &= (attacks - 1);
-        }
-    }
-    /* coords before;
-    coords after;
-    array_moves ar;
-    U64 same = 0;
-    int shift = color ? 0 : 6;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i];
-    }
-
-    U64 rooks_copy = color ? piecesBB[3] : piecesBB[9];
-    while(rooks_copy) {
-        int index = get_LSB(rooks_copy);
-
-        rooks_copy &= (rooks_copy - 1);
-        before.i = index/8;
-        before.j = index%8;
-        U64 u = attacksRooksMagic(index, (~same)) & (~same);
-        array_coords array = u64_to_coords(u);
-        for (int k=0; k<array.size(); k++){
-            after = array[k];
-            move_t m (before, after);
-            ar.push_back(&m);
-        }
-    } */
-};
-
-void bitboard_t::allMovesQueens(bool color, array_moves* moves){
-    coords before, after;
-    U64 same = 0, different = 0, both = 0, attacks;
-    int shift = color ? 0 : 6, index;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i]; 
-    }
-    for(int i = 0; i<12; i++) {
-        both |= piecesBB[i]; 
-    }
-    different = both ^ same;
-    
-
-    U64 queen_copy = color ? piecesBB[4] : piecesBB[10];
-    while(queen_copy) {
-        index = get_LSB(queen_copy);
-        queen_copy &= (queen_copy - 1);
-        
-        before.i = index/8;
-        before.j = index%8;
-
-        attacks = attacksQueensMagic(index, both) & (~same);
-        while(attacks) {
-            index = get_LSB(attacks);
-            after.i = index/8;
-            after.j = index%8;
-            if(get_bit(different,index)) { // A capture move
-                moves->push_back(new move_t(before, after, -1));
-            }
-            else {
-                moves->push_back(new move_t(before, after, 0));
-            }
-            attacks &= (attacks - 1);
-        }
-    }
-
-    /* coords before;
-    coords after;
-    array_moves ar;
-    U64 same = 0;
-    int shift = color ? 0 : 6;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i];
-    }
-
-    U64 queens_copy = color ? piecesBB[4] : piecesBB[10];
-    while(queens_copy) {
-        int index = get_LSB(queens_copy);
-
-        queens_copy &= (queens_copy - 1);
-        before.i = index/8;
-        before.j = index%8;
-        U64 u = attacksQueensMagic(index, (~same)) & (~same);
-        array_coords array = u64_to_coords(u);
-        for (int k=0; k<array.size(); k++){
-            after = array[k];
-            move_t m (before, after);
-            ar.push_back(&m);
-        }
-    } */
-};
-
 bool bitboard_t::is_square_attacked(int square, bool color){
     int shift = color ? 0 : 6;
-    /* U64 same = 0;
-    for(int i = shift; i<6+shift; i++) {
-        same |= piecesBB[i];
-    } */
     U64 both = 0;
-    for(int i = shift; i<12; i++) {
+    for(int i = 0; i<12; i++) {
         both |= piecesBB[i];
     }
     if(attacksPawns[color^1][square] & piecesBB[shift]) {
@@ -686,47 +258,13 @@ bool bitboard_t::is_square_attacked(int square, bool color){
     if(attacksKing[square] & piecesBB[shift+5])
         return true;
     return false;
-
-    /* for(int j = shift; j<6+shift; j++) {
-        std::vector<int> ar = u64_to_index(piecesBB[j]);
-        if (j%6 == 0){
-            for (int i=0; i<ar.size(); i++){
-                attacking |= attacksPawns_mask(ar[i], (color));
-            }
-        }
-        if (j%6 == 1){
-            for (int i=0; i<ar.size(); i++){
-                attacking |= attacksKnight_mask(ar[i]);
-            }
-        }
-        if (j%6 == 2){
-            for (int i=0; i<ar.size(); i++){
-                attacking |= attacksBishopsMagic(ar[i], (~same));
-            }
-        }
-        if (j%6 == 3){
-            for (int i=0; i<ar.size(); i++){
-                attacking |= attacksRook_mask(ar[i], (~same));
-            }
-        }
-        if (j%6 == 4){
-            for (int i=0; i<ar.size(); i++){
-                attacking |= attacksQueen_mask(ar[i], (~same));
-            }
-        }
-        if (j%6 == 5){
-            for (int i=0; i<ar.size(); i++){
-                attacking |= attacksKing_mask(ar[i]);
-            }
-        }
-    }
-    return get_bit(attacking, square); */
-
 };
 
 void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bool w_c_kside, bool w_c_qside, bool b_c_kside, bool b_c_qside) {
     int index_before = move->before.i*8 + move->before.j; 
     int index_after = move->after.i*8 + move->after.j;
+
+    turn ^= 1;
 
     //undo en passant square and castling rights
     enpassant_square = ep_square;
@@ -741,15 +279,16 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
     pieceTable[index_before] = p_before; 
     pieceTable[index_after] = -1;
 
-    //if capture
-    if(move->type_move == -1) {
-        set_bit(piecesBB[p_after], index_after);
+    //if promotion
+    if(abs(move->type_move) >= 7) {
+        int shift = (turn == 1) ? -6 : 0;
+        clear_bit(piecesBB[abs(move->type_move)+shift], index_after);
     }
 
-    //if promotion
-    if(move->type_move >= 7) {
-        int shift = (turn == 1) ? -6 : 0;
-        clear_bit(piecesBB[move->type_move+shift], index_after);
+    //if capture
+    if(move->type_move == -1 || move->type_move <= -7) {
+        set_bit(piecesBB[p_after], index_after);
+        pieceTable[index_after] = p_after;
     }
 
     //if enpassant
@@ -760,7 +299,7 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
         }
         else {
             set_bit(piecesBB[0],index_after+8)
-            pieceTable[index_after-8] = 0; ////////////////////////////
+            pieceTable[index_after+8] = 0; ////////////////////////////
         }
     }
 
@@ -768,39 +307,89 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
     if(move->type_move == 1) {
         if(turn == 1) {
             if(move->after.j == 6) { //king side
-                clear_bit(piecesBB[3],move->after.j-1);
+                clear_bit(piecesBB[3],5);
                 set_bit(piecesBB[3],7);
-                pieceTable[move->after.j-1] = -1;
+                pieceTable[5] = -1;
                 pieceTable[7] = 3;
             }
             else if(move->after.j == 2) { //queen side
-                clear_bit(piecesBB[3],move->after.j+1);
+                clear_bit(piecesBB[3],3);
                 set_bit(piecesBB[3],0);
-                pieceTable[move->after.j+1] = -1;
+                pieceTable[3] = -1;
                 pieceTable[0] = 3;
             }
         }
         else {
             if(move->after.j == 6) { //king side
-                clear_bit(piecesBB[9],move->after.j-1);
+                clear_bit(piecesBB[9],61);
                 set_bit(piecesBB[9],63);
-                pieceTable[move->after.j-1] = -1;
-                pieceTable[63] = 3;
+                pieceTable[61] = -1;
+                pieceTable[63] = 9;
             }
             else if(move->after.j == 2) { //queen side
-                clear_bit(piecesBB[9],move->after.j+1);
+                clear_bit(piecesBB[9],59);
                 set_bit(piecesBB[9],56);
-                pieceTable[move->after.j+1] = -1;
-                pieceTable[56] = 3;
+                pieceTable[59] = -1;
+                pieceTable[56] = 9;
             }
         }
     }
-    turn ^= 1;
+    
+}
+
+void bitboard_t::update_string(std::string move) {
+    coords after, before;
+    before.j = move[0] - 'a';
+    before.i = move[1] - '1';
+    after.j = move[2] - 'a';
+    after.i = move[3] - '1';
+    
+    int index_before = before.i*8 + before.j; 
+    int index_after = after.i*8 + after.j;
+
+    //promotion
+    if(move.size() == 5) {
+        std::map<char,int> promoted_piece = {{'n', 7}, {'b', 8}, {'r', 9}, {'q', 10}};
+        int promotion_type = promoted_piece[move[4]];
+        if(pieceTable[index_after] != -1) promotion_type = -promotion_type; //if it is a promotion with a capture
+
+        update(new move_t(before,after,promotion_type));
+        return;
+    }
+
+    //double pawn push
+    //if the piece is a pawn and it moved 2 squares => double pawn push
+    if(pieceTable[index_before] == ((turn == 1) ? 0 : 6) && abs(after.i - before.i) == 2) {
+        update(new move_t(before,after,3));
+        return;
+    }
+
+    //en passant
+    int enpassant_row = (turn == 1) ? 5 : 4;
+    // if the piece is a pawn, and it attacks an empty square => en passant
+    if(pieceTable[index_before] == ((turn == 1) ? 0 : 6) && before.j != after.j && pieceTable[index_after] == -1) {
+        update(new move_t(before,after,-2));
+        return;
+    }
+
+    //castle
+    // if the piece is a king, and it moved 2 squares to the left/right => castle
+    if(pieceTable[index_before] == ((turn == 1) ? 5 : 11) && abs(before.j - after.j) == 2) {
+        update(new move_t(before,after,1));
+        return;
+    }
+    
+    //capture
+    if(pieceTable[index_after] != -1) {
+        update(new move_t(before,after,-1));
+        return;
+    }
+
+    update(new move_t(before,after,0));
 }
 
 bool bitboard_t::update(move_t* move) {
     int index_before, index_after, piece_before, piece_after;
-
     index_before = move->before.i*8 + move->before.j; 
     index_after = move->after.i*8 + move->after.j;
     //std::cout << move->before.i << " " << move->before.j << " " << move->type_move << std::endl;
@@ -823,9 +412,11 @@ bool bitboard_t::update(move_t* move) {
     set_bit(piecesBB[piece_before], index_after);
     pieceTable[index_before] = -1;  /////////////////////////////////
     pieceTable[index_after] = piece_before;///////////////////////////////
+
+    
     
     //if capture
-    if(move->type_move == -1) {
+    if(move->type_move == -1 || move->type_move <= -7) {
         clear_bit(piecesBB[piece_after], index_after);
 
         //if capture rook - change the castling rights
@@ -840,12 +431,12 @@ bool bitboard_t::update(move_t* move) {
     }
 
     //if promotion
-    if(move->type_move >= 7) {
+    if(abs(move->type_move) >= 7) {
         int shift = 0;
         if(turn == 1) shift = -6;
         clear_bit(piecesBB[piece_before], index_after);
-        set_bit(piecesBB[move->type_move+shift], index_after);
-        pieceTable[index_after] = move->type_move+shift; ///////////////////////
+        set_bit(piecesBB[abs(move->type_move)+shift], index_after);
+        pieceTable[index_after] = abs(move->type_move)+shift; ///////////////////////
     }
 
     //if enpassant
@@ -871,38 +462,39 @@ bool bitboard_t::update(move_t* move) {
     if(move->type_move == 1) {
         if(turn == 1) {
             if(move->after.j == 6) { //king side
-                set_bit(piecesBB[3],move->after.j-1);
+                set_bit(piecesBB[3],5);
                 clear_bit(piecesBB[3],7);
-                pieceTable[move->after.j-1] = 3;
+                pieceTable[5] = 3;
                 pieceTable[7] = -1;
             }
             else if(move->after.j == 2) { //queen side
-                set_bit(piecesBB[3],move->after.j+1);
+                set_bit(piecesBB[3],3);
                 clear_bit(piecesBB[3],0);
-                pieceTable[move->after.j+1] = 3;
+                pieceTable[3] = 3;
                 pieceTable[0] = -1;
             }
         }
         else {
             if(move->after.j == 6) { //king side
-                set_bit(piecesBB[9],move->after.j-1);
+                set_bit(piecesBB[9],61);
                 clear_bit(piecesBB[9],63);
 
-                pieceTable[move->after.j-1] = 3;
+                pieceTable[61] = 9;
                 pieceTable[63] = -1;
             }
             else if(move->after.j == 2) { //queen side
-                set_bit(piecesBB[9],move->after.j+1);
+                set_bit(piecesBB[9],59);
                 clear_bit(piecesBB[9],56);
 
-                pieceTable[move->after.j+1] = 3;
+                pieceTable[59] = 9;
                 pieceTable[56] = -1;
             }
         }
     }
+    
 
     //updating castling rights
-    if(piece_before == 6) { //if white king moved
+    if(piece_before == 5) { //if white king moved
         w_castle_kside = 0;
         w_castle_qside = 0;
     }
@@ -920,10 +512,9 @@ bool bitboard_t::update(move_t* move) {
     }
 
     turn ^= 1;
-
     //make sure it king is not exposed with a check at the end
-    int king = (turn == 1) ? 5 : 11;
-    if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) {
+    int king = (turn == 1) ? 11 : 5;
+    if(is_square_attacked(get_LSB(piecesBB[king]),turn)) {
         undo(move, p_before, p_after, ep_square, w_c_kside, w_c_qside, b_c_kside, b_c_qside);
         return false;
     }
@@ -931,38 +522,97 @@ bool bitboard_t::update(move_t* move) {
     return true;
 }
 
-void bitboard_t::generate_all_moves(array_moves* moves) {
-    allMovesPawns(turn, moves);
-    allMovesKnights(turn, moves);
-    allMovesBishop(turn, moves);
-    allMovesRooks(turn, moves);
-    allMovesQueens(turn, moves);
-    allMovesKing(turn, moves);
+bool bitboard_t::is_legal(move_t* move) {
+    int p_before = pieceTable[move->before.i*8 + move->before.j];
+    int p_after = pieceTable[move->after.i*8 + move->after.j]; 
+    int ep_square = enpassant_square;
+    bool w_c_kside = w_castle_kside;
+    bool w_c_qside = w_castle_qside; 
+    bool b_c_kside = b_castle_kside;
+    bool b_c_qside = b_castle_qside;
+
+    if(!update(move))
+        return false;
+    undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
+    return true;
 }
 
-U64 bitboard_t::perft(int depth) {
+bool bitboard_t::is_checkmate() {
     array_moves moves;
-    U64 count = 0;
-    if(depth == 0)
-        return 1ULL;
-    
     generate_all_moves(&moves);
-    for(auto& move : moves) {
-        int p_before = pieceTable[move->before.i*8 + move->before.j];
-        int p_after = pieceTable[move->after.i*8 + move->after.j]; 
-        int ep_square = enpassant_square;
-        bool w_c_kside = w_castle_kside;
-        bool w_c_qside = w_castle_qside; 
-        bool b_c_kside = b_castle_kside;
-        bool b_c_qside = b_castle_qside;
-        if(update(move)) {
-            printBB();
-            std::cout << p_before << " " << p_after << std::endl;
-            std::cout << move->before.i << " " << move->before.j << "  " << move->after.i << " " << move->after.j << " " << move->type_move << std::endl;
-            getchar(); 
-            count += perft(depth-1);
-            undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
+    if(moves.size() == 0)
+        return true;
+    return false;
+}
+
+#include <ctime>
+//For now we generate a random move from all legal moves
+std::string bitboard_t::next_move() {
+    array_moves moves;
+    std::srand(std::time(0));
+    generate_all_moves(&moves);
+    int rand_pos = std::rand() % moves.size();
+    return move_to_string(moves[rand_pos]);
+}
+
+//create a copy of the current bitboard
+bitboard_t bitboard_t::copy() {
+    bitboard_t copy_board = bitboard_t();
+    for (int i = 0; i<12; ++i) {
+        copy_board.piecesBB[i] = this->piecesBB[i];
+    }
+    copy_board.turn = this->turn;
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.pieceTable[i] = this->pieceTable[i];
+    }
+    for (int i=0; i< 2; ++i) {
+        copy_board.kingWhere[i] = this->kingWhere[i];
+    }
+    copy_board.enpassant_square = this->enpassant_square;
+    copy_board.w_castle_kside = this->w_castle_kside;
+    copy_board.w_castle_qside = this->w_castle_qside;
+    copy_board.b_castle_kside = this->b_castle_kside;
+    copy_board.b_castle_qside = this->b_castle_qside;
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksKing[i] = this->attacksKing[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksKnights[i] = this->attacksKnights[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        for(int j=0; j<2; ++j){
+            copy_board.attacksPawns[j][i] = this->attacksPawns[j][i];
         }
     }
-    return count;
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksBishops[i] = this->attacksBishops[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksRooks[i] = this->attacksRooks[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksBishopsNoBlockers[i] = this->attacksBishopsNoBlockers[i];
+    }
+    for (int i=0; i< SIZESQ; ++i) {
+        copy_board.attacksRooksNoBlockers[i] = this->attacksRooksNoBlockers[i];
+    }
+    return copy_board;
+}
+
+int bitboard_t::eval() {
+    int total = 0;
+    for (int i=0; i<SIZESQ; ++i) {
+        int a = this->pieceTable[i];
+        if (a==0) total += 1;
+        if (a==1) total += 3;
+        if (a==2) total += 3;
+        if (a==3) total += 5;
+        if (a==4) total += 9;
+        if (a==6) total -= 1;
+        if (a==7) total -= 3;
+        if (a==8) total -= 3;
+        if (a==9) total -= 5;
+        if (a==10) total -= 9;
+    }
+    return total;
 }

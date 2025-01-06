@@ -9,7 +9,12 @@ project(shallowcyan
 
 include_directories(.)
 
-add_library(libraries board.cpp board.hpp piece.cpp piece.hpp macro.hpp bitboard.hpp bitboard.cpp bitmoves.cpp bithelpers.hpp magicbitboard.cpp)
+add_library(libraries board.cpp board.hpp piece.cpp piece.hpp macro.hpp 
+bitboard.hpp bitboard.cpp 
+bitmoves.cpp bitallmoves.cpp 
+bithelpers.hpp magicbitboard.cpp
+perft_fen.cpp
+dictionaries.hpp search.cpp)
 
 add_executable(shallowcyan main.cpp)
 

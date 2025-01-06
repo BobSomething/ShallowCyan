@@ -1,9 +1,12 @@
 #ifndef MACRO_HPP_
 #define MACRO_HPP_
 
+#include <cstdint>
+
 struct move_t;
 
 #define coords std::pair<int,int> //location of a piece
+#define eval_move std::pair<int, move_t*> //hold eval and move_t for alpha-beta pruning
 #define array_coords std::vector<coords>
 #define array_moves std::vector<move_t*>  //vector of move_t
 #define i first //number
