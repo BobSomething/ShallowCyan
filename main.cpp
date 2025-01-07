@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
 
     //Initializing the board
     bitboard_t bboard;
+    U64 test = bboard.zobrist_board();
 
     //Reading the history file
     std::ifstream input;

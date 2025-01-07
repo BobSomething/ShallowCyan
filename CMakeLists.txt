@@ -16,7 +16,8 @@ bitboard.hpp bitboard.cpp
 bitmoves.cpp bitallmoves.cpp 
 bithelpers.hpp
 perft_fen.cpp
-search.cpp)
+search.cpp 
+Zobrist.cpp)
 
 add_executable(shallowcyan main.cpp)
 

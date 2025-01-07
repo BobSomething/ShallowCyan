@@ -96,7 +96,9 @@ struct bitboard_t {
     
     //zobrist-hashing
     U64 Zobrist_table[64][12];
+    U64 Zobrist_black;
     void zobrist_init();
+    U64 zobrist_board();
 
     /* Precomputed data of all moves */
     /* USE THESE TABLES FOR THE POSSIBLE ATTACKS */
