@@ -164,6 +164,19 @@ struct bitboard_t {
     int eval();
 
 
+    //you can get inspired from https://www.chessprogramming.org/Simplified_Evaluation_Function
+    //you can implement for only white, for black's turn we can "flip" the board to get correct values
+    //TODO
+    int scorePawnsOpening[64];
+    int scorePawnsEnding[64];  
+    int scoreRooks[64];
+    int scoreKnights[64];
+    int scoreBishops[64];
+    int scoreQueens[64];
+    int scoreKingOpening[64];
+    int scoreKingEnding[64];
+
+
     /*
     
     FUNCTIONS IMPLEMENTED IN BITMOVES.CPP

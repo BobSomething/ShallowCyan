@@ -570,7 +570,7 @@ bool bitboard_t::no_moves() {
 //For now we generate a random move from all legal moves
 //After a while try search function
 std::string bitboard_t::next_move() {
-    if(nb_turns < 30) {
+    if(nb_turns < 10) {
         array_moves moves;
         std::srand(std::time(0));
         generate_all_moves(&moves);
@@ -578,7 +578,7 @@ std::string bitboard_t::next_move() {
         return move_to_string(moves[rand_pos]);
     }
     else {
-        return move_to_string(search(3));
+        return move_to_string(search(5));
     }
 }
 
@@ -625,18 +625,25 @@ bitboard_t bitboard_t::copy() {
 
 int bitboard_t::eval() {
     int total = 0;
+    //can calculate how many pieces are left for white and black with & all the bitboards and use the get_count function
+    //define a threshold of nb of pieces that we are in endgame: ...
+
     for (int i=0; i<SIZESQ; ++i) {
         int a = this->pieceTable[i];
-        if (a==0) total += 1;
-        if (a==1) total += 3;
-        if (a==2) total += 3;
-        if (a==3) total += 5;
-        if (a==4) total += 9;
-        if (a==6) total -= 1;
-        if (a==7) total -= 3;
-        if (a==8) total -= 3;
-        if (a==9) total -= 5;
-        if (a==10) total -= 9;
+        if (a==0) total += 100;
+        if (a==1) total += 300;
+        if (a==2) total += 300;
+        if (a==3) total += 500;
+        if (a==4) total += 900;
+        if (a==6) total -= 100;
+        if (a==7) total -= 300;
+        if (a==8) total -= 300;
+        if (a==9) total -= 500;
+        if (a==10) total -= 900;
+
+        //add up scores from score tables
+        //remember to "flip" the board for black's turn
+        //check if we are in endgame or not, if so remember to use Ending tables for kings and pawns
     }
     return total;
 }
