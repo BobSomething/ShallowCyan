@@ -1,5 +1,3 @@
-#include "board.hpp"
-#include "piece.hpp"
 #include "bitboard.hpp"
 //#include "bithelpers.hpp"
 //#include "magicbitboard.cpp"
@@ -27,59 +25,43 @@ int main(int argc, char* argv[]) {
     }
 
     //Initializing the board
-    board_t board;
-
+    bitboard_t bboard;
+    U64 test = bboard.zobrist_board();
 
     //Reading the history file
     std::ifstream input;
     input.open(history);
     std::string line;
     while (getline(input, line)) {
-        board.update(line,true);
+        bboard.update_string(line);
+        bboard.nb_turns++;
     }
     input.close();
 
     //Outputs the next move
     std::ofstream output;
     output.open(move);
-    output << board.next_move();
+    output << bboard.next_move();
     output.close();
 
-    bitboard_t board_test;
-    U64 same = 0;
-    for(int i = 0; i < 6; i++) {
-        same |= board_test.piecesBB[i];
-    }
-    board_test.printBBany(same);
+    bboard.printBB();
 
-    U64 bishop = board_test.attacksBishopsMagic(2,same);
-    board_test.printBBany(bishop);
-    // U64 occupied;
-    // set_bit(occupied, 12);
-    // set_bit(occupied, 30);
-    // set_bit(occupied, 25);
-    // set_bit(occupied, 40);
-    // set_bit(occupied, 19);
-    // set_bit(occupied, 14);
-    // board_test.printBBany(occupied);
-    // board_test.printBBany(board_test.attacksQueensMagic(28,occupied));  */
-    //array_coords ar = board_test.u64_to_coords(3);
-    //std::cout << ar[1].i << ar[1].j;
+    //array_moves moves;
+    //bboard.generate_all_moves(&moves);
 
-
-    /* for(int i =0;i <100; i++) {
-        U64 x = board_test.attacksRook_mask(21,temp);
-        board_test.printBBany(get_set_with_index(i,board_test.attacksRook_mask(21,temp)));
-        board_test.printBBany(get_a_mask(i, x, 21));
-        getchar();
-    } */
-    //board.print();
-    //board.update_with_move(board.string_to_move("a2a3"),true);
-    //board.print_grids(1);
-    // std::cout << board.state[0][4]->legal_moves().size();
-    //board.update("b1c3",true);
-    //std::cout << board.nb_moves(4); 
     
+    /* bitboard_t board_test;
+
+    board_test.update_with_fen(epcases);
+
+    std::cout << board_test.generate_fen() << std::endl;
+
+    board_test.printBB();
+
+    for(int i=1; i<7; i++)
+        std::cout << board_test.perft(i) << std::endl;
+
+    std::cout << board_test.generate_fen() << std::endl; */
 
     return 0;
 }

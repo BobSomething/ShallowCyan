@@ -717,3 +717,27 @@ std::string board_t::next_move() {
 	array_moves g = generate_all_moves();
 	return move_to_string(g[0]);
 }
+
+board_t board_t::copy() {
+	board_t copy_board = board_t();
+	for (int i=0; i<SIZE; ++i){
+		for (int j=0; j<SIZE; ++j){
+			copy_board.state[i][j] = this->state[i][j];
+		}
+	}
+	copy_board.current_pieces = this->current_pieces;
+	copy_board.turn = this->turn;
+	copy_board.fifty_moves = this->fifty_moves;
+	copy_board.last_move = this->last_move;
+	for (int i=0; i<SIZE; ++i){
+		for (int j=0; j<SIZE; ++j){
+			for (int k=0; k<2; ++k){
+				copy_board.grid_attack[k][i][j] = this->grid_attack[k][i][j];
+			}
+		}
+	}
+	for (int k=0; k<2; ++k){
+		copy_board.king[k] = this->king[k];
+	}
+	return copy_board;
+}

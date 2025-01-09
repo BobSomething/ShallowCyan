@@ -1,24 +1,10 @@
 #include "bitboard.hpp"
 
-void bitboard_t::update(move_t* move) {
-    
-}
-
-void bitboard_t::undo(move_t* move) {
-    
-}
-
-/*
-DUC read:
-
-This will be probably useful:
-To not have loop over attack moves you can & it wih not fileA: you do ~fileA
-*/
-
 U64 fileA = 0x0101010101010101;
 U64 fileH = 0x8080808080808080;
 U64 fileAB = 0x0303030303030303;
-U64 fileGH = 0xC0C0C0C0C0C0C0C0;
+U64 fileGH = 0xc0c0c0c0c0c0c0c0;
+
 
 U64 bitboard_t::attacksKing_mask(int square) {
     //TODO
@@ -77,19 +63,18 @@ U64 bitboard_t::attacksKnight_mask(int square) {
     //TODO
     //To avoid loop
     U64 temp_bitboard = 0x0000000000000000;
-    if (square%8 == 7){
+    if (square%8 >= 6){
         temp_bitboard = 0x0303030303030303;
     }
-    if (square%8 == 0){
+    if (square%8 <= 1){
         temp_bitboard = 0xC0C0C0C0C0C0C0C0;
     }
     if (square < 8){
         temp_bitboard |= 0xFFFF000000000000;
     }
-    if (square > 55){
+    if (square > 47){
         temp_bitboard |= 0x000000000000FFFF;
     }
-    //This should check if the square is out of the board
     U64 attack_bitboard = 0ULL;
     set_bit(attack_bitboard, (square+10));
     set_bit(attack_bitboard, (square+6));
@@ -99,7 +84,6 @@ U64 bitboard_t::attacksKnight_mask(int square) {
     set_bit(attack_bitboard, (square-6));
     set_bit(attack_bitboard, (square-17));
     set_bit(attack_bitboard, (square-15));
-
     return attack_bitboard & (~temp_bitboard);
 }
 
@@ -137,7 +121,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
     U64 attack_bitboard = 0ULL;
     set_bit(temp_bitboard, square);
     for (int i = 1; (square - i*9)>=0; i++){  //down left
-        if ((square - i*9)%8 > square % 8){
+        if ((square - i*9)%8 >= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square - i*9));
@@ -146,7 +130,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
         }
     }
     for (int i=1; (square + i*9)<64; i++){ //up right
-        if ((square + i*9)%8 < square % 8){
+        if ((square + i*9)%8 <= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square + i*9));
@@ -155,7 +139,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
         }
     }
     for (int i=1; (square - i*7)>=0; i++){ //down right
-        if (((square - i*7))%8 < square % 8){
+        if (((square - i*7))%8 <= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square - i*7));
@@ -164,7 +148,7 @@ U64 bitboard_t::attacksBishop_mask(int square, U64 occupied) {
         }
     }
     for (int i = 1; (square + i*7)<64; i++){ //up left
-        if (((square + i*7))%8 > square % 8){
+        if (((square + i*7))%8 >= square % 8){
             break;
         }
         set_bit(attack_bitboard, (square + i*7));

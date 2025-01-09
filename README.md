@@ -11,29 +11,27 @@ Then afterwards:
 1-cd build
 2-make
 
-Notes about how the project will be.
+CURRENT PROGRESS:
 
-Remember to name all functions/variables in a way for other to understand
-+ add comments to describe the functions/things you are doing
+We are now operating on bitboards.
 
-To do list:
-0. Organizing stuff
-    a. piece.hpp - all types of pieces 
-    b. piece.cpp - all the implementation of piece.hpp
-    c. board.hpp - all board stuff related
-    d. board.cpp - all the implementation of board.hpp
-    e. Makefile (or equivalent) - facilitate the compilation of our files
+Some explanations:
 
-1. Implement all the pieces
-    a. Have a struct piece_t - generic type.
-    b. All struct for pawn_t, king_t, queen_t, rook_t, bishop_t, knight_t
-    c. Fields: the color
-    d. Methods: calculating all possible moves
+1. We represent the board as bitboards of pieces - which are unsigned 64-bit integer.
+2. Every attack move is precomputed, hence we don't need to calculate the squares on the fly.
+3. Every move was checked by multiple perft checks, so the move generation should be okay.
 
-2. Think how to implement the board?
-    Have a 2d array, where each cell is a piece or nothing (nullptr)
+Our algorithm right now is:
 
-3. Implement the history read, i.e. for each input move, correctly change the board.
-    - Have it know if we are white or black, (checking castling)
+1. At the beginning we return a random legal move.
+2. Then we use the search function to find the best moves.
 
+The search function:
+1. alpha-beta prunning, no improvements right now.
 
+TODO:
+1. improve alpha-beta prunning, make some good guesses, to be able to prune faster, like promotion, capture, checks - good
+2. zobrist hashing - hash positions, so we can see if the state was already reached or not, and store the eval calculated
+3. openings book moves => probably encode these with fen notation, or zobrist hashing
+4. heuristics for endgames and openings -> where to move the pieces:
+    like kings want to castle in the beginning, knights want to be more in the center and so on.
