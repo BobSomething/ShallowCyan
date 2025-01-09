@@ -91,7 +91,7 @@ std::string bitboard_t::generate_fen() {
     if(enpassant_square != -1) {
         int x = enpassant_square/8;
         int y = enpassant_square%8;
-        fen += " " + coords_to_letter_2[y] + std::to_string(x+1);
+        fen += " " + coords_to_letter[y] + std::to_string(x+1);
     }
     else fen += " -";
     fen += " 0 1";
@@ -154,7 +154,7 @@ void bitboard_t::update_with_fen(std::string fen) {
     cur = fen[index];
     enpassant_square = -1;
     if(cur != '-') {
-        int y = letter_to_coords_2[std::to_string(cur)];
+        int y = letter_to_coords[std::to_string(cur)];
         int x = int(fen[index+1]);
         enpassant_square = x*8+y; 
     }

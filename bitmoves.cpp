@@ -1,25 +1,10 @@
 #include "bitboard.hpp"
 
-/*
-DUC read:
-
-This will be probably useful:
-To not have loop over attack moves you can & it wih not fileA: you do ~fileA
-*/
-
 U64 fileA = 0x0101010101010101;
 U64 fileH = 0x8080808080808080;
 U64 fileAB = 0x0303030303030303;
 U64 fileGH = 0xc0c0c0c0c0c0c0c0;
 
-/*
-Im assuming the bitboard look like this
-57 58 59 ... 64
-... .... ... ...
-.... 
-1 2 3 ...     8
-with the integer stands for the index of the bit
-*/
 
 U64 bitboard_t::attacksKing_mask(int square) {
     //TODO
