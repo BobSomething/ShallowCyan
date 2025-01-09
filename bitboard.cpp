@@ -627,19 +627,33 @@ int bitboard_t::eval() {
     int total = 0;
     //can calculate how many pieces are left for white and black with & all the bitboards and use the get_count function
     //define a threshold of nb of pieces that we are in endgame: ...
-
+    U64 nb_piece = 0;
+    for (int i=1; i<12; i++){
+        nb_piece |= piecesBB[i];
+    }
+    int nb_pieces = get_count(nb_piece);
     for (int i=0; i<SIZESQ; ++i) {
         int a = this->pieceTable[i];
-        if (a==0) total += 100;
-        if (a==1) total += 300;
-        if (a==2) total += 300;
-        if (a==3) total += 500;
-        if (a==4) total += 900;
-        if (a==6) total -= 100;
-        if (a==7) total -= 300;
-        if (a==8) total -= 300;
-        if (a==9) total -= 500;
-        if (a==10) total -= 900;
+        if (a==1) total += 300 + scoreKnights[i];
+        if (a==2) total += 300 + scoreBishops[i];
+        if (a==3) total += 500 + scoreRooks[i];
+        if (a==4) total += 900 + scoreQueens[i];
+        if (a==7) total -= 300 - scoreKnights[((8-(i/8))*8)-(8-i%8)];
+        if (a==8) total -= 300 - scoreBishops[((8-(i/8))*8)-(8-i%8)];
+        if (a==9) total -= 500 - scoreRooks[((8-(i/8))*8)-(8-i%8)];
+        if (a==10) total -= 900- scoreQueens[((8-(i/8))*8)-(8-i%8)];
+        if (nb_pieces > 10){
+            if (a==0) total += 100 + scorePawnsOpening[i];
+            if (a==5) total += scoreKingOpening[i];
+            if (a==11) total += scoreKingOpening[((8-(i/8))*8)-(8-i%8)];
+            if (a==6) total -= 100 - scorePawnsOpening[((8-(i/8))*8)-(8-i%8)];
+        }
+        if (nb_pieces < 11){
+            if (a==0) total += 100 + scorePawnsEnding[i];
+            if (a==5) total += scoreKingEnding[i];
+            if (a==11) total += scoreKingEnding[((8-(i/8))*8)-(8-i%8)];
+            if (a==6) total -= 100 - scorePawnsEnding[((8-(i/8))*8)-(8-i%8)];
+        }
 
         //add up scores from score tables
         //remember to "flip" the board for black's turn
