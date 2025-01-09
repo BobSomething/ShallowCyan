@@ -170,23 +170,23 @@ struct bitboard_t {
     //you can get inspired from https://www.chessprogramming.org/Simplified_Evaluation_Function
     //you can implement for only white, for black's turn we can "flip" the board to get correct values
     //TODO
-    int scorePawnsOpening[64] = {0,  0,  0,  0,  0,  0,  0,  0, 
+    int scorePawnsOpening[64] ={ 0,  0,  0,  0,  0,  0,  0,  0, 
                                  5, 10, 10,-20,-20, 10, 10,  5,
                                  5, -5,-10,  0,  0,-10, -5,  5,
                                  0,  0,  0, 20, 20,  0,  0,  0,
                                  5,  5, 10, 25, 25, 10,  5,  5,
                                  10, 10, 20, 30, 30, 20, 10, 10,
                                  50, 50, 50, 50, 50, 50, 50, 50,
-                                 0,  0,  0,  0,  0,  0,  0,  0}; //flipped compared to the real board
+                                 0,  0,  0,  0,  0,  0,  0,  0 }; //flipped compared to the real board
 
-    int scorePawnsEnding[64] = {  0,  0,  0,  0,  0,  0,  0,  0,
-                                -40,-30,-30,-30,-30,-30,-30,-40,
-                                -40,-30,-30,-30,-30,-30,-30,-40,
-                                -30,-20,-20,-20,-20,-20,-20,-30,
-                                -10,  0,  0,  0,  0,  0,  0, -10,
-                                  0, 20, 20, 20, 20, 20, 20, 20,
-                                 30, 50, 50, 50, 50, 50, 50, 30,
-                                100,100,100,100,100,100,100,100};  
+    int scorePawnsEnding[64] = { 0,  0,  0,  0,  0,  0,  0,  0, 
+                                 10, 10, 10, 10, 10, 10, 10, 10, 
+                                 20, 20, 20, 20, 20, 20, 20, 20,
+                                 30, 30, 30, 30, 30, 30, 30, 30,
+                                 40, 40, 40, 40, 40, 40, 40, 40,
+                                 50, 50, 50, 50, 50, 50, 50, 50,
+                                 100,100,100,100,100,100,100,100,
+                                 0,  0,  0,  0,  0,  0,  0,  0};
 
     int scoreRooks[64] = { 0,  0,  0,  5,  5,  0,  0,  0,
                           -5,  0,  0,  0,  0,  0,  0, -5,
