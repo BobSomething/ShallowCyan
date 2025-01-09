@@ -26,5 +26,12 @@ U64 bitboard_t::zobrist_board(){
       h = h ^ Zobrist_table[i][pieceTable[i]];
     }
   }
+  current_board = h;
   return h;
+}
+
+U64 bitboard_t::zobrist_update(move_t* move){
+  if (move->type_move < 0) {
+    
+  }
 }

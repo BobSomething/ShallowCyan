@@ -97,8 +97,10 @@ struct bitboard_t {
     //zobrist-hashing
     U64 Zobrist_table[64][12];
     U64 Zobrist_black;
+    U64 current_board;
     void zobrist_init();
     U64 zobrist_board();
+    U64 zobrist_update(move_t* move);
 
     /* Precomputed data of all moves */
     /* USE THESE TABLES FOR THE POSSIBLE ATTACKS */
@@ -180,9 +182,9 @@ struct bitboard_t {
                                 -40,-30,-30,-30,-30,-30,-30,-40,
                                 -40,-30,-30,-30,-30,-30,-30,-40,
                                 -30,-20,-20,-20,-20,-20,-20,-30,
-                                -10,  0,  0,  0,  0,  0,  0,  0,
+                                -10,  0,  0,  0,  0,  0,  0, -10,
                                   0, 20, 20, 20, 20, 20, 20, 20,
-                                 30, 50, 50, 50, 50, 50, 50, 50,
+                                 30, 50, 50, 50, 50, 50, 50, 30,
                                 100,100,100,100,100,100,100,100};  
 
     int scoreRooks[64] = { 0,  0,  0,  5,  5,  0,  0,  0,
