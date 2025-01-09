@@ -93,7 +93,12 @@ struct bitboard_t {
     int nb_turns = 0;               // number of turns = number of moves in the game
 
     bitboard_t();                   // Initializing the bitboards
-
+    
+    //zobrist-hashing
+    U64 Zobrist_table[64][12];
+    U64 Zobrist_black;
+    void zobrist_init();
+    U64 zobrist_board();
 
     /* Precomputed data of all moves */
     /* USE THESE TABLES FOR THE POSSIBLE ATTACKS */
@@ -157,6 +162,19 @@ struct bitboard_t {
 
     /* Evaluates the current state of the board */
     int eval();
+
+
+    //you can get inspired from https://www.chessprogramming.org/Simplified_Evaluation_Function
+    //you can implement for only white, for black's turn we can "flip" the board to get correct values
+    //TODO
+    int scorePawnsOpening[64];
+    int scorePawnsEnding[64];  
+    int scoreRooks[64];
+    int scoreKnights[64];
+    int scoreBishops[64];
+    int scoreQueens[64];
+    int scoreKingOpening[64];
+    int scoreKingEnding[64];
 
 
     /*

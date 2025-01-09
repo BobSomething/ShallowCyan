@@ -10,9 +10,10 @@ eval_move bitboard_t::search_aux(int depth, int α, int β) {
 
 	if(no_moves()) {
 		int king = (turn == 0) ? 11 : 5;
+		int sign = (turn == 0) ? 1 : -1;
 		//checkmate
 		if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) {
-			return eval_move(-inf,nullptr);
+			return eval_move(sign*inf,nullptr);
 		}
 		//stalemate
 		return eval_move(0,nullptr);
@@ -20,9 +21,9 @@ eval_move bitboard_t::search_aux(int depth, int α, int β) {
 
     if (turn) {
 		int val = -inf;
-		eval_move end = eval_move(val, nullptr);
 		std::vector<move_t*> moves;
-		generate_all_moves(&moves);  
+		generate_all_moves(&moves);
+		eval_move end = eval_move(val, moves[0]);
         for (move_t* move: moves) {
 			int p_before = pieceTable[move->before.i*8 + move->before.j];
 			int p_after = pieceTable[move->after.i*8 + move->after.j]; 
@@ -53,9 +54,9 @@ eval_move bitboard_t::search_aux(int depth, int α, int β) {
 	}
     else {
 		int val = inf;
-		eval_move end = eval_move(val, nullptr);
 		std::vector<move_t*> moves;
 		generate_all_moves(&moves);
+		eval_move end = eval_move(val, moves[0]);
         for (move_t* move : moves) {
 			int p_before = pieceTable[move->before.i*8 + move->before.j];
 			int p_after = pieceTable[move->after.i*8 + move->after.j]; 
