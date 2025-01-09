@@ -42,7 +42,7 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
                     moves->push_back(new move_t(before, after, -10));
                 }
                 else if(before.i != promotion_row && is_legal(new_move = new move_t(before, after, -1)))
-                    moves->push_back(new_move);
+                    moves->insert(moves->begin(),new_move);
             }
             attacks &= (attacks - 1);
         }
@@ -110,7 +110,7 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
             after.i = index/8;
             after.j = index%8;
             if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->push_back(new_move);
+                moves->insert(moves->begin(),new_move);
             }
             else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
                 moves->push_back(new_move);
@@ -194,7 +194,7 @@ void bitboard_t::allMovesKnights(bool color, array_moves* moves){
             after.i = index/8;
             after.j = index%8;
             if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->push_back(new_move);
+                moves->insert(moves->begin(),new_move);
             }
             else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
                 moves->push_back(new_move);
@@ -232,7 +232,7 @@ void bitboard_t::allMovesBishop(bool color, array_moves* moves){
             after.i = index/8;
             after.j = index%8;
             if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->push_back(new_move);
+                moves->insert(moves->begin(),new_move);
             }
             else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
                 moves->push_back(new_move);
@@ -270,7 +270,7 @@ void bitboard_t::allMovesRooks(bool color, array_moves* moves){
             after.i = index/8;
             after.j = index%8;
             if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->push_back(new_move);
+                moves->insert(moves->begin(),new_move);
             }
             else if (!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))) {
                 moves->push_back(new_move);
@@ -309,7 +309,7 @@ void bitboard_t::allMovesQueens(bool color, array_moves* moves){
             after.j = index%8;
             //move_t* new_move2 = new move_t(before, after, 0);
             if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->push_back(new_move);
+                moves->insert(moves->begin(),new_move);
             }
             else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
                 moves->push_back(new_move);
