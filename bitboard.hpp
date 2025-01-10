@@ -44,6 +44,8 @@ struct move_t {
 	int type_move; 
 	int score = 0;
 	int eval = 0;
+    int piece = -1;
+    int capture_piece = -2; //-1 if not capture, piece number otherwise
 
 	move_t(int before_i, int before_j, int after_i, int after_j, int type_move)
 		: before {makep(before_i,before_j)}, after {makep(after_i, after_j)}, type_move {type_move} {}
@@ -53,6 +55,12 @@ struct move_t {
 
 	move_t(coords before, coords after, int type_move)
 		: before {before}, after {after}, type_move {type_move} {}
+
+    move_t(coords before, coords after, int type_move, int piece)
+        : before {before}, after {after}, type_move {type_move}, piece {piece}, capture_piece{-1} {}
+
+    move_t(coords before, coords after, int type_move, int piece, int capture_piece)
+        : before {before}, after {after}, type_move {type_move}, piece {piece}, capture_piece {capture_piece} {}
 
 	move_t()
 		: before {makep(-10,-10)}, after {makep(-10,-10)}, type_move {-10} {} //not initialized

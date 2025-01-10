@@ -35,14 +35,14 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
             after.i = id/8;
             after.j = id%8;
             if(get_bit(different,id)) { // A capture move
-                if(before.i == promotion_row && is_legal(new_move = new move_t(before, after, -7))) {
+                if(before.i == promotion_row && is_legal(new_move = new move_t(before, after, -7, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) {
                     moves->push_back(new_move);
-                    moves->push_back(new move_t(before, after, -8));
-                    moves->push_back(new move_t(before, after, -9));
-                    moves->push_back(new move_t(before, after, -10));
+                    moves->push_back(new move_t(before, after, -8, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]));
+                    moves->push_back(new move_t(before, after, -9, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]));
+                    moves->push_back(new move_t(before, after, -10, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]));
                 }
-                else if(before.i != promotion_row && is_legal(new_move = new move_t(before, after, -1)))
-                    moves->insert(moves->begin(),new_move);
+                else if(before.i != promotion_row && is_legal(new_move = new move_t(before, after, -1, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j])))
+                    moves->push_back(new_move);
             }
             attacks &= (attacks - 1);
         }
@@ -51,7 +51,7 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
         if(enpassant_square != -1) {
             after.i = enpassant_square/8;
             after.j = enpassant_square%8;
-            if(get_bit(attacksPawns[color][index],enpassant_square) && is_legal(new_move = new move_t(before, after, -2))) {
+            if(get_bit(attacksPawns[color][index],enpassant_square) && is_legal(new_move = new move_t(before, after, -2, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) {
                 moves->push_back(new_move);
             }
         }
@@ -61,21 +61,21 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
         if(before.i == promotion_row) {
             after.i = before.i+direction;
             after.j = before.j;
-            if(!get_bit(both, before.j+(before.i+direction)*8) && is_legal(new_move = new move_t(before, after, 7))) {
+            if(!get_bit(both, before.j+(before.i+direction)*8) && is_legal(new_move = new move_t(before, after, 7, pieceTable[(before.i *8)+before.j]))) {
                 moves->push_back(new_move);
-                moves->push_back(new move_t(before, after, 8));
-                moves->push_back(new move_t(before, after, 9));
-                moves->push_back(new move_t(before, after, 10));
+                moves->push_back(new move_t(before, after, 8, pieceTable[(before.i *8)+before.j]));
+                moves->push_back(new move_t(before, after, 9, pieceTable[(before.i *8)+before.j]));
+                moves->push_back(new move_t(before, after, 10, pieceTable[(before.i *8)+before.j]));
                 continue;
             }
         }
         after.i = before.i+direction;
         after.j = before.j;
         if(!get_bit(both, before.j+(before.i+direction)*8)) {
-            if(is_legal(new_move = new move_t(before, after, 0)))
+            if(is_legal(new_move = new move_t(before, after, 0, pieceTable[(before.i *8)+before.j])))
                 moves->push_back(new_move); // normal move
             after.i = before.i+2*direction;
-            if(before.i == first_row && !get_bit(both, before.j+(before.i+2*direction)*8) && is_legal(new_move = new move_t(before, after, 3))) {
+            if(before.i == first_row && !get_bit(both, before.j+(before.i+2*direction)*8) && is_legal(new_move = new move_t(before, after, 3, pieceTable[(before.i *8)+before.j]))) {
                 moves->push_back(new_move); // double pawn push
             }
         }
@@ -109,10 +109,10 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
             index = get_LSB(attacks);
             after.i = index/8;
             after.j = index%8;
-            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->insert(moves->begin(),new_move);
+            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) { // A capture move
+                moves->push_back(new_move);
             }
-            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
+            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0, pieceTable[(before.i *8)+before.j]))){
                 moves->push_back(new_move);
             }
             attacks &= (attacks - 1);
@@ -125,7 +125,7 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
                     after.i = before.i;
                     after.j = before.j + 2;
                     if(!is_square_attacked(before.j + before.i*8,!color) && !is_square_attacked(before.j+1 + before.i*8,!color) \
-                    && is_legal(new_move = new move_t(before, after, 1))) {
+                    && is_legal(new_move = new move_t(before, after, 1, pieceTable[(before.i *8)+before.j]))) {
                         moves->push_back(new_move);
                     }
                 }
@@ -135,7 +135,7 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
                     after.i = before.i;
                     after.j = before.j - 2;
                     if(!is_square_attacked(before.j + before.i*8,!color) && !is_square_attacked(before.j-1 + before.i*8,!color) \
-                    && is_legal(new_move = new move_t(before, after, 1))) {
+                    && is_legal(new_move = new move_t(before, after, 1, pieceTable[(before.i *8)+before.j]))) {
                         moves->push_back(new_move);
                     }
                 }
@@ -147,7 +147,7 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
                     after.i = before.i;
                     after.j = before.j + 2;
                     if(!is_square_attacked(before.j + before.i*8,!color) && !is_square_attacked(before.j+1 + before.i*8,!color) \
-                    && is_legal(new_move = new move_t(before, after, 1))) {
+                    && is_legal(new_move = new move_t(before, after, 1, pieceTable[(before.i *8)+before.j]))) {
                         moves->push_back(new_move);
                     }
                 }
@@ -157,7 +157,7 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
                     after.i = before.i;
                     after.j = before.j - 2;
                     if(!is_square_attacked(before.j + before.i*8,!color) && !is_square_attacked(before.j-1 + before.i*8,!color) \
-                    && is_legal(new_move = new move_t(before, after, 1))) {
+                    && is_legal(new_move = new move_t(before, after, 1, pieceTable[(before.i *8)+before.j]))) {
                         moves->push_back(new_move);
                     }
                 }
@@ -193,10 +193,10 @@ void bitboard_t::allMovesKnights(bool color, array_moves* moves){
             index = get_LSB(attacks);
             after.i = index/8;
             after.j = index%8;
-            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->insert(moves->begin(),new_move);
+            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) { // A capture move
+               moves->push_back(new_move);
             }
-            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
+            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0, pieceTable[(before.i *8)+before.j]))){
                 moves->push_back(new_move);
             }
             attacks &= (attacks - 1);
@@ -231,10 +231,10 @@ void bitboard_t::allMovesBishop(bool color, array_moves* moves){
             index = get_LSB(attacks);
             after.i = index/8;
             after.j = index%8;
-            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->insert(moves->begin(),new_move);
+            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) { // A capture move
+                moves->push_back(new_move);
             }
-            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
+            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0, pieceTable[(before.i *8)+before.j]))){
                 moves->push_back(new_move);
             }
             attacks &= (attacks - 1);
@@ -269,10 +269,10 @@ void bitboard_t::allMovesRooks(bool color, array_moves* moves){
             index = get_LSB(attacks);
             after.i = index/8;
             after.j = index%8;
-            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->insert(moves->begin(),new_move);
+            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) { // A capture move
+                moves->push_back(new_move);
             }
-            else if (!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))) {
+            else if (!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0, pieceTable[(before.i *8)+before.j]))) {
                 moves->push_back(new_move);
             }
             attacks &= (attacks - 1);
@@ -308,10 +308,10 @@ void bitboard_t::allMovesQueens(bool color, array_moves* moves){
             after.i = index/8;
             after.j = index%8;
             //move_t* new_move2 = new move_t(before, after, 0);
-            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1))) { // A capture move
-                moves->insert(moves->begin(),new_move);
+            if(get_bit(different,index) && is_legal(new_move = new move_t(before, after, -1, pieceTable[(before.i *8)+before.j], pieceTable[(after.i *8)+after.j]))) { // A capture move
+                moves->push_back(new_move);
             }
-            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0))){
+            else if(!get_bit(different,index) && is_legal(new_move = new move_t(before, after, 0, pieceTable[(before.i *8)+before.j]))){
                 moves->push_back(new_move);
             }
             attacks &= (attacks - 1);
