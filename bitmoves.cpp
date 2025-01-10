@@ -9,45 +9,33 @@ U64 fileGH = 0xc0c0c0c0c0c0c0c0;
 U64 bitboard_t::attacksKing_mask(int square) {
     //TODO
     //To avoid loops
-    U64 temp_bitboard = 0x0000000000000000;
+    U64 temp_bitboard = 0ULL;
     if (square%8 == 7){
-        temp_bitboard = 0x0101010101010101;
+        temp_bitboard = fileA;
+    } else if (square%8 == 0){
+        temp_bitboard = fileH;
     }
-    if (square%8 == 0){
-        temp_bitboard = 0x8080808080808080;
-    }
+    /* Somehow we should probably remove this */
     if (square < 8){
         temp_bitboard |= 0xFF00000000000000;
-    }
-    if (square > 55){
+    } else if (square > 55){
         temp_bitboard |= 0x00000000000000FF;
     }
 
     U64 attack_bitboard = 0ULL;
-    // set_bit(temp_bitboard, square);
-
-    set_bit(attack_bitboard, (square + 1));
-    set_bit(attack_bitboard, (square - 1));
-    set_bit(attack_bitboard, (square + 8));
-    set_bit(attack_bitboard, (square - 8));
-    set_bit(attack_bitboard, (square + 7));
-    set_bit(attack_bitboard, (square + 9));
-    set_bit(attack_bitboard, (square - 7));
-    set_bit(attack_bitboard, (square - 9));
-
+    int moves[] = {-9, -8, -7, -1, 1, 7, 8, 9};
+    for (int move : moves) set_bit(attack_bitboard, (square + move));
     return attack_bitboard & (~temp_bitboard);
-    // return temp_bitboard;
 }
 
 U64 bitboard_t::attacksPawns_mask(int square, bool color) {
     //TODO
     //To avoid loops
-    U64 temp_bitboard = 0x0000000000000000;
+    U64 temp_bitboard = 0ULL;
     if (square%8 == 7){
-        temp_bitboard = 0x0101010101010101;
-    }
-    if (square%8 == 0){
-        temp_bitboard = 0x8080808080808080;
+        temp_bitboard = fileA;
+    } else if (square%8 == 0){
+        temp_bitboard = fileH;
     }
     if (square < 8){
         temp_bitboard |= 0xFF00000000000000;
