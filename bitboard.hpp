@@ -330,6 +330,21 @@ struct bitboard_t {
     //create the search function for alpha-beta prunning
     eval_move search_aux(int depth, int α = -inf, int β = inf);
     move_t* search(int depth);
+    int eval_moves(move_t* move);
+
+    //Map for translate pieces to their correspond points
+    std::map<int, int> pieces_to_points = {
+        {0, 100},       //white pawns
+        {1, 300},       //white knights
+        {2, 300},       //white bishops
+        {3, 500},       //white rooks
+        {4, 900},       //white queen
+        {6,-100},       //black pawns
+        {7,-300},       //black knights
+        {8,-300},       //black bishops
+        {9,-500},       //black rooks
+        {10,-900}       //black queen
+    };
 }; 
 
 #endif
