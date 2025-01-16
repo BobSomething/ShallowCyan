@@ -1,10 +1,8 @@
 #include "bitboard.hpp"
 
-eval_move bitboard_t::search_aux(int depth, int α, int β) {
+move_t* bitboard_t::search(int depth, int α, int β) {
 	/* Alpha-beta pruning :) */
-	// for now, returns an int
-	// MAKE A COPY FUNCTION (should be done but im keeping this in case its wrong so we know its important)
-    if (depth == 0) { // OR CHECKMATE
+    if (depth == 0) { 
 		return eval_move(this->eval(),nullptr);
 	}
 
