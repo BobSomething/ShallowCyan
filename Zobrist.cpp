@@ -41,3 +41,4 @@ U64 bitboard_t::zobrist_update(move_t* move){
   current_board = current_board ^ Zobrist_black;
   return current_board;
 }
+
