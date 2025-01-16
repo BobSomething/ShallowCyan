@@ -89,3 +89,6 @@ eval_move bitboard_t::search_aux(int depth, int α, int β) {
 move_t* bitboard_t::search(int depth){
 	return search_aux(depth).second;
 }
+
+
+

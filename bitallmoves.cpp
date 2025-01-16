@@ -280,7 +280,7 @@ void bitboard_t::allMovesRooks(bool color, array_moves* moves){
     }
 };
 
-void bitboard_t::allMovesQueens(bool color, array_moves* moves){
+void bitboard_t::allMovesQueens(bool color, array_moves* moves, bool capture = false){
     coords before, after;
     move_t* new_move;
     U64 same = 0, different = 0, both = 0, attacks;

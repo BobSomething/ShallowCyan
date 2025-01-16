@@ -13,6 +13,9 @@ Implemented bitboard attack for bishop and queen.
 Week 4:
 Still sick, tbh i forgot what i did :(
 
-Hollidays:
+Holidays:
 Worked on Alpha-Beta prunning and the implementation of the algorithm in our case, using the eval() method to give us who has the advantage (will make eval better, for now only uses material)
 Started working on Zobrist Hashing to efficiently see if we already had this board before (usefull to check 3 fold repition and in eval as the same position happens very often)
+
+Week 5:
+Worked some more on Zobrist hashing, changed the innitialization of move_t to include the piece it moves and capture (if its a capture move) as we need it to update the hash.

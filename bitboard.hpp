@@ -42,8 +42,8 @@ struct move_t {
     */
 
 	int type_move; 
-	int score = 0;
-	int eval = 0;
+	int score = 0; //for move ordering
+	int eval = 0; //for search
     int piece = -1;
     int capture_piece = -2; //-1 if not capture, piece number otherwise
 
@@ -328,8 +328,7 @@ struct bitboard_t {
 
 
     //create the search function for alpha-beta prunning
-    eval_move search_aux(int depth, int α = -inf, int β = inf);
-    move_t* search(int depth);
+    move_t* search(int depth, int α = -inf, int β = inf);
     int eval_moves(move_t* move);
 
     //Map for translate pieces to their correspond points
