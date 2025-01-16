@@ -339,3 +339,4 @@ void bitboard_t::generate_all_moves(array_moves* moves, bool only_capture) {
     }
     if (swap_c) std::cout << "Generate all moves performed " << swap_c << " swaps!";
 }
+
