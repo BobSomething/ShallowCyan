@@ -668,3 +668,21 @@ int bitboard_t::eval() {
     }
     return total;
 }
+
+int bitboard_t::eval_moves(move_t* move){
+    int score = 0;
+    int move_piece_type = pieceTable[move->before.i*8+move->before.j];
+    int captured_piece_type = pieceTable[move->after.i*8+move->after.j];
+    if (captured_piece_type != -1){     //Captured something
+        score = 2*pieces_to_points[captured_piece_type] - pieces_to_points[move_piece_type];
+    }
+    bool color = 0;
+    if (move_piece_type < 6){
+        color = 1;
+    }
+    if (is_square_attacked(move->after.i*8+move->after.j, color)){
+        score -= pieces_to_points[move_piece_type];
+    }
+    move->score = score;
+    return score;
+}
