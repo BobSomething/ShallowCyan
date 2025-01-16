@@ -570,7 +570,7 @@ bool bitboard_t::no_moves() {
 //For now we generate a random move from all legal moves
 //After a while try search function
 std::string bitboard_t::next_move() {
-    if(nb_turns < 10) {
+    if(nb_turns < 0) {
         array_moves moves;
         std::srand(std::time(0));
         generate_all_moves(&moves);
@@ -674,7 +674,7 @@ int bitboard_t::score_move(move_t* move){
     int move_piece_type = pieceTable[move->before.i*8+move->before.j];
     int captured_piece_type = pieceTable[move->after.i*8+move->after.j];
     if (captured_piece_type != -1){     //Captured something
-        score = 2*pieces_to_points[captured_piece_type] - pieces_to_points[move_piece_type];
+        score = 2*pieces_to_points[captured_piece_type];
     }
     bool color = (move_piece_type < 6) ? 1 : 0;
     if (is_square_attacked(move->after.i*8+move->after.j, color)){
