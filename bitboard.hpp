@@ -329,7 +329,7 @@ struct bitboard_t {
 
     //create the search function for alpha-beta prunning
     move_t* search(int depth, int α = -inf, int β = inf);
-    int eval_moves(move_t* move);
+    int score_move(move_t* move);
 
     //Map for translate pieces to their correspond points
     std::map<int, int> pieces_to_points = {
