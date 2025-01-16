@@ -36,7 +36,7 @@ move_t* bitboard_t::search(int depth, int α = -inf, int β = inf) {
 		update(move);
 
 		//int pval = child.search_aux(depth - 1, α, β).first;
-		int pval = search_aux(depth - 1, α, β)->eval;
+		int pval = search(depth - 1, α, β)->eval;
 
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
