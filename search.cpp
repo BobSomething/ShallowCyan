@@ -1,6 +1,6 @@
 #include "bitboard.hpp"
 
-move_t* bitboard_t::search(int depth, int α = -inf, int β = inf) {
+move_t* bitboard_t::search(int depth, int α, int β) {
 	/* Alpha-beta pruning :) */
     if (depth == 0) { 
 		move_t* ret;
@@ -57,5 +57,6 @@ move_t* bitboard_t::search(int depth, int α = -inf, int β = inf) {
 			if (val < α) break;
 			if (val < β) β = val;
 		}
-    return ret;
+	}
+	return ret;
 }
