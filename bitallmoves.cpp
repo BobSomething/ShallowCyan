@@ -1,6 +1,6 @@
 #include "bitboard.hpp"
 
-void bitboard_t::allMovesPawns(bool color, array_moves* moves){
+void bitboard_t::allMovesPawns(bool color, array_moves* moves, bool only_capture = false){
     coords before, after;
     move_t* new_move;
     U64 different = 0, both = 0, attacks;
@@ -82,7 +82,7 @@ void bitboard_t::allMovesPawns(bool color, array_moves* moves){
     }
 }
 
-void bitboard_t::allMovesKing(bool color, array_moves* moves) {
+void bitboard_t::allMovesKing(bool color, array_moves* moves, bool only_capture = false) {
     coords before, after;
     move_t* new_move;
     U64 same = 0, different = 0, both = 0, attacks;
@@ -167,7 +167,7 @@ void bitboard_t::allMovesKing(bool color, array_moves* moves) {
 }
 
 
-void bitboard_t::allMovesKnights(bool color, array_moves* moves){
+void bitboard_t::allMovesKnights(bool color, array_moves* moves, bool only_capture = false){
     coords before, after;
     move_t* new_move;
     U64 same = 0, different = 0, both = 0, attacks;
@@ -205,7 +205,7 @@ void bitboard_t::allMovesKnights(bool color, array_moves* moves){
 };
 
 //Bishop, basically copy paste from knight
-void bitboard_t::allMovesBishop(bool color, array_moves* moves){
+void bitboard_t::allMovesBishop(bool color, array_moves* moves, bool only_capture = false){
     coords before, after;
     move_t* new_move;
     U64 same = 0, different = 0, both = 0, attacks;
@@ -242,7 +242,7 @@ void bitboard_t::allMovesBishop(bool color, array_moves* moves){
     }
 }
 
-void bitboard_t::allMovesRooks(bool color, array_moves* moves){
+void bitboard_t::allMovesRooks(bool color, array_moves* moves, bool only_capture = false){
     coords before, after;
     move_t* new_move;
     U64 same = 0, different = 0, both = 0, attacks;
@@ -280,7 +280,7 @@ void bitboard_t::allMovesRooks(bool color, array_moves* moves){
     }
 };
 
-void bitboard_t::allMovesQueens(bool color, array_moves* moves, bool capture = false){
+void bitboard_t::allMovesQueens(bool color, array_moves* moves, bool only_capture = false){
     coords before, after;
     move_t* new_move;
     U64 same = 0, different = 0, both = 0, attacks;
@@ -319,11 +319,11 @@ void bitboard_t::allMovesQueens(bool color, array_moves* moves, bool capture = f
     }
 }
 
-void bitboard_t::generate_all_moves(array_moves* moves) {
-    allMovesPawns(turn, moves);
-    allMovesKnights(turn, moves);
-    allMovesBishop(turn, moves);
-    allMovesRooks(turn, moves);
-    allMovesQueens(turn, moves);
-    allMovesKing(turn, moves);
+void bitboard_t::generate_all_moves(array_moves* moves, bool only_capture = false) {
+    allMovesPawns(turn, moves, only_capture);
+    allMovesKnights(turn, moves, only_capture);
+    allMovesBishop(turn, moves, only_capture);
+    allMovesRooks(turn, moves, only_capture);
+    allMovesQueens(turn, moves, only_capture);
+    allMovesKing(turn, moves, only_capture);
 }

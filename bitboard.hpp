@@ -292,14 +292,14 @@ struct bitboard_t {
     */
 
 
-    void allMovesPawns(bool color, array_moves* moves);
-    void allMovesKnights(bool color, array_moves* moves);
-    void allMovesKing(bool color, array_moves* moves);
-    void allMovesBishop(bool color, array_moves* moves);
-    void allMovesRooks(bool color, array_moves* moves);
-    void allMovesQueens(bool color, array_moves* moves);
+    void allMovesPawns(bool color, array_moves* moves, bool only_capture = false);
+    void allMovesKnights(bool color, array_moves* moves, bool only_capture = false);
+    void allMovesKing(bool color, array_moves* moves, bool only_capture = false);
+    void allMovesBishop(bool color, array_moves* moves, bool only_capture = false);
+    void allMovesRooks(bool color, array_moves* moves, bool only_capture = false);
+    void allMovesQueens(bool color, array_moves* moves, bool only_capture = false);
 
-    void generate_all_moves(array_moves* moves);
+    void generate_all_moves(array_moves* moves, bool only_capture = false);
 
 
     /*
