@@ -9,6 +9,7 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 	}
 
     int val = (turn) ? -inf : inf;
+	ret->eval = val;
 	std::vector<move_t*> moves;
 	generate_all_moves(&moves);
 	
@@ -20,7 +21,6 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 		return ret;
 	}
 
-	ret->eval = val;
 	for (move_t* move: moves) {
 		int p_before = pieceTable[move->before.i*8 + move->before.j];
 		int p_after = pieceTable[move->after.i*8 + move->after.j]; 
