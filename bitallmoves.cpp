@@ -326,18 +326,16 @@ void bitboard_t::generate_all_moves(array_moves* moves, bool only_capture) {
     allMovesBishop(turn, moves, only_capture);
     allMovesPawns(turn, moves, only_capture);
     allMovesKing(turn, moves, only_capture);
-    if (moves->size() == 0) return;
     int move_p = 100;   // What is a good move? Determine here xd. Maybe make dynamic parameter?
     int swap_c = 0;     // Count swap (for debugging)
     size_t i = 0;
-    while (score_move(moves->at(i)) > move_p) i++;
-    for (size_t j = 0; j < moves->size(); j++) {
+    while (moves->size() > i && score_move(moves->at(i)) > move_p) i++;
+    for (size_t j = i; j < moves->size(); j++) {
         if (score_move(moves->at(j)) > move_p) {
             move_t* temp = moves->at(i);
             moves->at(i) = moves->at(j);
             moves->at(j) = temp;
         }
     }
-    if (swap_c) std::cout << swap_c;
-    //std::cout << "Generate all moves performed " << swap_c << " swaps!";
+    if (swap_c) std::cout << "Generate all moves performed " << swap_c << " swaps!";
 }
