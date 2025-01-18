@@ -3,7 +3,9 @@
 move_t* bitboard_t::search(int depth, int α, int β) {
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
-    if (depth == 0) { 
+    if (depth == 0) {
+		ret->eval = eval();
+		return ret;
 		return Quiescence_search(2, α,β);
 	}
 
@@ -32,11 +34,24 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 		//bitboard_t child = this->copy();
 		//child.update(move);
 		update(move);
-
-		//int pval = child.search_aux(depth - 1, α, β).first;
-		int pval = search(depth - 1, α, β)->eval;
-
+		int pval;
+		if (counter_hash_map[hash_current_board] >= 3){
+			pval = 0;
+		}
+		else {
+			std::map<U64,int>::iterator it;
+			it = zobrist_hash_map.find(hash_current_board);
+			if (it != zobrist_hash_map.end()){
+				pval = zobrist_hash_map[hash_current_board];
+			}
+			//int pval = child.search_aux(depth - 1, α, β).first;
+			else {
+				pval = search(depth - 1, α, β)->eval;
+				zobrist_hash_map[hash_current_board] = pval;
+			}
+		}
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
+		
 		
 		if (turn) {
 			if (pval > val){

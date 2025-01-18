@@ -134,7 +134,7 @@ bitboard_t::bitboard_t() {
         }
     }
     zobrist_init();
-
+    hash_current_board = zobrist_board();
 }
 
 
@@ -287,6 +287,10 @@ void bitboard_t::undo(move_t* move, int p_before, int p_after, int ep_square, bo
     int index_before = move->before.i*8 + move->before.j; 
     int index_after = move->after.i*8 + move->after.j;
 
+    //update the Zobrist hash
+    counter_hash_map[hash_current_board]--;
+    hash_current_board = zobrist_update(move);
+
     turn ^= 1;
 
     //undo en passant square and castling rights
@@ -412,6 +416,11 @@ void bitboard_t::update_string(std::string move) {
 }
 
 bool bitboard_t::update(move_t* move) {
+    //updating the zobrist-hash at every update
+    hash_current_board = zobrist_update(move);
+    counter_hash_map[hash_current_board]++;
+
+
     int index_before, index_after, piece_before, piece_after;
     index_before = move->before.i*8 + move->before.j; 
     index_after = move->after.i*8 + move->after.j;
@@ -578,7 +587,7 @@ std::string bitboard_t::next_move() {
         return move_to_string(moves[rand_pos]);
     }
     else {
-        return move_to_string(search(4));
+        return move_to_string(search(5));
     }
 }
 
@@ -628,7 +637,10 @@ int bitboard_t::eval() {
     //define a threshold of nb of pieces that we are in endgame: ...
      //add up scores from score tables
     //remember to "flip" the board for black's turn
-    //check if we are in endgame or not, if so remember to use Ending tables for kings and pawns
+    //check if we are in endgame or not, if so remember to use Ending tables for kings and pawn
+    if (counter_hash_map[hash_current_board] >= 3){
+		return 0;
+	}
     int total = 0;
     U64 nb_piece = 0;
     for (int i=1; i<12; i++){

@@ -106,10 +106,13 @@ struct bitboard_t {
     //zobrist-hashing
     U64 Zobrist_table[64][12];
     U64 Zobrist_black;
-    U64 current_board;
+    U64 hash_current_board;
     void zobrist_init();
     U64 zobrist_board();
     U64 zobrist_update(move_t* move);
+    std::map<U64,int> zobrist_hash_map;
+    std::map<U64,int> counter_hash_map;
+
 
     /* Precomputed data of all moves */
     /* USE THESE TABLES FOR THE POSSIBLE ATTACKS */

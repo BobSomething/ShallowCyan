@@ -26,7 +26,7 @@ U64 bitboard_t::zobrist_board(){
       h = h ^ Zobrist_table[i][pieceTable[i]];
     }
   }
-  current_board = h;
+  hash_current_board = h;
   return h;
 }
 
@@ -34,11 +34,11 @@ U64 bitboard_t::zobrist_update(move_t* move){
   int b4sqr = (move->before.first *8 )+ move->before.second;
   int aftersqr = (move->after.first *8 )+ move->after.second;
   if (move->type_move < 0) {
-    current_board = current_board ^ Zobrist_table[aftersqr][move->capture_piece];
+    hash_current_board = hash_current_board ^ Zobrist_table[aftersqr][move->capture_piece];
   }
-  current_board = current_board ^ Zobrist_table[b4sqr][move->piece];
-  current_board = current_board ^ Zobrist_table[aftersqr][move->piece];
-  current_board = current_board ^ Zobrist_black;
-  return current_board;
+  hash_current_board = hash_current_board ^ Zobrist_table[b4sqr][move->piece];
+  hash_current_board = hash_current_board ^ Zobrist_table[aftersqr][move->piece];
+  hash_current_board = hash_current_board ^ Zobrist_black;
+  return hash_current_board;
 }
 
