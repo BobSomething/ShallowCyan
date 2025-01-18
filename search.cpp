@@ -1,6 +1,10 @@
 #include "bitboard.hpp"
+#include <chrono>
 
 move_t* bitboard_t::search(int depth, int α, int β) {
+	// Timer for 5 seconds rule
+	auto start = std::chrono::high_resolution_clock::now();
+
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
     if (depth == 0) {
@@ -23,6 +27,12 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 	}
 
 	for (move_t* move: moves) {
+		auto now = std::chrono::high_resolution_clock::now();
+    	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
+		if (elapsed>=4.5){
+			break;
+		}
+
 		int p_before = pieceTable[move->before.i*8 + move->before.j];
 		int p_after = pieceTable[move->after.i*8 + move->after.j]; 
 		int ep_square = enpassant_square;

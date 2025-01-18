@@ -655,24 +655,26 @@ int bitboard_t::eval() {
             case 1: total += 300 + scoreKnights[i]; break;
             case 2: total += 300 + scoreBishops[i]; break;
             case 3: total += 500 + scoreRooks[i]; break;
-            case 4: total += 900 + scoreQueens[i]; break;
             case 7: total -= 300 + scoreKnights[((8-(i/8))*8)-(8-i%8)]; break;
             case 8: total -= 300 + scoreBishops[((8-(i/8))*8)-(8-i%8)]; break;
             case 9: total -= 500 + scoreRooks[((8-(i/8))*8)-(8-i%8)]; break;
-            case 10:total-= 900 + scoreQueens[((8-(i/8))*8)-(8-i%8)]; break;
             default:
                 if (in_opening){
                     switch(a) {
                         case 0: total += 100 + scorePawnsOpening[i]; break;
+                        case 4: total += 900 + scoreQueensOpening[i]; break;
                         case 5: total += scoreKingOpening[i]; break;
                         case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 10:total-= 900 + scoreQueensOpening[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= scoreKingOpening[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 } else {
                     switch(a) {
                         case 0: total += 100 + scorePawnsEnding[i]; break;
+                        case 4:total += 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 5: total += scoreKingEnding[i]; break;
                         case 6: total -= 100 + scorePawnsEnding[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 10:total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 }
