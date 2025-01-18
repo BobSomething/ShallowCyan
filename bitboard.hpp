@@ -329,6 +329,7 @@ struct bitboard_t {
 
     //create the search function for alpha-beta prunning
     move_t* search(int depth, int α = -inf, int β = inf);
+    move_t* Quiescence_search(int depth, int α = -inf, int β = inf);
     int score_move(move_t* move);
 
     //Map for translate pieces to their correspond points

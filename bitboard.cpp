@@ -578,7 +578,7 @@ std::string bitboard_t::next_move() {
         return move_to_string(moves[rand_pos]);
     }
     else {
-        return move_to_string(search(5));
+        return move_to_string(search(4));
     }
 }
 

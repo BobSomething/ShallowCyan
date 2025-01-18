@@ -4,8 +4,7 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
     if (depth == 0) { 
-		ret->eval = this->eval();
-		return ret;
+		return Quiescence_search(2, α,β);
 	}
 
     int val = (turn) ? -inf : inf;
@@ -58,4 +57,61 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 		}
 	}
 	return ret;
+}
+
+move_t* bitboard_t::Quiescence_search(int depth, int α, int β){
+	move_t* best_move = new move_t;
+
+	best_move->eval = eval();
+
+    if (best_move->eval >= β) {
+        return best_move;
+    }
+    if (best_move->eval > α) {
+        α = best_move->eval;
+    }
+
+	if (depth == 0){
+		return best_move;
+	}
+	int pval = best_move->eval;
+
+	std::vector<move_t*> moves;
+	generate_all_moves(&moves, true);
+
+	int val = (turn) ? -inf : inf;
+
+	for (move_t* move: moves){
+		int p_before = pieceTable[move->before.i*8 + move->before.j];
+		int p_after = pieceTable[move->after.i*8 + move->after.j]; 
+		int ep_square = enpassant_square;
+		bool w_c_kside = w_castle_kside;
+		bool w_c_qside = w_castle_qside; 
+		bool b_c_kside = b_castle_kside;
+		bool b_c_qside = b_castle_qside;
+
+		update(move);
+		int score_Q = Quiescence_search(depth-1, α, β)->eval;
+		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
+
+
+		if (turn) {
+			if (score_Q > val){
+				val = score_Q;
+				move->eval = val;
+				best_move = move;
+			} 
+			if (val > β) break;
+			if (val > α) α = val;
+		} else {
+			if (score_Q < val){
+				val = score_Q;
+				move->eval = val;
+				best_move = move;
+			} 
+			if (val < α) break;
+			if (val < β) β = val;
+		}
+	}
+	return best_move;
 }

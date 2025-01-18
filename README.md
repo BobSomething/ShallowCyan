@@ -35,3 +35,4 @@ TODO:
 3. openings book moves => probably encode these with fen notation, or zobrist hashing
 4. heuristics for endgames and openings -> where to move the pieces:
     like kings want to castle in the beginning, knights want to be more in the center and so on.
+5. Manage memort leaks
