@@ -3,9 +3,9 @@
 
 //std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
-move_t* bitboard_t::search(int depth, int α, int β) {
-	// Timer for 5 seconds rule
-	auto start = std::chrono::high_resolution_clock::now();
+move_t* bitboard_t::search(int depth, int α, int β, double time) {
+	// Timer
+	auto tracker = std::chrono::high_resolution_clock::now();
 
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
@@ -31,11 +31,9 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 	ret->eval = val;
 
 	for (move_t* move: moves) {
-		auto now = std::chrono::high_resolution_clock::now();
-    	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
-		if (elapsed>=7){
-			break;
-		}
+		time += std::chrono::duration_cast<std::chrono::seconds> (tracker - std::chrono::high_resolution_clock::now()).count();
+		tracker = std::chrono::high_resolution_clock::now();
+    	if (MAX_TIME - time < 0.5) break;
 
 		int p_before = pieceTable[move->before.i*8 + move->before.j];
 		int p_after = pieceTable[move->after.i*8 + move->after.j]; 
@@ -65,7 +63,7 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 			}
 		}*/
 		else {
-			pval = search(depth - 1, α, β)->eval;
+			pval = search(depth - 1, α, β, time)->eval;
 			if (pval) pval -= ((turn == 0) ? 1 : -1);
 		}
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
