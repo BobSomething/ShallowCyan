@@ -64,8 +64,10 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 				zobrist_hash_map[hash_current_board] = pval;
 			}
 		}*/
-		else 
+		else {
 			pval = search(depth - 1, α, β)->eval;
+			if (pval) pval -= ((turn == 0) ? 1 : -1);
+		}
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
 		
