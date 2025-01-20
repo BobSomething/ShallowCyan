@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     bboard.printBB();
 
     auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::cout << "Time elapsed " << (trackered-tracker)/1000000;
+    std::cout << "Time elapsed " << (trackered-tracker)/1000000 << std::endl;
 
     /* bitboard_t board_test;
 

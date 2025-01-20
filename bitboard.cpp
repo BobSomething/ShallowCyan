@@ -690,7 +690,7 @@ int bitboard_t::score_move(move_t* move){
     int move_piece_type = pieceTable[move->before.i*8+move->before.j];
     int captured_piece_type = pieceTable[move->after.i*8+move->after.j];
     if (captured_piece_type != -1){     //Captured something
-        score = 2*pieces_to_points[captured_piece_type];
+        score += MVV_LVA[move_piece_type][captured_piece_type];
     }
     bool color = (move_piece_type < 6) ? 1 : 0;
     if (is_square_attacked(move->after.i*8+move->after.j, color)){
