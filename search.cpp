@@ -1,6 +1,8 @@
 #include "bitboard.hpp"
 #include <chrono>
 
+//std::chrono::time_point<std::chrono::high_resolution_clock> start;
+
 move_t* bitboard_t::search(int depth, int α, int β) {
 	// Timer for 5 seconds rule
 	auto start = std::chrono::high_resolution_clock::now();
@@ -10,11 +12,10 @@ move_t* bitboard_t::search(int depth, int α, int β) {
     if (depth == 0) {
 		ret->eval = eval();
 		return ret;
-		return Quiescence_search(2, α,β);
+		//return Quiescence_search(2, α,β);
 	}
 
     int val = (turn) ? -inf : inf;
-	ret->eval = val;
 	std::vector<move_t*> moves;
 	generate_all_moves(&moves);
 	
@@ -25,11 +26,14 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 		else ret->eval = 0; //stalemate
 		return ret;
 	}
+	
+	ret = moves[0];
+	ret->eval = val;
 
 	for (move_t* move: moves) {
 		auto now = std::chrono::high_resolution_clock::now();
     	auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
-		if (elapsed>=4.5){
+		if (elapsed>=7){
 			break;
 		}
 
@@ -48,7 +52,7 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 		if (counter_hash_map[hash_current_board] >= 3){
 			pval = 0;
 		}
-		else {
+		/*else {
 			std::map<U64,int>::iterator it;
 			it = zobrist_hash_map.find(hash_current_board);
 			if (it != zobrist_hash_map.end()){
@@ -59,7 +63,9 @@ move_t* bitboard_t::search(int depth, int α, int β) {
 				pval = search(depth - 1, α, β)->eval;
 				zobrist_hash_map[hash_current_board] = pval;
 			}
-		}
+		}*/
+		else 
+			pval = search(depth - 1, α, β)->eval;
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
 		

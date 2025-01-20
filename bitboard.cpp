@@ -671,10 +671,10 @@ int bitboard_t::eval() {
                 } else {
                     switch(a) {
                         case 0: total += 100 + scorePawnsEnding[i]; break;
-                        case 4:total += 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 4: total += 900 + scoreQueensEnding[i]; break;
                         case 5: total += scoreKingEnding[i]; break;
                         case 6: total -= 100 + scorePawnsEnding[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 10:total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 10: total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 }

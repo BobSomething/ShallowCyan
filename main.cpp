@@ -45,10 +45,6 @@ int main(int argc, char* argv[]) {
     output.close();
 
     bboard.printBB();
-    //array_moves moves;
-    //bboard.generate_all_moves(&moves);
-
-    
     /* bitboard_t board_test;
 
     board_test.update_with_fen(epcases);
