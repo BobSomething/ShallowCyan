@@ -587,7 +587,9 @@ std::string bitboard_t::next_move() {
         return move_to_string(moves[rand_pos]);
     }
     else {
-        return move_to_string(search(5));
+        move_t* next = search(5);
+        std::cout << "Evaluation: " << next->eval << std::endl;
+        return move_to_string(next);
     }
 }
 
@@ -662,10 +664,10 @@ int bitboard_t::eval() {
                 if (in_opening){
                     switch(a) {
                         case 0: total += 100 + scorePawnsOpening[i]; break;
-                        case 4: total += 900 + scoreQueensOpening[i]; break;
+                        case 4: total += 900 + scoreQueensEnding[i]; break;
                         case 5: total += scoreKingOpening[i]; break;
                         case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 10:total -= 900 + scoreQueensOpening[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 10:total -= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= scoreKingOpening[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 } else {
