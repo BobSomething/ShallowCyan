@@ -24,6 +24,6 @@ struct move_t;
 #define get_count(bitboard) (__builtin_popcountl(bitboard))
 
 /* Parameters or something */
-#define MAX_TIME 5
+#define MAX_TIME 9000000000
 
 #endif

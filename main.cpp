@@ -3,12 +3,15 @@
 //#include "magicbitboard.cpp"
 #include <fstream>
 #include <cstring>
-
+#include <ctime>
+#include <iomanip> // For std::put_time
 
 
 int main(int argc, char* argv[]) {
     bool state = true;
     std::string history, move;
+    auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
     //Taking all the arguments
     for(int i = 1; i < argc; i++) {
         // Checking all if the next argument is a history file or a move file
@@ -45,6 +48,10 @@ int main(int argc, char* argv[]) {
     output.close();
 
     bboard.printBB();
+
+    auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    std::cout << "Time elapsed " << (trackered-tracker)/1000000;
+
     /* bitboard_t board_test;
 
     board_test.update_with_fen(epcases);

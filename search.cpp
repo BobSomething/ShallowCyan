@@ -5,7 +5,8 @@
 
 move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	// Timer
-	auto tracker = std::chrono::high_resolution_clock::now();
+	auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
 
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
@@ -31,10 +32,11 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	ret->eval = val;
 
 	for (move_t* move: moves) {
-		time += std::chrono::duration_cast<std::chrono::seconds> (tracker - std::chrono::high_resolution_clock::now()).count();
-		tracker = std::chrono::high_resolution_clock::now();
-    	if (MAX_TIME - time < 0.5) break;
-
+		auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    	if (trackered - tracker > MAX_TIME){
+			tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+			break;
+		}
 		int p_before = pieceTable[move->before.i*8 + move->before.j];
 		int p_after = pieceTable[move->after.i*8 + move->after.j]; 
 		int ep_square = enpassant_square;
