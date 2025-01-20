@@ -665,7 +665,7 @@ int bitboard_t::eval() {
                         case 4: total += 900 + scoreQueensOpening[i]; break;
                         case 5: total += scoreKingOpening[i]; break;
                         case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 10:total-= 900 + scoreQueensOpening[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 10:total -= 900 + scoreQueensOpening[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= scoreKingOpening[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 } else {
