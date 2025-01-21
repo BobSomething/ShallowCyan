@@ -10,7 +10,7 @@
 int main(int argc, char* argv[]) {
     bool state = true;
     std::string history, move;
-    auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    //auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
     //Taking all the arguments
     for(int i = 1; i < argc; i++) {
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     //Initializing the board
     bitboard_t bboard;
-    //bboard.update_with_fen("4Q3/3Q4/1p4pk/p6p/5p2/P6P/1b3PP1/4R1K1 w - - 0 48");
+    //bboard.update_with_fen("N2q1b1r/3bkp2/p1Qp2pp/2n1p1n1/8/7P/PPPPNPP1/R1B1K2R w KQ - 4 20");
 
     //Reading the history file
     std::ifstream input;

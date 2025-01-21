@@ -245,7 +245,7 @@ struct bitboard_t {
                                 -10,  0,  0,  0,  0,  0,  0,-10,
                                 -20,-10,-10, -5, -5,-10,-10,-20};
 
-    int scoreKingOpening[64] = { 20, 30, 10,  0,  0, 10, 30, 20,
+    int scoreKingOpening[64] = { 20, 30, 10, -5, -5, 10, 30, 20,
                                  20, 20,  0,  0,  0,  0, 20, 20,
                                 -10,-20,-20,-20,-20,-20,-20,-10,
                                 -20,-30,-30,-40,-40,-30,-30,-20,
@@ -342,7 +342,7 @@ struct bitboard_t {
 
     //create the search function for alpha-beta prunning
     move_t* search(int depth, int α = -inf, int β = inf, double time = 0);
-    move_t* Quiescence_search(int depth, int α = -inf, int β = inf);
+    move_t* Quiescence_search(int depth, int α = -inf, int β = inf, double time = 0);
     int score_move(move_t* move);
 
     //Map for translate pieces to their correspond points

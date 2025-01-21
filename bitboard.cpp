@@ -587,9 +587,10 @@ std::string bitboard_t::next_move() {
         return move_to_string(moves[rand_pos]);
     }
     else {
-        move_t* next = search(5);
-        std::cout << "Evaluation: " << next->eval << std::endl;
-        return move_to_string(next);
+        return move_to_string(search(4));
+        //move_t* next = search(4);
+        //std::cout << "Evaluation: " << next->eval << std::endl;
+        //return move_to_string(next);
     }
 }
 
@@ -649,35 +650,35 @@ int bitboard_t::eval() {
         nb_piece |= piecesBB[i];
     }
     int nb_pieces = get_count(nb_piece);
-    bool in_opening = (nb_pieces > 10); // Maybe change parameter
+    bool in_opening = (nb_pieces > 14); // Maybe change parameter
     for (int i=0; i<SIZESQ; ++i) {
         int a = this->pieceTable[i];
         if (a == -1) continue;
         switch(a) {
-            case 1: total += 300 + scoreKnights[i]; break;
-            case 2: total += 300 + scoreBishops[i]; break;
+            case 1: total += 310 + scoreKnights[i]; break;
+            case 2: total += 350 + scoreBishops[i]; break;
             case 3: total += 500 + scoreRooks[i]; break;
-            case 7: total -= 300 + scoreKnights[((8-(i/8))*8)-(8-i%8)]; break;
-            case 8: total -= 300 + scoreBishops[((8-(i/8))*8)-(8-i%8)]; break;
+            case 7: total -= 310 + scoreKnights[((8-(i/8))*8)-(8-i%8)]; break;
+            case 8: total -= 350 + scoreBishops[((8-(i/8))*8)-(8-i%8)]; break;
             case 9: total -= 500 + scoreRooks[((8-(i/8))*8)-(8-i%8)]; break;
             default:
                 if (in_opening){
                     switch(a) {
                         case 0: total += 100 + scorePawnsOpening[i]; break;
                         case 4: total += 900 + scoreQueensEnding[i]; break;
-                        case 5: total += scoreKingOpening[i]; break;
+                        case 5: total += 10000 + scoreKingOpening[i]; break;
                         case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
                         case 10:total -= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 11: total-= scoreKingOpening[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 11: total-= 10000 + scoreKingOpening[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 } else {
                     switch(a) {
                         case 0: total += 100 + scorePawnsEnding[i]; break;
                         case 4: total += 900 + scoreQueensEnding[i]; break;
-                        case 5: total += scoreKingEnding[i]; break;
+                        case 5: total += 10000 + scoreKingEnding[i]; break;
                         case 6: total -= 100 + scorePawnsEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 10: total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 11: total-= scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; break;
+                        case 11: total-= 10000 + scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 }
         }
@@ -706,7 +707,7 @@ int bitboard_t::score_move(move_t* move){
     update(move);
     int king = (turn == 0) ? 11 : 5;
     if (is_square_attacked(get_LSB(piecesBB[king]),!turn)){
-        score = score*1.1;
+        score += score/10;
     }
     undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
     move->score = score;

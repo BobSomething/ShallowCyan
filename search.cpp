@@ -10,9 +10,9 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
     if (depth == 0) {
-		ret->eval = eval();
-		return ret;
-		//return Quiescence_search(2, α,β);
+		//ret->eval = eval();
+		//return ret;
+		return Quiescence_search(1, α,β, time);
 	}
 
     int val = (turn) ? -inf : inf;
@@ -49,7 +49,7 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 		//child.update(move);
 		update(move);
 		int pval;
-		if (counter_hash_map[hash_current_board] >= 3){
+		if (counter_hash_map[hash_current_board] >= 2){
 			pval = 0;
 		}
 		/*else {
@@ -70,7 +70,7 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 		}
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
-		//if(depth == 5) {
+		//if(depth == 4) {
 			//std::cout << move_to_string(move) << ": " << pval << " " << val << std::endl;
 		//}
 
@@ -95,17 +95,13 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	return ret;
 }
 
-move_t* bitboard_t::Quiescence_search(int depth, int α, int β){
+move_t* bitboard_t::Quiescence_search(int depth, int α, int β, double time){
+	// Timer
+	auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
 	move_t* best_move = new move_t;
 
 	best_move->eval = eval();
-
-    if (best_move->eval >= β) {
-        return best_move;
-    }
-    if (best_move->eval > α) {
-        α = best_move->eval;
-    }
 
 	if (depth == 0){
 		return best_move;
@@ -115,9 +111,27 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β){
 	std::vector<move_t*> moves;
 	generate_all_moves(&moves, true);
 
+	if(moves.size() == 0) {
+        int king = (turn == 0) ? 11 : 5;
+		int sign = (turn == 0) ? 1 : -1;
+		if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) best_move->eval = sign*(inf + depth); //checkmate
+		// TESTING
+		else best_move->eval = 0; //stalemate
+		return best_move;
+	}
+
 	int val = (turn) ? -inf : inf;
+	
+	best_move = moves[0];
+	best_move->eval = val;
 
 	for (move_t* move: moves){
+		auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    	if (trackered - tracker > MAX_TIME){
+			tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+			break;
+		}
+
 		int p_before = pieceTable[move->before.i*8 + move->before.j];
 		int p_after = pieceTable[move->after.i*8 + move->after.j]; 
 		int ep_square = enpassant_square;
@@ -127,7 +141,7 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β){
 		bool b_c_qside = b_castle_qside;
 
 		update(move);
-		int score_Q = Quiescence_search(depth-1, α, β)->eval;
+		int score_Q = Quiescence_search(depth-1, α, β, time)->eval;
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 
 
