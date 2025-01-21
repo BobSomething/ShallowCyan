@@ -65,14 +65,18 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 		}*/
 		else {
 			pval = search(depth - 1, α, β, time)->eval;
-			if (pval) pval -= ((turn == 0) ? 1 : -1);
+			//if (pval) pval -= ((turn == 0) ? 1 : -1);
 		}
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
 		//if(depth == 5) {
 			//std::cout << move_to_string(move) << ": " << pval << " " << val << std::endl;
 		//}
-		
+		if ((turn == 0 && pval == inf) || (turn == 1 && pval == -inf)) {
+			move->eval = pval;
+			return move;
+		}
+
 		if (turn) {
 			if (pval > val){
 				val = pval;
