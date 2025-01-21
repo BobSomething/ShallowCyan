@@ -696,6 +696,11 @@ int bitboard_t::score_move(move_t* move){
     if (is_square_attacked(move->after.i*8+move->after.j, !color)){
         score -= pieces_to_points[move_piece_type];
     }
+    update(move);
+    int king = (turn == 0) ? 11 : 5;
+    if (is_square_attacked(get_LSB(piecesBB[king]),!turn)){
+        score = score*1.1;
+    }
     move->score = score;
     return score;
 }
