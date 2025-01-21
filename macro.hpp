@@ -14,7 +14,7 @@ struct move_t;
 #define makep std::make_pair
 #define SIZE 8
 #define SIZESQ SIZE*SIZE
-#define inf 2147483647
+#define inf 214748364
 
 #define U64 uint64_t
 #define set_bit(bitboard, index) if(index >= 0) {(bitboard |= (1ULL << index));}
