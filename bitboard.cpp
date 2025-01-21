@@ -696,11 +696,19 @@ int bitboard_t::score_move(move_t* move){
     if (is_square_attacked(move->after.i*8+move->after.j, !color)){
         score -= pieces_to_points[move_piece_type];
     }
+    int p_before = pieceTable[move->before.i*8 + move->before.j];
+    int p_after = pieceTable[move->after.i*8 + move->after.j]; 
+    int ep_square = enpassant_square;
+    bool w_c_kside = w_castle_kside;
+    bool w_c_qside = w_castle_qside; 
+    bool b_c_kside = b_castle_kside;
+    bool b_c_qside = b_castle_qside;
     update(move);
     int king = (turn == 0) ? 11 : 5;
     if (is_square_attacked(get_LSB(piecesBB[king]),!turn)){
         score = score*1.1;
     }
+    undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
     move->score = score;
     return score;
 }
