@@ -320,18 +320,19 @@ void bitboard_t::allMovesQueens(bool color, array_moves* moves, bool only_captur
 }
 
 void bitboard_t::generate_all_moves(array_moves* moves, bool only_capture) {
-    allMovesQueens(turn, moves, only_capture);
-    allMovesRooks(turn, moves, only_capture);
-    allMovesKnights(turn, moves, only_capture);
-    allMovesBishop(turn, moves, only_capture);
     allMovesPawns(turn, moves, only_capture);
+    allMovesKnights(turn, moves, only_capture);
+    allMovesQueens(turn, moves, only_capture);
+    allMovesBishop(turn, moves, only_capture);
+    allMovesRooks(turn, moves, only_capture);
     allMovesKing(turn, moves, only_capture);
-    int move_p = 50;   // What is a good move? Determine here xd. Maybe make dynamic parameter?
+    int move_p = 60;   // What is a good move? Determine here xd. Maybe make dynamic parameter?
     int swap_c = 0;     // Count swap (for debugging)
     size_t i = 0;
     while (moves->size() > i && score_move(moves->at(i)) > move_p) i++;
     for (size_t j = i; j < moves->size(); j++) {
         if (score_move(moves->at(j)) > move_p) {
+            move_p = std::max(score_move(moves->at(j))/2,60);
             move_t* temp = moves->at(i);
             moves->at(i) = moves->at(j);
             moves->at(j) = temp;

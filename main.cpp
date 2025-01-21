@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     //Initializing the board
     bitboard_t bboard;
-    U64 test = bboard.zobrist_board();
+    //bboard.update_with_fen("4Q3/3Q4/1p4pk/p6p/5p2/P6P/1b3PP1/4R1K1 w - - 0 48");
 
     //Reading the history file
     std::ifstream input;
@@ -47,10 +47,13 @@ int main(int argc, char* argv[]) {
     output << bboard.next_move();
     output.close();
 
-    bboard.printBB();
+    //std::vector<move_t*> moves;
+	//bboard.generate_all_moves(&moves);
 
-    auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::cout << "Time elapsed " << (trackered-tracker)/1000000 << std::endl;
+    //bboard.printBB();
+
+    //auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    //std::cout << "Time elapsed " << (trackered-tracker)/1000000 << std::endl;
 
     /* bitboard_t board_test;
 

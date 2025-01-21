@@ -8,7 +8,7 @@ from requests.exceptions import ConnectionError
 from berserk.exceptions import ApiError
 
 TOKEN = "lip_lPc0IqAZGHce62FNW5HH"
-ENGINE_PATH = "../../build/shallowcyan"  # Path to your compiled engine
+ENGINE_PATH = "../build/shallowcyan"  # Path to your compiled engine
 
 class ChessEngineWrapper:
     def __init__(self):

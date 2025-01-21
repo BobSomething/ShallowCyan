@@ -352,11 +352,11 @@ struct bitboard_t {
         {2, 300},       //white bishops
         {3, 500},       //white rooks
         {4, 900},       //white queen
-        {6,-100},       //black pawns
-        {7,-300},       //black knights
-        {8,-300},       //black bishops
-        {9,-500},       //black rooks
-        {10,-900}       //black queen
+        {6, 100},       //black pawns
+        {7, 300},       //black knights
+        {8, 300},       //black bishops
+        {9, 500},       //black rooks
+        {10,900}       //black queen
     };
 
     int MVV_LVA[12][12] = {
