@@ -22,7 +22,8 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	if(moves.size() == 0) {
         int king = (turn == 0) ? 11 : 5;
 		int sign = (turn == 0) ? 1 : -1;
-		if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) ret->eval = sign*inf; //checkmate
+		if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) ret->eval = sign*(inf - depth); //checkmate
+		// TESTING
 		else ret->eval = 0; //stalemate
 		return ret;
 	}
@@ -72,10 +73,6 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 		//if(depth == 5) {
 			//std::cout << move_to_string(move) << ": " << pval << " " << val << std::endl;
 		//}
-		if ((turn == 0 && pval == inf) || (turn == 1 && pval == -inf)) {
-			move->eval = pval;
-			return move;
-		}
 
 		if (turn) {
 			if (pval > val){
