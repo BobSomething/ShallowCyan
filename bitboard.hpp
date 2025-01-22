@@ -43,7 +43,7 @@ struct move_t {
     */
 
 	int type_move; 
-	int score = 0; //for move ordering
+	//int score = 0; //for move ordering
 	int eval = 0; //for search
     int piece = -1;
     int capture_piece = -2; //-1 if not capture, piece number otherwise
@@ -209,14 +209,14 @@ struct bitboard_t {
                            5, 10, 10, 10, 10, 10, 10,  5,
                            0,  0,  0,  0,  0,  0,  0,  0};
 
-    int scoreKnights[64] = {-50,-40,-30,-30,-30,-30,-40,-50,
+    int scoreKnights[64] = {-50,-50,-30,-30,-30,-30,-50,-50,
                             -40,-20,  0,  5,  5,  0,-20,-40,
-                            -30,  5, 10, 15, 15, 10,  5,-30,
-                            -30,  0, 15, 20, 20, 15,  0,-30,
-                            -30,  5, 15, 20, 20, 15,  5,-30,
-                            -30,  0, 10, 15, 15, 10,  0,-30,
+                            -30,  5, 20, 15, 15, 20,  5,-30,
+                            -30,  0, 15, 25, 25, 15,  0,-30,
+                            -30,  5, 15, 25, 25, 15,  5,-30,
+                            -30,  0, 20, 15, 15, 20,  0,-30,
                             -40,-20,  0,  0,  0,  0,-20,-40,
-                            -50,-40,-30,-30,-30,-30,-40,-50};
+                            -50,-50,-30,-30,-30,-30,-50,-50};
 
     int scoreBishops[64] = {-20,-10,-10,-10,-10,-10,-10,-20,
                             -10,  5,  0,  0,  0,  0,  5,-10,
@@ -227,16 +227,16 @@ struct bitboard_t {
                             -10,  0,  0,  0,  0,  0,  0,-10,
                             -20,-10,-10,-10,-10,-10,-10,-20};
 
-    int scoreQueensOpening[64]={-20,-10,-10, -5, -5,-10,-10,-20,
-                                -10,  0,  0,  0,  0,  0,  0,-10,
-                                -10,  0,-50,-50,-50,-50,  0,-10,
-                                 -5,  0,-50,-50,-50,-50,  0, -5,
-                                 -5,  0,-50,-50,-50,-50,  0, -5,
-                                -10,  0,-50,-50,-50,-50,  0,-10,
-                                -10,  0,  0,  0,  0,  0,  0,-10,
+    int scoreQueensOpening[64]={-20,-10,-10,  5,  5,-10,-10,-20,
+                                -10, -5, -5, -5, -5, -5, -5,-10,
+                                -10, -5,-50,-50,-50,-50, -5,-10,
+                                 -5, -5,-50,-50,-50,-50, -5, -5,
+                                 -5, -5,-50,-50,-50,-50, -5, -5,
+                                -10, -5,-50,-50,-50,-50, -5,-10,
+                                -10, -5, -5, -5, -5, -5, -5,-10,
                                 -20,-10,-10, -5, -5,-10,-10,-20};
 
-    int scoreQueensEnding[64] ={-20,-10,-10,  0, -5,-10,-10,-20,
+    int scoreQueensEnding[64] ={-20,-10,  0,  5,  5,  0,-10,-20,
                                 -10,  0,  0,  0,  0,  0,  0,-10,
                                 -10,  0,  5,  5,  5,  5,  0,-10,
                                  -5,  0,  5,  5,  5,  5,  0, -5,
@@ -341,6 +341,7 @@ struct bitboard_t {
 
 
     //create the search function for alpha-beta prunning
+    int current_depth = 0;
     move_t* search(int depth, int α = -inf, int β = inf, double time = 0);
     move_t* Quiescence_search(int depth, int α = -inf, int β = inf, double time = 0);
     int score_move(move_t* move);
@@ -352,11 +353,13 @@ struct bitboard_t {
         {2, 300},       //white bishops
         {3, 500},       //white rooks
         {4, 900},       //white queen
+        {5, 10000},     //white king
         {6, 100},       //black pawns
         {7, 300},       //black knights
         {8, 300},       //black bishops
         {9, 500},       //black rooks
-        {10,900}       //black queen
+        {10,900},       //black queen
+        {11, 10000},    //black king
     };
 
     int MVV_LVA[12][12] = {
@@ -374,6 +377,13 @@ struct bitboard_t {
         101, 201, 301, 401, 501, 601,  101, 201, 301, 401, 501, 601,
         100, 200, 300, 400, 500, 600,  100, 200, 300, 400, 500, 600
     };
+
+    //killer moves
+    move_t* killer_moves[10][2] {};
+
+    //history moves
+    int history_moves[12][64] {};
+
 }; 
 
 #endif

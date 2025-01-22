@@ -48,8 +48,10 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 		//bitboard_t child = this->copy();
 		//child.update(move);
 		update(move);
+		current_depth++;
+
 		int pval;
-		if (counter_hash_map[hash_current_board] >= 2){
+		if (counter_hash_map[hash_current_board] >= 3){
 			pval = 0;
 		}
 		/*else {
@@ -68,10 +70,12 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 			pval = search(depth - 1, α, β, time)->eval;
 			//if (pval) pval -= ((turn == 0) ? 1 : -1);
 		}
+
+		current_depth--;
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
 		//if(depth == 4) {
-			//std::cout << move_to_string(move) << ": " << pval << " " << val << std::endl;
+			//std::cout << move_to_string(move) << " " << score_move(move) << ": " << pval << " " << val << std::endl;
 		//}
 
 		if (turn) {
@@ -80,16 +84,30 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 				move->eval = val;
 				ret = move;
 			} 
-			if (val > β) break;
-			if (val > α) α = val;
+			if (val > β) {
+				killer_moves[current_depth][1] = killer_moves[current_depth][0];
+				killer_moves[current_depth][0] = move;
+				break;
+			}
+			if (val > α) {
+				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				α = val;
+			}
 		} else {
 			if (pval < val){
 				val = pval;
 				move->eval = val;
 				ret = move;
 			} 
-			if (val < α) break;
-			if (val < β) β = val;
+			if (val < α) {
+				killer_moves[current_depth][1] = killer_moves[current_depth][0];
+				killer_moves[current_depth][0] = move;
+				break;
+			}
+			if (val < β) {
+				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				β = val;
+			}
 		}
 	}
 	return ret;
@@ -140,8 +158,11 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, double time){
 		bool b_c_kside = b_castle_kside;
 		bool b_c_qside = b_castle_qside;
 
+		current_depth++;
 		update(move);
 		int score_Q = Quiescence_search(depth-1, α, β, time)->eval;
+
+		current_depth--;
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 
 
@@ -151,16 +172,30 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, double time){
 				move->eval = val;
 				best_move = move;
 			} 
-			if (val > β) break;
-			if (val > α) α = val;
+			if (val > β) {
+				killer_moves[current_depth][1] = killer_moves[current_depth][0];
+				killer_moves[current_depth][0] = move;
+				break;
+			}
+			if (val > α) {
+				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				α = val;
+			}
 		} else {
 			if (score_Q < val){
 				val = score_Q;
 				move->eval = val;
 				best_move = move;
 			} 
-			if (val < α) break;
-			if (val < β) β = val;
+			if (val < α) {
+				killer_moves[current_depth][1] = killer_moves[current_depth][0];
+				killer_moves[current_depth][0] = move;
+				break;
+			}
+			if (val < β) {
+				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				β = val;
+			}
 		}
 	}
 	return best_move;

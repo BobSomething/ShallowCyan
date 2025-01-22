@@ -10,7 +10,7 @@
 int main(int argc, char* argv[]) {
     bool state = true;
     std::string history, move;
-    //auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
     //Taking all the arguments
     for(int i = 1; i < argc; i++) {
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     //Initializing the board
     bitboard_t bboard;
-    //bboard.update_with_fen("N2q1b1r/3bkp2/p1Qp2pp/2n1p1n1/8/7P/PPPPNPP1/R1B1K2R w KQ - 4 20");
+    //bboard.update_with_fen("r1bqkbnr/ppp2ppp/2n1p3/3p4/3P1B2/4PN2/PPP2PPP/RN1QKB1R b KQkq - 0 4");
 
     //Reading the history file
     std::ifstream input;
@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
         bboard.nb_turns++;
     }
     input.close();
+    
 
     //Outputs the next move
     std::ofstream output;
@@ -52,8 +53,8 @@ int main(int argc, char* argv[]) {
 
     //bboard.printBB();
 
-    //auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    //std::cout << "Time elapsed " << (trackered-tracker)/1000000 << std::endl;
+    auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    std::cout << "Time elapsed " << (double)(trackered-tracker)/1000000000 << " seconds" << std::endl;
 
     /* bitboard_t board_test;
 

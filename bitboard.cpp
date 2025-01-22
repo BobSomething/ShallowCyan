@@ -135,6 +135,7 @@ bitboard_t::bitboard_t() {
     }
     zobrist_init();
     hash_current_board = zobrist_board();
+    counter_hash_map[hash_current_board]++;
 }
 
 
@@ -651,34 +652,43 @@ int bitboard_t::eval() {
     }
     int nb_pieces = get_count(nb_piece);
     bool in_opening = (nb_pieces > 14); // Maybe change parameter
+    bool punish_queen = (nb_turns < 10);
     for (int i=0; i<SIZESQ; ++i) {
         int a = this->pieceTable[i];
         if (a == -1) continue;
         switch(a) {
-            case 1: total += 310 + scoreKnights[i]; break;
+            case 1: total += 320 + scoreKnights[i]; break;
             case 2: total += 350 + scoreBishops[i]; break;
             case 3: total += 500 + scoreRooks[i]; break;
-            case 7: total -= 310 + scoreKnights[((8-(i/8))*8)-(8-i%8)]; break;
+            case 7: total -= 320 + scoreKnights[((8-(i/8))*8)-(8-i%8)]; break;
             case 8: total -= 350 + scoreBishops[((8-(i/8))*8)-(8-i%8)]; break;
             case 9: total -= 500 + scoreRooks[((8-(i/8))*8)-(8-i%8)]; break;
             default:
                 if (in_opening){
                     switch(a) {
                         case 0: total += 100 + scorePawnsOpening[i]; break;
-                        case 4: total += 900 + scoreQueensEnding[i]; break;
                         case 5: total += 10000 + scoreKingOpening[i]; break;
                         case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 10:total -= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= 10000 + scoreKingOpening[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 } else {
                     switch(a) {
                         case 0: total += 100 + scorePawnsEnding[i]; break;
-                        case 4: total += 900 + scoreQueensEnding[i]; break;
                         case 5: total += 10000 + scoreKingEnding[i]; break;
                         case 6: total -= 100 + scorePawnsEnding[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 10: total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= 10000 + scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; break;
+                    }
+                }
+                if (punish_queen) {
+                    switch(a) {
+                        case 4: total += 900 + scoreQueensOpening[i]; break;
+                        case 10: total-= 900 + scoreQueensOpening[((8-(i/8))*8)-(8-i%8)]; break;
+                    }
+                }
+                else {
+                    switch(a) {
+                        case 4: total += 900 + scoreQueensEnding[i]; break;
+                        case 10: total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
                     }
                 }
         }
@@ -687,16 +697,31 @@ int bitboard_t::eval() {
 }
 
 int bitboard_t::score_move(move_t* move){
+    //killer moves
     int score = 0;
     int move_piece_type = pieceTable[move->before.i*8+move->before.j];
     int captured_piece_type = pieceTable[move->after.i*8+move->after.j];
     if (captured_piece_type != -1){     //Captured something
         score += MVV_LVA[move_piece_type][captured_piece_type];
     }
+    else {
+        if(killer_moves[current_depth][0] == move) {
+            return 2000;
+        }
+        if(killer_moves[current_depth][1] == move) {
+            return 1000;
+        }
+        //return history_moves[move_piece_type][move->after.i*8+move->after.j];
+    }
+    
     bool color = (move_piece_type < 6) ? 1 : 0;
     if (is_square_attacked(move->after.i*8+move->after.j, !color)){
         score -= pieces_to_points[move_piece_type];
     }
+    if (is_square_attacked(move->before.i*8+move->before.j, !color)){
+        score += pieces_to_points[move_piece_type]/3;
+    }
+
     int p_before = pieceTable[move->before.i*8 + move->before.j];
     int p_after = pieceTable[move->after.i*8 + move->after.j]; 
     int ep_square = enpassant_square;
@@ -707,9 +732,10 @@ int bitboard_t::score_move(move_t* move){
     update(move);
     int king = (turn == 0) ? 11 : 5;
     if (is_square_attacked(get_LSB(piecesBB[king]),!turn)){
-        score += score/10;
+        score += std::max(60,score/10);
     }
     undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
-    move->score = score;
+
+    //move->score = score;
     return score;
 }
