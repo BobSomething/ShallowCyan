@@ -31,6 +31,7 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	ret = moves[0];
 	ret->eval = val;
 
+	int move_counter = 0;
 	for (move_t* move: moves) {
 		auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     	if (trackered - tracker > MAX_TIME){
@@ -66,9 +67,20 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 				zobrist_hash_map[hash_current_board] = pval;
 			}
 		}*/
-		else {
+		else if (move_counter >= 7){
+			if (depth > 3) {
+				pval = search(depth - 3, α, β, time)->eval;
+				//if (pval) pval -= ((turn == 0) ? 1 : -1);
+
+				if (pval > val) {
+					pval = search(depth - 1, α, β, time)->eval;
+				}
+
+			} else {
+				pval = search(depth - 1, α, β, time)->eval;
+			}
+		} else {
 			pval = search(depth - 1, α, β, time)->eval;
-			//if (pval) pval -= ((turn == 0) ? 1 : -1);
 		}
 
 		current_depth--;
@@ -109,6 +121,7 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 				β = val;
 			}
 		}
+		move_counter++;
 	}
 	return ret;
 }
@@ -142,7 +155,7 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, double time){
 	
 	best_move = moves[0];
 	best_move->eval = val;
-
+	
 	for (move_t* move: moves){
 		auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
     	if (trackered - tracker > MAX_TIME){
