@@ -19,3 +19,9 @@ Started working on Zobrist Hashing to efficiently see if we already had this boa
 
 Week 5:
 Worked some more on Zobrist hashing, changed the innitialization of move_t to include the piece it moves and capture (if its a capture move) as we need it to update the hash.
+
+Week 6:
+Dont remember exactly what we did, but we thought of how to make the code better. One thing we implemented was the time, as we realised that we could go with more depths with only a few moves where the search time was longer than the time limit, so by implementing the time and returning the search function slightly before the limit is over, we could get a higher depths for most move, without risking our code timing out.
+
+Week 7:
+Worked on a new move prunning (additional) where basically we hope that the first few moves we see are "good", and so for the moves after those, we do not look the full depths for all of them , we only look at a lower depths for all, and only look through the whole depth if the move is good. We hope (and verified) that the first moves we see are good enough for the average complexity to be better, making the search function faster.

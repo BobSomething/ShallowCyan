@@ -68,7 +68,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		}*/
 		else if (move_counter >= 7){
 			if (depth > 3) {
-				pval = search(depth - 1, α, β, time)->eval;
+				pval = search(2, α, β, time)->eval;
 				//if (pval) pval -= ((turn == 0) ? 1 : -1);
 
 				if (pval > val) {
