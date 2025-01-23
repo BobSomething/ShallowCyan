@@ -342,8 +342,9 @@ struct bitboard_t {
 
     //create the search function for alpha-beta prunning
     int current_depth = 0;
-    move_t* search(int depth, int α = -inf, int β = inf, double time = 0);
-    move_t* Quiescence_search(int depth, int α = -inf, int β = inf, double time = 0);
+    std::time_t tracker = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    move_t* search(int depth, int α = -inf, int β = inf, std::time_t time = 0);
+    move_t* Quiescence_search(int depth, int α = -inf, int β = inf, std::time_t time = 0);
     int score_move(move_t* move);
 
     //Map for translate pieces to their correspond points

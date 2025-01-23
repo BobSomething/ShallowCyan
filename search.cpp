@@ -2,9 +2,8 @@
 
 //std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
-move_t* bitboard_t::search(int depth, int α, int β, double time) {
+move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 	// Timer
-	auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
 
 	/* Alpha-beta pruning :) */
@@ -33,8 +32,8 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 
 	for (move_t* move: moves) {
 		auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    	if (trackered - tracker > MAX_TIME){
-			tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    	if (trackered - time > MAX_TIME){
+			time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 			break;
 		}
 		int p_before = pieceTable[move->before.i*8 + move->before.j];
@@ -113,10 +112,8 @@ move_t* bitboard_t::search(int depth, int α, int β, double time) {
 	return ret;
 }
 
-move_t* bitboard_t::Quiescence_search(int depth, int α, int β, double time){
+move_t* bitboard_t::Quiescence_search(int depth, int α, int β, std::time_t time){
 	// Timer
-	auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-
 	move_t* best_move = new move_t;
 
 	best_move->eval = eval();
@@ -145,8 +142,8 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, double time){
 
 	for (move_t* move: moves){
 		auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    	if (trackered - tracker > MAX_TIME){
-			tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    	if (trackered - time > MAX_TIME){
+			time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 			break;
 		}
 
