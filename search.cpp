@@ -9,9 +9,9 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
     if (depth == 0) {
-		//ret->eval = eval();
-		//return ret;
-		return Quiescence_search(1, α,β, time);
+		ret->eval = eval();
+		return ret;
+		//return Quiescence_search(2, α,β, time);
 	}
 
     int val = (turn) ? -inf : inf;
@@ -68,7 +68,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		}*/
 		else if (move_counter >= 7){
 			if (depth > 3) {
-				pval = search(depth - 3, α, β, time)->eval;
+				pval = search(depth - 1, α, β, time)->eval;
 				//if (pval) pval -= ((turn == 0) ? 1 : -1);
 
 				if (pval > val) {
@@ -101,7 +101,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 				break;
 			}
 			if (val > α) {
-				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
 				α = val;
 			}
 		} else {
@@ -116,7 +116,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 				break;
 			}
 			if (val < β) {
-				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
 				β = val;
 			}
 		}
@@ -188,7 +188,7 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, std::time_t tim
 				break;
 			}
 			if (val > α) {
-				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
 				α = val;
 			}
 		} else {
@@ -203,7 +203,7 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, std::time_t tim
 				break;
 			}
 			if (val < β) {
-				//history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
+				history_moves[pieceTable[move->before.i*8+move->before.j]][move->before.i*8+move->before.j] += 5*depth;
 				β = val;
 			}
 		}
