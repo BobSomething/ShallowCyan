@@ -637,6 +637,15 @@ bitboard_t bitboard_t::copy() {
     return copy_board;
 }
 
+int bitboard_t::game_phase() {
+    int white_score = 0, black_score = 0;
+
+    //let's say we count the phase as follows
+    //4 * knights + 4 * bishops + 2 * rooks + 2 * queen
+
+    return white_score + black_score;
+}
+
 int bitboard_t::eval() {
     //can calculate how many pieces are left for white and black with & all the bitboards and use the get_count function
     //define a threshold of nb of pieces that we are in endgame: ...

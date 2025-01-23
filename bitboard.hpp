@@ -178,10 +178,40 @@ struct bitboard_t {
     /* Evaluates the current state of the board */
     int eval();
 
+    /* Calculates what phase of the game are we in */
+    int game_phase();
+
+    int material_pieces[2][12] = {
+        // opening material
+        82, 337, 365, 477, 1025, 12000, -82, -337, -365, -477, -1025, -12000,
+    
+        // endgame material
+        94, 281, 297, 512,  936, 12000, -94, -281, -297, -512,  -936, -12000
+    }; //we can tinker a bit
+
+    const int opening_phase_score = 6192; //we can always tinker here
+    const int ending_phase_score = 518;  //we can always tinker here
+
+    //use the the game_phase to determine what is the phase:
+    // if game_phase() > opening_phase_score => opening, if game_phase() < ending_phase_score => ending.
+    //https://www.chessprogramming.org/Tapered_Eval
+    //Now in order to calculate interpolated score
+    /* for a given game phase we use this formula
+    (same for material and positional scores):
+    (
+        score_opening * game_phase_score + 
+        score_endgame * (opening_phase_score - game_phase_score)
+    ) / opening_phase_score */
+
+
+    int scorePiecePositional[2][6][64]; // we can switch to this array to make the eval function prettier
+    //we can add new tables for ending of each piece.
+
 
     //you can get inspired from https://www.chessprogramming.org/Simplified_Evaluation_Function
     //you can implement for only white, for black's turn we can "flip" the board to get correct values
     //TODO
+
     int scorePawnsOpening[64] ={ 0,  0,  0,  0,  0,  0,  0,  0, 
                                  5, 10, 10,-20,-20, 10, 10,  5,
                                  5, -5,-10,  0,  0,-10, -5,  5,

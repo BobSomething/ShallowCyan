@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     //Initializing the board
     bitboard_t bboard;
-    //bboard.update_with_fen("r1bqkbnr/ppp2ppp/2n1p3/3p4/3P1B2/4PN2/PPP2PPP/RN1QKB1R b KQkq - 0 4");
+    //bboard.update_with_fen("1r1qk2r/2p1b2p/B1n1Q3/3p4/3p1p2/1NP2P2/P4P1P/R5RK b k - 0 23");
 
     //Reading the history file
     std::ifstream input;
