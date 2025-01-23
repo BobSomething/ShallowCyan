@@ -589,7 +589,7 @@ std::string bitboard_t::next_move() {
     }
     else {
         std::time_t tracker = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-        return move_to_string(search(4, -inf, inf, tracker));
+        return move_to_string(search(5, -inf, inf, tracker));
         //move_t* next = search(4);
         //std::cout << "Evaluation: " << next->eval << std::endl;
         //return move_to_string(next);
@@ -638,12 +638,22 @@ bitboard_t bitboard_t::copy() {
 }
 
 int bitboard_t::game_phase() {
-    int white_score = 0, black_score = 0;
+    int all_score = 0;
 
     //let's say we count the phase as follows
     //4 * knights + 4 * bishops + 2 * rooks + 2 * queen
 
-    return white_score + black_score;
+    for(int i=0; i<64; i++) {
+        int piece = pieceTable[i];
+        if(piece == 1 || piece == 2 || piece == 7 || piece == 8)
+            all_score += 4 * 300;
+        else if(piece == 3 || piece == 9)
+            all_score += 2 * 500;
+        else if(piece == 4 || piece == 10)
+            all_score += 2 * 900;
+    }
+    
+    return all_score;
 }
 
 int bitboard_t::eval() {
@@ -655,6 +665,7 @@ int bitboard_t::eval() {
     if (counter_hash_map[hash_current_board] >= 3){
 		return 0;
 	}
+    
     int total = 0;
     U64 nb_piece = 0;
     for (int i=1; i<12; i++){
@@ -683,12 +694,12 @@ int bitboard_t::eval() {
                         case 0: total += 100 + scorePawnsOpening[i]; break;
                         case 5: total += 10000 + scoreKingOpening[i]; 
                                 for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total += get_count(attacksKing[i] & sameColor) * 5;
+                                total += get_count(attacksKing[i] & sameColor) * 4;
                                 break;
                         case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= 10000 + scoreKingOpening[((8-(i/8))*8)-(8-i%8)];
                                 for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total -= get_count(attacksKing[i] & sameColor) * 5;
+                                total -= get_count(attacksKing[i] & sameColor) * 4;
                                 break;
                     }
                 } else {
@@ -696,12 +707,12 @@ int bitboard_t::eval() {
                         case 0: total += 100 + scorePawnsEnding[i]; break;
                         case 5: total += 10000 + scoreKingEnding[i]; 
                                 for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total += get_count(attacksKing[i] & sameColor) * 5;
+                                total += get_count(attacksKing[i] & sameColor) * 4;
                                 break;
                         case 6: total -= 100 + scorePawnsEnding[((8-(i/8))*8)-(8-i%8)]; break;
                         case 11: total-= 10000 + scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; 
                                 for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total -= get_count(attacksKing[i] & sameColor) * 5;
+                                total -= get_count(attacksKing[i] & sameColor) * 4;
                                 break;
                     }
                 }

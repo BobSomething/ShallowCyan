@@ -67,8 +67,8 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 			}
 		}*/
 		else if (move_counter >= 7){
-			if (depth > 3) {
-				pval = search(2, α, β, time)->eval;
+			if (depth == 5) {
+				pval = search(depth-2, α, β, time)->eval;
 				//if (pval) pval -= ((turn == 0) ? 1 : -1);
 
 				if (pval > val) {
@@ -85,7 +85,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		current_depth--;
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 		
-		//if(depth == 4) {
+		//if(depth == 5) {
 			//std::cout << move_to_string(move) << " " << score_move(move) << ": " << pval << " " << val << std::endl;
 		//}
 
