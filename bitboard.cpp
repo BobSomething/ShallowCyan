@@ -139,28 +139,6 @@ bitboard_t::bitboard_t() {
 }
 
 
-/* Prints the specific piece bitboard */
-void bitboard_t::printBBpiece(int index) {
-    for (int i = SIZE-1; i >= 0; i--) {
-		std::cout << std::to_string(i+1) + " ";
-		for (int j = 0; j < SIZE; j++) {
-			if((i + j) % 2 == 0)
-				std::cout << "\033[43m";
-			else
-				std::cout << "\033[100m";
-
-            std::cout << " " << ((piecesBB[index] & (1ULL << (8*i+j))) ? 1 : 0) << " ";
-		}
-		std::cout << "\033[40m" << std::endl;
-	}
-	std::cout << "  ";
-	for (int j = 0; j < SIZE; j++) {
-		std::cout << " " + coords_to_letter[j] + " ";
-	}
-	std::cout << " " << std::endl;
-    std::cout << "Bitboard: " << piecesBB[index] << std::endl;
-}
-
 /* Prints any bitboard with the input as a uint64_t */
 void bitboard_t::printBBany(U64 u64) {
     for (int i = SIZE-1; i >= 0; i--) {
@@ -193,35 +171,6 @@ void bitboard_t::printBB() {
 			else
 				std::cout << "\033[100m";
 
-            int index = 0;
-            for(index; index < 12; index++) {
-                if(piecesBB[index] & (1ULL << (8*i+j)))
-                    break;
-            }
-            std::cout << " " << index_to_piece[index] << " ";
-		}
-		std::cout << "\033[40m" << std::endl;
-	}
-	std::cout << "  ";
-	for (int j = 0; j < SIZE; j++) {
-		std::cout << " " + coords_to_letter[j] + " ";
-	}
-	std::cout << " " << std::endl;
-}
-
-void bitboard_t::printBBattacked(bool color) {
-    for (int i = SIZE-1; i >= 0; i--) {
-		std::cout << std::to_string(i+1) + " ";
-		for (int j = 0; j < SIZE; j++) {
-            if (is_square_attacked(i*8+j, color)){
-                std::cout << "\033[44m";
-            }
-            if (!is_square_attacked(i*8+j,color)) {
-                if((i + j) % 2 == 0)
-                    std::cout << "\033[43m";
-                else
-                    std::cout << "\033[100m";
-            }
             int index = 0;
             for(index; index < 12; index++) {
                 if(piecesBB[index] & (1ULL << (8*i+j)))
@@ -568,14 +517,6 @@ bool bitboard_t::is_legal(move_t* move) {
     return true;
 }
 
-bool bitboard_t::no_moves() {
-    array_moves moves;
-    generate_all_moves(&moves);
-    if(moves.size() == 0)
-        return true;
-    return false;
-}
-
 #include <ctime>
 //For now we generate a random move from all legal moves
 //After a while try search function
@@ -596,63 +537,17 @@ std::string bitboard_t::next_move() {
     }
 }
 
-//create a copy of the current bitboard
-bitboard_t bitboard_t::copy() {
-    bitboard_t copy_board = bitboard_t();
-    for (int i = 0; i<12; ++i) {
-        copy_board.piecesBB[i] = this->piecesBB[i];
-    }
-    copy_board.turn = this->turn;
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.pieceTable[i] = this->pieceTable[i];
-    }
-    copy_board.enpassant_square = this->enpassant_square;
-    copy_board.w_castle_kside = this->w_castle_kside;
-    copy_board.w_castle_qside = this->w_castle_qside;
-    copy_board.b_castle_kside = this->b_castle_kside;
-    copy_board.b_castle_qside = this->b_castle_qside;
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.attacksKing[i] = this->attacksKing[i];
-    }
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.attacksKnights[i] = this->attacksKnights[i];
-    }
-    for (int i=0; i< SIZESQ; ++i) {
-        for(int j=0; j<2; ++j){
-            copy_board.attacksPawns[j][i] = this->attacksPawns[j][i];
-        }
-    }
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.attacksBishops[i] = this->attacksBishops[i];
-    }
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.attacksRooks[i] = this->attacksRooks[i];
-    }
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.attacksBishopsNoBlockers[i] = this->attacksBishopsNoBlockers[i];
-    }
-    for (int i=0; i< SIZESQ; ++i) {
-        copy_board.attacksRooksNoBlockers[i] = this->attacksRooksNoBlockers[i];
-    }
-    return copy_board;
-}
-
+//calculates the game phase
 int bitboard_t::game_phase() {
     int all_score = 0;
 
     //let's say we count the phase as follows
     //4 * knights + 4 * bishops + 2 * rooks + 2 * queen
-
-    for(int i=0; i<64; i++) {
-        int piece = pieceTable[i];
-        if(piece == 1 || piece == 2 || piece == 7 || piece == 8)
-            all_score += 4 * 300;
-        else if(piece == 3 || piece == 9)
-            all_score += 2 * 500;
-        else if(piece == 4 || piece == 10)
-            all_score += 2 * 900;
-    }
     
+    for(int i=1; i<=4; i++)
+        all_score += get_count(piecesBB[i]) * material_pieces[0][i];
+    for(int i=7; i<=10; i++)
+        all_score += get_count(piecesBB[i]) * -material_pieces[0][i];
     return all_score;
 }
 
@@ -665,6 +560,12 @@ int bitboard_t::eval() {
     if (counter_hash_map[hash_current_board] >= 3){
 		return 0;
 	}
+
+    //0 - opening, 2 - midgame, 1 - endgame
+    int phase = 0;
+    int game_phase_score = game_phase();
+    if (game_phase_score < opening_phase_score) phase+=2;
+    if (game_phase_score < ending_phase_score) phase--;
     
     int total = 0;
     U64 nb_piece = 0;
@@ -675,59 +576,120 @@ int bitboard_t::eval() {
     bool in_opening = (nb_pieces > 14); // Maybe change parameter
     bool punish_queen = (nb_turns < 10);
     for (int i=0; i<SIZESQ; ++i) {
-        int a = this->pieceTable[i];
+        int piece = this->pieceTable[i];
+
+        int mirrored = ((8-(i/8))*8)-(8-i%8);
 
         U64 sameColor = 0;
         int shift = (turn) ? 0 : 6;
 
-        if (a == -1) continue;
-        switch(a) {
-            case 1: total += 320 + scoreKnights[i]; break;
-            case 2: total += 350 + scoreBishops[i]; break;
-            case 3: total += 500 + scoreRooks[i]; break;
-            case 7: total -= 320 + scoreKnights[((8-(i/8))*8)-(8-i%8)]; break;
-            case 8: total -= 350 + scoreBishops[((8-(i/8))*8)-(8-i%8)]; break;
-            case 9: total -= 500 + scoreRooks[((8-(i/8))*8)-(8-i%8)]; break;
-            default:
-                if (in_opening){
-                    switch(a) {
-                        case 0: total += 100 + scorePawnsOpening[i]; break;
-                        case 5: total += 10000 + scoreKingOpening[i]; 
-                                for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total += get_count(attacksKing[i] & sameColor) * 4;
-                                break;
-                        case 6: total -= 100 + scorePawnsOpening[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 11: total-= 10000 + scoreKingOpening[((8-(i/8))*8)-(8-i%8)];
-                                for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total -= get_count(attacksKing[i] & sameColor) * 4;
-                                break;
-                    }
-                } else {
-                    switch(a) {
-                        case 0: total += 100 + scorePawnsEnding[i]; break;
-                        case 5: total += 10000 + scoreKingEnding[i]; 
-                                for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total += get_count(attacksKing[i] & sameColor) * 4;
-                                break;
-                        case 6: total -= 100 + scorePawnsEnding[((8-(i/8))*8)-(8-i%8)]; break;
-                        case 11: total-= 10000 + scoreKingEnding[((8-(i/8))*8)-(8-i%8)]; 
-                                for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
-                                total -= get_count(attacksKing[i] & sameColor) * 4;
-                                break;
-                    }
+        if (piece == -1) continue;
+
+        if(phase == 2) { //midgame
+            total += (
+                    material_pieces[0][piece] * game_phase_score +
+                    material_pieces[1][piece] * (opening_phase_score - game_phase_score)
+                ) / opening_phase_score;
+        }
+        else total += material_pieces[phase][piece];
+
+        switch(piece) {
+            case 1 ... 3: //white knights bishops rooks
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece][0][i] * game_phase_score +
+                        scorePiecePositional[piece][1][i] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
                 }
-                if (punish_queen) {
-                    switch(a) {
-                        case 4: total += 900 + scoreQueensOpening[i]; break;
-                        case 10: total-= 900 + scoreQueensOpening[((8-(i/8))*8)-(8-i%8)]; break;
-                    }
+                else
+                    total += scorePiecePositional[piece][0][i];
+                break;
+            
+            case 7 ... 9: //black knights bishops rooks
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece-6][0][mirrored] * game_phase_score +
+                        scorePiecePositional[piece-6][1][mirrored] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
                 }
-                else {
-                    switch(a) {
-                        case 4: total += 900 + scoreQueensEnding[i]; break;
-                        case 10: total-= 900 + scoreQueensEnding[((8-(i/8))*8)-(8-i%8)]; break;
-                    }
+                else
+                    total -= scorePiecePositional[piece-6][0][mirrored];
+                break;
+            
+            case 0: //white pawn
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece][0][i] * game_phase_score +
+                        scorePiecePositional[piece][1][i] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
                 }
+                else
+                    total += scorePiecePositional[piece][phase][i];
+                break;
+            
+            case 6: //black pawn
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece-6][0][mirrored] * game_phase_score +
+                        scorePiecePositional[piece-6][1][mirrored] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
+                }
+                else
+                    total -= scorePiecePositional[piece-6][phase][mirrored];
+                break;
+            
+            case 4: //white queen
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece][0][i] * game_phase_score +
+                        scorePiecePositional[piece][1][i] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
+                }
+                else
+                    total += scorePiecePositional[piece][phase][i];
+                break;
+
+            case 10: //black queen
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece-6][0][mirrored] * game_phase_score +
+                        scorePiecePositional[piece-6][1][mirrored] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
+                }
+                else
+                    total -= scorePiecePositional[piece-6][phase][mirrored];
+                break;
+
+            case 5: //white king
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece][0][i] * game_phase_score +
+                        scorePiecePositional[piece][1][i] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
+                }
+                else
+                    total += scorePiecePositional[piece][phase][i];
+
+                //king safety
+                for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
+                total += get_count(attacksKing[i] & sameColor) * 4;
+                
+                break;
+
+            case 11: //black king
+                if(phase == 2) {
+                    total += (
+                        scorePiecePositional[piece-6][0][mirrored] * game_phase_score +
+                        scorePiecePositional[piece-6][1][mirrored] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
+                }
+                else
+                    total -= scorePiecePositional[piece-6][phase][mirrored];
+
+                //king safety
+                for (int p=shift; p < shift + 6; p++) sameColor |= piecesBB[p];
+                total -= get_count(attacksKing[i] & sameColor) * 4;
+                break;
         }
     }
     return total;
@@ -739,6 +701,7 @@ int bitboard_t::score_move(move_t* move){
     int square_before = move->before.i*8+move->before.j;
     int move_piece_type = pieceTable[move->before.i*8+move->before.j];
     int captured_piece_type = pieceTable[move->after.i*8+move->after.j];
+
     if (captured_piece_type != -1){     //Captured something
         int shift = (turn) ? 6 : 0;
         U64 allPieces = 0;
@@ -747,9 +710,12 @@ int bitboard_t::score_move(move_t* move){
             allPieces |= piecesBB[p];
         for(int p=shift; p<shift+6; p++) 
             oppPieces |= piecesBB[p];
+
+        //if recapture
         U64 oppAttacks = attacksKing[square_before] | attacksPawns[turn][square_before] | attacksKnights[square_before] | attacksBishops[square_before][allPieces] | attacksRooks[square_before][allPieces];
         if(get_bit(oppAttacks & oppPieces, square_before))
-            score += (pieces_to_points[captured_piece_type] >= pieces_to_points[move_piece_type]) ? 600 : 100;
+            score += MVV_LVA[move_piece_type][captured_piece_type] +
+            (pieces_to_points[captured_piece_type] >= pieces_to_points[move_piece_type]) ? 600 : 100;
         else
             score += MVV_LVA[move_piece_type][captured_piece_type] + 600;
     }
@@ -781,7 +747,7 @@ int bitboard_t::score_move(move_t* move){
     update(move);
     int king = (turn == 0) ? 11 : 5;
     if (is_square_attacked(get_LSB(piecesBB[king]),!turn)){
-        score += std::max(80,score/10);
+        score += std::max(80,score/20);
     }
     undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
 

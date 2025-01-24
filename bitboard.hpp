@@ -140,10 +140,8 @@ struct bitboard_t {
     */
 
     /* To debug */ 
-    void printBBpiece(int index);   // print the current bitboard of specific piece on the board
     void printBBany(U64 u64);       // print any U64 integer, thus any kind of bitboard
     void printBB();                 // print the current board
-    void printBBattacked(bool color); // print the board and the square attacked by color
 
 
     /* Turns the type move_t to a move in form of the string */ 
@@ -167,13 +165,10 @@ struct bitboard_t {
     bool is_square_attacked(int square, bool color);
 
     /* Checks, if there is no moves for the current player */
-    bool no_moves(); 
+    //bool no_moves(); 
 
     /* Outputs the next move */
     std::string next_move();
-
-    /* Create a copy of the bitboard */
-    bitboard_t copy();
 
     /* Evaluates the current state of the board */
     int eval();
@@ -195,15 +190,7 @@ struct bitboard_t {
     //use the the game_phase to determine what is the phase:
     // if game_phase() > opening_phase_score => opening, if game_phase() < ending_phase_score => ending.
     //https://www.chessprogramming.org/Tapered_Eval
-    //Now in order to calculate interpolated score
-    /* for a given game phase we use this formula
-    (same for material and positional scores):
-    (
-        score_opening * game_phase_score + 
-        score_endgame * (opening_phase_score - game_phase_score)
-    ) / opening_phase_score */
-
-    //change plz and check plz
+  
     // piece - phase - square
     int scorePiecePositional[6][2][64] = {
         //score pawns opening
@@ -286,25 +273,25 @@ struct bitboard_t {
          5, 10, 10, 10, 10, 10, 10,  5,
          0,  0,  0,  0,  0,  0,  0,  0,
 
-        //score queens opening
-        -20,-10,-10,  5,  5,-10,-10,-20,
-        -10, -5, -5, -5, -5, -5, -5,-10,
-        -10, -5,-50,-50,-50,-50, -5,-10,
-        -5, -5,-50,-50,-50,-50, -5, -5,
-        -5, -5,-50,-50,-50,-50, -5, -5,
-        -10, -5,-50,-50,-50,-50, -5,-10,
-        -10, -5, -5, -5, -5, -5, -5,-10,
-        -20,-10,-10, -5, -5,-10,-10,-20,
+        //score queens opening //found on internet
+         -1, -18,  -9,  10, -15, -25, -31, -50,
+        -35,  -8,  11,   2,   8,  15,  -3,   1,
+        -14,   2, -11,  -2,  -5,   2,  14,   5,
+         -9, -26,  -9, -10,  -2,  -4,   3,  -3,
+        -27, -27, -16, -16,  -1,  17,  -2,   1,
+        -13, -17,   7,   8,  29,  56,  47,  57,
+        -24, -39,  -5,   1, -16,  57,  28,  54,
+        -28,   0,  29,  12,  59,  44,  43,  45,
 
-        //score queens ending
-        -20,-10,  0,  5,  5,  0,-10,-20,
-        -10,  0,  0,  0,  0,  0,  0,-10,
-        -10,  0,  5,  5,  5,  5,  0,-10,
-        -5,  0,  5,  5,  5,  5,  0, -5,
-        -5,  0,  5,  5,  5,  5,  0, -5,
-        -10,  0,  5,  5,  5,  5,  0,-10,
-        -10,  0,  0,  0,  0,  0,  0,-10,
-        -20,-10,-10, -5, -5,-10,-10,-20,
+        //score queens ending //found on internet
+        -33, -28, -22, -43,  -5, -32, -20, -41,
+        -22, -23, -30, -16, -16, -23, -36, -32,
+        -16, -27,  15,   6,   9,  17,  10,   5,
+        -18,  28,  19,  47,  31,  34,  39,  23,
+          3,  22,  24,  45,  57,  40,  57,  36,
+        -20,   6,   9,  49,  47,  35,  19,   9,
+        -17,  20,  32,  41,  58,  25,  30,   0,
+         -9,  22,  22,  27,  27,  19,  10,  20,
 
         //score king opening
         20, 30, 10, -5, -5, 10, 30, 20,
@@ -326,95 +313,7 @@ struct bitboard_t {
         -30,-20,-10,  0,  0,-10,-20,-30,
         -50,-40,-30,-20,-20,-30,-40,-50
 
-    }; // we can switch to this array to make the eval function prettier
-    //we can add new tables for ending of each piece.
-
-
-    //you can get inspired from https://www.chessprogramming.org/Simplified_Evaluation_Function
-    //you can implement for only white, for black's turn we can "flip" the board to get correct values
-    //TODO
-
-    int scorePawnsOpening[64] ={ 0,  0,  0,  0,  0,  0,  0,  0, 
-                                 5, 10, 10,-20,-20, 10, 10,  5,
-                                 5, -5,-10,  0,  0,-10, -5,  5,
-                                 0,  0,  0, 30, 30,  0,  0,  0,
-                                 5,  5, 10, 25, 25, 10,  5,  5,
-                                 10, 10, 20, 30, 30, 20, 10, 10,
-                                 50, 50, 50, 50, 50, 50, 50, 50,
-                                 0,  0,  0,  0,  0,  0,  0,  0 }; //flipped compared to the real board
-
-    int scorePawnsEnding[64] = { 0,  0,  0,  0,  0,  0,  0,  0, 
-                                 10, 10, 10, 10, 10, 10, 10, 10, 
-                                 20, 20, 20, 20, 20, 20, 20, 20,
-                                 30, 30, 30, 30, 30, 30, 30, 30,
-                                 40, 40, 40, 40, 40, 40, 40, 40,
-                                 50, 50, 50, 50, 50, 50, 50, 50,
-                                 100,100,100,100,100,100,100,100,
-                                 0,  0,  0,  0,  0,  0,  0,  0};
-
-    int scoreRooks[64] = { 0,  0,  0,  5,  5,  0,  0,  0,
-                          -5,  0,  0,  0,  0,  0,  0, -5,
-                          -5,  0,  0,  0,  0,  0,  0, -5,
-                          -5,  0,  0,  0,  0,  0,  0, -5,
-                          -5,  0,  0,  0,  0,  0,  0, -5,
-                          -5,  0,  0,  0,  0,  0,  0, -5,
-                           5, 10, 10, 10, 10, 10, 10,  5,
-                           0,  0,  0,  0,  0,  0,  0,  0};
-
-    int scoreKnights[64] = {-50,-50,-30,-30,-30,-30,-50,-50,
-                            -40,-20,  0,  5,  5,  0,-20,-40,
-                            -30,  5, 20, 15, 15, 20,  5,-30,
-                            -30,  0, 15, 25, 25, 15,  0,-30,
-                            -30,  5, 15, 25, 25, 15,  5,-30,
-                            -30,  0, 20, 15, 15, 20,  0,-30,
-                            -40,-20,  0,  0,  0,  0,-20,-40,
-                            -50,-50,-30,-30,-30,-30,-50,-50};
-
-    int scoreBishops[64] = {-20,-10,-10,-10,-10,-10,-10,-20,
-                            -10,  5,  0,  0,  0,  0,  5,-10,
-                            -10, 10, 10, 10, 10, 10, 10,-10,
-                            -10,  0, 10, 10, 10, 10,  0,-10,
-                            -10,  5,  5, 10, 10,  5,  5,-10,
-                            -10,  0,  5, 10, 10,  5,  0,-10,
-                            -10,  0,  0,  0,  0,  0,  0,-10,
-                            -20,-10,-10,-10,-10,-10,-10,-20};
-
-    int scoreQueensOpening[64]={-20,-10,-10,  5,  5,-10,-10,-20,
-                                -10, -5, -5, -5, -5, -5, -5,-10,
-                                -10, -5,-50,-50,-50,-50, -5,-10,
-                                 -5, -5,-50,-50,-50,-50, -5, -5,
-                                 -5, -5,-50,-50,-50,-50, -5, -5,
-                                -10, -5,-50,-50,-50,-50, -5,-10,
-                                -10, -5, -5, -5, -5, -5, -5,-10,
-                                -20,-10,-10, -5, -5,-10,-10,-20};
-
-    int scoreQueensEnding[64] ={-20,-10,  0,  5,  5,  0,-10,-20,
-                                -10,  0,  0,  0,  0,  0,  0,-10,
-                                -10,  0,  5,  5,  5,  5,  0,-10,
-                                 -5,  0,  5,  5,  5,  5,  0, -5,
-                                 -5,  0,  5,  5,  5,  5,  0, -5,
-                                -10,  0,  5,  5,  5,  5,  0,-10,
-                                -10,  0,  0,  0,  0,  0,  0,-10,
-                                -20,-10,-10, -5, -5,-10,-10,-20};
-
-    int scoreKingOpening[64] = { 20, 30, 10, -5, -5, 10, 30, 20,
-                                 20, 20,  0,  0,  0,  0, 20, 20,
-                                -10,-20,-20,-20,-20,-20,-20,-10,
-                                -20,-30,-30,-40,-40,-30,-30,-20,
-                                -30,-40,-40,-50,-50,-40,-40,-30,
-                                -30,-40,-40,-50,-50,-40,-40,-30,
-                                -30,-40,-40,-50,-50,-40,-40,-30,
-                                -30,-40,-40,-50,-50,-40,-40,-30};
-
-    int scoreKingEnding[64] = {-50,-30,-30,-30,-30,-30,-30,-50,
-                               -30,-30,  0,  0,  0,  0,-30,-30,
-                               -30,-10, 20, 30, 30, 20,-10,-30,
-                               -30,-10, 30, 40, 40, 30,-10,-30,
-                               -30,-10, 30, 40, 40, 30,-10,-30,
-                               -30,-10, 20, 30, 30, 20,-10,-30,
-                               -30,-20,-10,  0,  0,-10,-20,-30,
-                               -50,-40,-30,-20,-20,-30,-40,-50};
-
+    };
 
     /*
     
@@ -496,12 +395,13 @@ struct bitboard_t {
     int current_depth = 0;
     std::time_t tracker = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
     move_t* search(int depth, int α = -inf, int β = inf, std::time_t time = 0);
-    move_t* Quiescence_search(int depth, int α = -inf, int β = inf, std::time_t time = 0);
+    //move_t* Quiescence_search(int depth, int α = -inf, int β = inf, std::time_t time = 0);
     int score_move(move_t* move);
 
     //Map for translate pieces to their correspond points
     int pieces_to_points[12] = {100, 300, 300, 500, 900, 10000, 100, 300, 300, 500, 900, 10000};
 
+    //Most Valuable Victim - Least Valuable Attacker
     int MVV_LVA[12][12] = {
         105, 205, 305, 405, 505, 605,  105, 205, 305, 405, 505, 605,
         104, 204, 304, 404, 504, 604,  104, 204, 304, 404, 504, 604,

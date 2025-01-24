@@ -1,11 +1,6 @@
 #include "bitboard.hpp"
 
-//std::chrono::time_point<std::chrono::high_resolution_clock> start;
-
 move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
-	// Timer
-
-
 	/* Alpha-beta pruning :) */
 	move_t* ret = new move_t;
     if (depth == 0) {
@@ -22,7 +17,6 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
         int king = (turn == 0) ? 11 : 5;
 		int sign = (turn == 0) ? 1 : -1;
 		if(is_square_attacked(get_LSB(piecesBB[king]),!turn)) ret->eval = sign*(inf + depth); //checkmate
-		// TESTING
 		else ret->eval = 0; //stalemate
 		return ret;
 	}
@@ -45,8 +39,6 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		bool b_c_kside = b_castle_kside;
 		bool b_c_qside = b_castle_qside;
 
-		//bitboard_t child = this->copy();
-		//child.update(move);
 		update(move);
 		current_depth++;
 
@@ -54,22 +46,10 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		if (counter_hash_map[hash_current_board] >= 3){
 			pval = 0;
 		}
-		/*else {
-			std::map<U64,int>::iterator it;
-			it = zobrist_hash_map.find(hash_current_board);
-			if (it != zobrist_hash_map.end()){
-				pval = zobrist_hash_map[hash_current_board];
-			}
-			//int pval = child.search_aux(depth - 1, α, β).first;
-			else {
-				pval = search(depth - 1, α, β)->eval;
-				zobrist_hash_map[hash_current_board] = pval;
-			}
-		}*/
+
 		else if (move_counter >= 7){
 			if (depth == 5) {
 				pval = search(depth-2, α, β, time)->eval;
-				//if (pval) pval -= ((turn == 0) ? 1 : -1);
 
 				if (pval > val) {
 					pval = search(depth - 1, α, β, time)->eval;
@@ -125,6 +105,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 	return ret;
 }
 
+/*
 move_t* bitboard_t::Quiescence_search(int depth, int α, int β, std::time_t time){
 	// Timer
 	move_t* best_move = new move_t;
@@ -210,3 +191,4 @@ move_t* bitboard_t::Quiescence_search(int depth, int α, int β, std::time_t tim
 	}
 	return best_move;
 }
+*/

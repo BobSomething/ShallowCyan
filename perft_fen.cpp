@@ -16,12 +16,6 @@ U64 bitboard_t::perft(int depth) {
         bool b_c_kside = b_castle_kside;
         bool b_c_qside = b_castle_qside;
         update(move);
-            /* if(depth == 1){
-                printBB();
-                std::cout << p_before << " " << p_after << std::endl;
-                std::cout << move->before.i << " " << move->before.j << "  " << move->after.i << " " << move->after.j << " " << move->type_move << std::endl;
-                //getchar(); 
-            } */
         count += perft(depth-1);
         undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
     }

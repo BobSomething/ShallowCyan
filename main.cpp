@@ -10,7 +10,7 @@
 int main(int argc, char* argv[]) {
     bool state = true;
     std::string history, move;
-    auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    //auto tracker = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
     //Taking all the arguments
     for(int i = 1; i < argc; i++) {
@@ -53,21 +53,7 @@ int main(int argc, char* argv[]) {
 
     //bboard.printBB();
 
-    auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::cout << "Time elapsed " << (double)(trackered-tracker)/1000000000 << " seconds" << std::endl;
-
-    /* bitboard_t board_test;
-
-    board_test.update_with_fen(epcases);
-
-    std::cout << board_test.generate_fen() << std::endl;
-
-    board_test.printBB();
-
-    for(int i=1; i<7; i++)
-        std::cout << board_test.perft(i) << std::endl;
-
-    std::cout << board_test.generate_fen() << std::endl; */
-
+    //auto trackered = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    //std::cout << "Time elapsed " << (double)(trackered-tracker)/1000000000 << " seconds" << std::endl;
     return 0;
 }
