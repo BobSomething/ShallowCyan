@@ -25,3 +25,4 @@ Dont remember exactly what we did, but we thought of how to make the code better
 
 Week 7:
 Worked on a new move prunning (additional) where basically we hope that the first few moves we see are "good", and so for the moves after those, we do not look the full depths for all of them , we only look at a lower depths for all, and only look through the whole depth if the move is good. We hope (and verified) that the first moves we see are good enough for the average complexity to be better, making the search function faster.
+Also helped An work on the game phases, to adjust the "piece positioning score" depending on when we are in a game
