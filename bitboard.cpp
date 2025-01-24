@@ -517,32 +517,18 @@ bool bitboard_t::is_legal(move_t* move) {
     return true;
 }
 
-#include <ctime>
-//For now we generate a random move from all legal moves
-//After a while try search function
+//seaching
 std::string bitboard_t::next_move() {
-    if(nb_turns < 0) {
-        array_moves moves;
-        std::srand(std::time(0));
-        generate_all_moves(&moves);
-        int rand_pos = std::rand() % moves.size();
-        return move_to_string(moves[rand_pos]);
-    }
-    else {
-        std::time_t tracker = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-        return move_to_string(search(5, -inf, inf, tracker));
-        //move_t* next = search(4);
-        //std::cout << "Evaluation: " << next->eval << std::endl;
-        //return move_to_string(next);
-    }
+    std::time_t tracker = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    return move_to_string(search(5, -inf, inf, tracker));
+    //move_t* next = search(4);
+    //std::cout << "Evaluation: " << next->eval << std::endl;
+    //return move_to_string(next);
 }
 
 //calculates the game phase
 int bitboard_t::game_phase() {
     int all_score = 0;
-
-    //let's say we count the phase as follows
-    //4 * knights + 4 * bishops + 2 * rooks + 2 * queen
     
     for(int i=1; i<=4; i++)
         all_score += get_count(piecesBB[i]) * material_pieces[0][i];
@@ -552,11 +538,7 @@ int bitboard_t::game_phase() {
 }
 
 int bitboard_t::eval() {
-    //can calculate how many pieces are left for white and black with & all the bitboards and use the get_count function
-    //define a threshold of nb of pieces that we are in endgame: ...
-     //add up scores from score tables
-    //remember to "flip" the board for black's turn
-    //check if we are in endgame or not, if so remember to use Ending tables for kings and pawn
+    //three-fold
     if (counter_hash_map[hash_current_board] >= 3){
 		return 0;
 	}
@@ -568,16 +550,11 @@ int bitboard_t::eval() {
     if (game_phase_score < ending_phase_score) phase--;
     
     int total = 0;
-    U64 nb_piece = 0;
-    for (int i=1; i<12; i++){
-        nb_piece |= piecesBB[i];
-    }
-    int nb_pieces = get_count(nb_piece);
-    bool in_opening = (nb_pieces > 14); // Maybe change parameter
-    bool punish_queen = (nb_turns < 10);
+
     for (int i=0; i<SIZESQ; ++i) {
         int piece = this->pieceTable[i];
 
+        //mirrored
         int mirrored = ((8-(i/8))*8)-(8-i%8);
 
         U64 sameColor = 0;

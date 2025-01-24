@@ -37,7 +37,6 @@ int main(int argc, char* argv[]) {
     std::string line;
     while (getline(input, line)) {
         bboard.update_string(line);
-        bboard.nb_turns++;
     }
     input.close();
     

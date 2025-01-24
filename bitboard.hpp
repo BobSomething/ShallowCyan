@@ -100,8 +100,6 @@ struct bitboard_t {
     bool b_castle_kside = true;     // black kingside castling rights 
     bool b_castle_qside = true;     // black queenside castling rights
 
-    int nb_turns = 0;               // number of turns = number of moves in the game
-
     bitboard_t();                   // Initializing the bitboards
     
     //zobrist-hashing
