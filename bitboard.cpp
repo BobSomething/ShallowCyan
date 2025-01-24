@@ -520,7 +520,7 @@ bool bitboard_t::is_legal(move_t* move) {
 //seaching
 std::string bitboard_t::next_move() {
     std::time_t tracker = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-    return move_to_string(search(5, -inf, inf, tracker));
+    return move_to_string(search(4, -inf, inf, tracker));
     //move_t* next = search(4);
     //std::cout << "Evaluation: " << next->eval << std::endl;
     //return move_to_string(next);

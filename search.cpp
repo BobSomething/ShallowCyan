@@ -46,9 +46,11 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		if (counter_hash_map[hash_current_board] >= 3){
 			pval = 0;
 		}
-
+		else
+			pval = search(depth - 1, α, β, time)->eval;
+		/*
 		else if (move_counter >= 7){
-			if (depth == 5) {
+			if (depth == 4) {
 				pval = search(depth-2, α, β, time)->eval;
 
 				if (pval > val) {
@@ -61,6 +63,7 @@ move_t* bitboard_t::search(int depth, int α, int β, std::time_t time) {
 		} else {
 			pval = search(depth - 1, α, β, time)->eval;
 		}
+		*/
 
 		current_depth--;
 		undo(move,p_before,p_after,ep_square,w_c_kside,w_c_qside,b_c_kside,b_c_qside);
