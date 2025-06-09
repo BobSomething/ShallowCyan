@@ -1,4 +1,10 @@
-For the professor:
+# Chess Bot in C++
+
+Final Project for C++ course. Name of our chess bot: ShallowCyan
+
+Done by: Bui Minh Duc, Sacha Gregoire, Yonas Grossard-Amin, Hai An Mai
+
+# For the professor:
 
 Bob - bob@bob.a is Hai An Mai
 My PC - mypc@macbook-air-84.local is Bui Minh Duc
