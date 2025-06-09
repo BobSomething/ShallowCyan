@@ -4,6 +4,8 @@ Final Project for C++ course. Name of our chess bot: ShallowCyan
 
 Done by: Bui Minh Duc, Sacha Gregoire, Yonas Grossard-Amin, Hai An Mai
 
+Ranked: 7/27 (probably could have done better, if we stayed with higher depth search)
+
 # For the professor:
 
 Bob - bob@bob.a is Hai An Mai
